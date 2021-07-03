@@ -1,0 +1,49 @@
+---
+- name: Ensure nvm installer is available
+  get_url:
+    url: https://raw.githubusercontent.com/nvm-sh/nvm/v{{ nvm_version }}/install.sh
+    dest: /tmp/nvm_install.sh
+    mode: a+x
+
+- name: Ensure nvm is installed
+  shell: 
+    cmd: /tmp/nvm_install.sh
+    creates: ~/.nvm/nvm.sh
+
+- name: Ensure Node is installed
+  shell:
+    cmd: . ~/.nvm/nvm.sh && nvm install {{ node_version }}
+    creates: ~/.nvm/versions/node/v{{ node_version }}/bin/npm
+
+- name: Ensure Yarn is installed
+  shell:
+    cmd: npm install -g yarn
+    creates: ~/.nvm/versions/node/v{{ node_version }}/lib/node_modules/yarn
+
+- name: Ensure git is installed
+  package:
+    name: git
+    state: present
+  become: yes
+
+- name: Ensure HedgeDoc directory exists
+  file:
+    path: "{{ hedgedoc_base_path }}-{{ hedgedoc_version }}"
+    state: directory
+
+- name: Extract tgz
+  unarchive:
+    src: "{{ hedgedoc_source }}"
+    dest: "{{ hedgedoc_base_path }}-{{ hedgedoc_version }}"
+    remote_src: yes
+    extra_opts: [--strip-components=1]
+    creates: "{{ hedgedoc_base_path }}-{{ hedgedoc_version }}/bin"
+  notify: restart hedgedoc
+
+- name: Run setup script
+  command:
+    chdir: "{{ hedgedoc_base_path }}-{{ hedgedoc_version }}"
+    cmd: "{{ hedgedoc_base_path }}-{{ hedgedoc_version }}/bin/setup"
+    creates: "{{ hedgedoc_base_path }}-{{ hedgedoc_version }}/node_modules"
+
+

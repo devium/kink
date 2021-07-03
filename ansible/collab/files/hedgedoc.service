@@ -1,0 +1,17 @@
+[Unit]
+Description=hedgedoc
+After=network.target
+
+[Service]
+Type=exec
+RestartSec=2s
+User=ec2-user
+Group=1000
+WorkingDirectory={{ hedgedoc_base_path }}
+ExecStart=/usr/bin/env npm start --production
+Restart=always
+PrivateTmp=true
+PrivateDevices=true
+
+[Install]
+WantedBy=multi-user.target
