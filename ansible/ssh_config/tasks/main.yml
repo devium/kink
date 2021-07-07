@@ -1,0 +1,14 @@
+---
+- name: Create ssh config file
+  copy:
+    content: ""
+    dest: ~/.ssh/config
+    force: no
+    mode: 0600
+
+- name: Create ssh config entry for collab server
+  blockinfile:
+    path: ~/.ssh/config
+    block: |
+      Host collab
+        HostName {{ collab_host }}

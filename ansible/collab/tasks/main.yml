@@ -1,49 +1,38 @@
 ---
-- name: Ensure nvm installer is available
-  get_url:
-    url: https://raw.githubusercontent.com/nvm-sh/nvm/v{{ nvm_version }}/install.sh
-    dest: /tmp/nvm_install.sh
-    mode: a+x
-
-- name: Ensure nvm is installed
-  shell: 
-    cmd: /tmp/nvm_install.sh
-    creates: ~/.nvm/nvm.sh
-
-- name: Ensure Node is installed
-  shell:
-    cmd: . ~/.nvm/nvm.sh && nvm install {{ node_version }}
-    creates: ~/.nvm/versions/node/v{{ node_version }}/bin/npm
-
-- name: Ensure Yarn is installed
-  shell:
-    cmd: npm install -g yarn
-    creates: ~/.nvm/versions/node/v{{ node_version }}/lib/node_modules/yarn
-
-- name: Ensure git is installed
+- name: Install pip
   package:
-    name: git
+    name:
+      - python-pip
     state: present
   become: yes
+  vars:
+    ansible_python_interpreter: /usr/bin/python2
 
-- name: Ensure HedgeDoc directory exists
-  file:
-    path: "{{ hedgedoc_base_path }}-{{ hedgedoc_version }}"
-    state: directory
+- name: Install Docker
+  shell:
+    cmd: amazon-linux-extras install -y docker
+    creates: /usr/bin/docker
+  become: yes
 
-- name: Extract tgz
-  unarchive:
-    src: "{{ hedgedoc_source }}"
-    dest: "{{ hedgedoc_base_path }}-{{ hedgedoc_version }}"
-    remote_src: yes
-    extra_opts: [--strip-components=1]
-    creates: "{{ hedgedoc_base_path }}-{{ hedgedoc_version }}/bin"
-  notify: restart hedgedoc
+- name: Start Docker
+  service:
+    name: docker
+    enabled: yes
+    state: started
+  become: yes
 
-- name: Run setup script
-  command:
-    chdir: "{{ hedgedoc_base_path }}-{{ hedgedoc_version }}"
-    cmd: "{{ hedgedoc_base_path }}-{{ hedgedoc_version }}/bin/setup"
-    creates: "{{ hedgedoc_base_path }}-{{ hedgedoc_version }}/node_modules"
+- name: Install docker-compose
+  pip:
+    name: docker-compose
+  become: yes
 
+- name: Copy docker-compose.yml to target machine
+  template:
+    src: docker-compose.yml.j2
+    dest: /home/ec2-user/docker-compose.yml
+  become: yes
 
+- name: Setup HedgeDoc via docker-compose
+  docker_compose:
+    project_src: /home/ec2-user/
+  become: yes

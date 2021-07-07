@@ -1,0 +1,14 @@
+all:
+  hosts:
+    bastion:
+      ansible_host: "{{ bastion_host }}"
+      ansible_user: ec2-user
+
+  children:
+    gatewayed:
+      hosts:
+        collab:
+          ansible_host: "{{ collab_host }}"
+          ansible_user: ec2-user
+      vars:
+        ansible_ssh_common_args: '-o ProxyCommand="ssh -W %h:%p -q ec2-user@{{ bastion_host }}"'

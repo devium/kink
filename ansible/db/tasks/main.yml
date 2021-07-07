@@ -1,2 +1,29 @@
 ---
-# tasks file for db
+- name: Install requirements for psycopg2
+  package:
+    name:
+      - python-pip
+    state: present
+  become: yes
+  vars:
+    ansible_python_interpreter: /usr/bin/python2
+
+- name: Install psycopg2 for Postgres access
+  pip:
+    name: psycopg2-binary
+
+- name: Create HedgeDoc database
+  postgresql_db:
+    login_host: "{{ db_host }}"
+    login_password: "{{ db_root_password }}"
+    name: " {{ db_hedgedoc_database }}"
+
+- name: Create HedgeDoc database user
+  postgresql_user:
+    login_host: "{{ db_host }}"
+    login_password: "{{ db_root_password }}"
+    db: "{{ db_hedgedoc_database }}"
+    name: "{{ db_hedgedoc_username }}"
+    password: "{{ db_hedgedoc_password }}"
+    priv: "ALL"
+    no_password_changes: yes

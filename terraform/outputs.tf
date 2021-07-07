@@ -1,10 +1,10 @@
-# Ansible inventory file
-resource "local_file" "AnsibleInventory" {
-  content = templatefile("inventory.tmpl",
+resource "local_file" "AnsibleHosts" {
+  content = templatefile("hosts.yml.tmpl",
     {
+      bastion = module.deploy.bastion_hostname,
       db = module.db.db_private_address,
       collab = module.deploy.collab_private_ip
     }
   )
-  filename = "../ansible/inventory"
+  filename = "../ansible/group_vars/all/hosts.yml"
 }

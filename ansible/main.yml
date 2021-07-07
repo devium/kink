@@ -1,4 +1,12 @@
 ---
-- hosts: all
+- hosts: bastion
+  roles:
+    - { role: db }
+
+- hosts: bastion
+  roles:
+    - { role: ssh_config }
+
+- hosts: collab
   roles:
     - { role: collab }

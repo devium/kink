@@ -1,9 +1,0 @@
-all:
-  hosts:
-    collab:
-      ansible_host: ${collab}
-      ansible_user: ec2-user
-  children:
-    dbservers:
-      hosts:
-        ${db}

@@ -1,9 +1,0 @@
-all:
-  hosts:
-    collab:
-      ansible_host: 192.168.1.197
-      ansible_user: ec2-user
-  children:
-    dbservers:
-      hosts:
-        terraform-20210703165549982100000001.ccoagnqigki8.eu-central-1.rds.amazonaws.com
