@@ -1,0 +1,8 @@
+---
+- name: Restart HedgeDoc and reverse proxy
+  docker_compose:
+    project_src: /home/ec2-user/hedgedoc
+    restarted: yes
+  become: yes
+  listen: "restart docker"
+  

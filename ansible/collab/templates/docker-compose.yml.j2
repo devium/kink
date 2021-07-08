@@ -1,15 +1,38 @@
 version: '3'
 services:
-  app:
+  hedgedoc:
     image: quay.io/hedgedoc/hedgedoc:{{ hedgedoc_version }}
+    container_name: hedgedoc
     environment:
       - CMD_DB_URL=postgres://{{ db_hedgedoc_username }}:{{ db_hedgedoc_password }}@{{ db_host }}:5432/{{ db_hedgedoc_database }}
       - CMD_DOMAIN=localhost
-      - CMD_URL_ADDPORT=true
       - CMD_DOMAIN={{ collab_domain }}
-      - CMD_PORT=80
+      - CMD_PORT=3000
       - CMD_ALLOW_ANONYMOUS_EDITS=true
+      - CMD_PROTOCOL_USESSL=true
       - CMD_SESSION_SECRET={{ hedgedoc_session_secret }}
     ports:
-      - "80:80"
-    restart: always
+      - 3000:3000
+    restart: unless-stopped
+
+  swag:
+    image: ghcr.io/linuxserver/swag
+    container_name: swag
+    cap_add:
+      - NET_ADMIN
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Berlin
+      - URL={{ collab_domain }}
+      - SUBDOMAINS=,
+      - VALIDATION=http
+      - ONLY_SUBDOMAINS=false
+    volumes:
+      - /home/ec2-user/hedgedoc/config:/config
+    ports:
+      - 443:443
+      - 80:80
+    restart: unless-stopped
+    depends_on:
+      - hedgedoc

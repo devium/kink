@@ -6,4 +6,5 @@ hedgedoc_version: "1.8.2"
 hedgedoc_session_secret: "{{ vault_hedgedoc_session_secret }}"
 ansible_python_interpreter: /usr/bin/python3
 
+kink_domain: kink.devium.net
 collab_domain: collab.kink.devium.net

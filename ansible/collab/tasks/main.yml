@@ -26,13 +26,23 @@
     name: docker-compose
   become: yes
 
+- name: Create HedgeDoc dirs
+  file:
+    path: /home/ec2-user/hedgedoc/config/nginx/site-confs
+    state: directory
+
 - name: Copy docker-compose.yml to target machine
   template:
     src: docker-compose.yml.j2
-    dest: /home/ec2-user/docker-compose.yml
-  become: yes
+    dest: /home/ec2-user/hedgedoc/docker-compose.yml
 
-- name: Setup HedgeDoc via docker-compose
+- name: Copy SWAG reverse proxy config for HedgeDoc
+  template:
+    src: hedgedoc.conf.j2
+    dest: /home/ec2-user/hedgedoc/config/nginx/site-confs/hedgedoc.conf
+  notify: "restart docker"
+
+- name: Run HedgeDoc and reverse proxy
   docker_compose:
-    project_src: /home/ec2-user/
+    project_src: /home/ec2-user/hedgedoc
   become: yes
