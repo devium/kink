@@ -1,48 +1,21 @@
 ---
-- name: Install pip
-  package:
-    name:
-      - python-pip
-    state: present
-  become: yes
-  vars:
-    ansible_python_interpreter: /usr/bin/python2
-
-- name: Install Docker
-  shell:
-    cmd: amazon-linux-extras install -y docker
-    creates: /usr/bin/docker
-  become: yes
-
-- name: Start Docker
-  service:
-    name: docker
-    enabled: yes
-    state: started
-  become: yes
-
-- name: Install docker-compose
-  pip:
-    name: docker-compose
-  become: yes
-
 - name: Create HedgeDoc dirs
   file:
-    path: /home/ec2-user/hedgedoc/config/nginx/site-confs
+    path: "{{ home }}/hedgedoc/config/nginx/site-confs"
     state: directory
 
 - name: Copy docker-compose.yml to target machine
   template:
     src: docker-compose.yml.j2
-    dest: /home/ec2-user/hedgedoc/docker-compose.yml
+    dest: "{{ home }}/hedgedoc/docker-compose.yml"
 
 - name: Copy SWAG reverse proxy config for HedgeDoc
   template:
     src: hedgedoc.conf.j2
-    dest: /home/ec2-user/hedgedoc/config/nginx/site-confs/hedgedoc.conf
+    dest: "{{ home }}/hedgedoc/config/nginx/site-confs/hedgedoc.conf"
   notify: "restart docker"
 
 - name: Run HedgeDoc and reverse proxy
   docker_compose:
-    project_src: /home/ec2-user/hedgedoc
+    project_src: "{{ home }}/hedgedoc"
   become: yes

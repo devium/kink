@@ -124,7 +124,7 @@ resource "aws_instance" "auth" {
   instance_type = var.auth_instance_type
   subnet_id = var.subnet_public_id
   key_name = var.key_name
-  vpc_security_group_ids = [ aws_security_group.bastion-sg.id ]
+  vpc_security_group_ids = [ aws_security_group.auth-sg.id ]
     associate_public_ip_address = true
 
   tags = {

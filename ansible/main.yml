@@ -7,6 +7,14 @@
   roles:
     - { role: ssh_config }
 
+- hosts: docker_hosts
+  roles:
+    - { role: docker }
+
 - hosts: collab
   roles:
     - { role: collab }
+
+- hosts: auth
+  roles:
+    - { role: auth }

@@ -1,0 +1,21 @@
+---
+- name: Create Keycloak dirs
+  file:
+    path: "{{ home }}/keycloak/config/nginx/site-confs"
+    state: directory
+
+- name: Copy docker-compose.yml to target machine
+  template:
+    src: docker-compose.yml.j2
+    dest: "{{ home }}/keycloak/docker-compose.yml"
+
+- name: Copy SWAG reverse proxy config for Keycloak
+  template:
+    src: keycloak.conf.j2
+    dest: "{{ home }}/keycloak/config/nginx/site-confs/keycloak.conf"
+  notify: "restart docker"
+
+- name: Run Keycloak
+  docker_compose:
+    project_src: "{{ home }}/keycloak"
+  become: yes

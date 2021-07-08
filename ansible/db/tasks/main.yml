@@ -28,3 +28,20 @@
     priv: "ALL"
     no_password_changes: yes
   no_log: true
+
+- name: Create Keycloak database
+  postgresql_db:
+    login_host: "{{ db_host }}"
+    login_password: "{{ db_root_password }}"
+    name: "{{ db_keycloak_database }}"
+
+- name: Create Keycloak database user
+  postgresql_user:
+    login_host: "{{ db_host }}"
+    login_password: "{{ db_root_password }}"
+    db: "{{ db_keycloak_database }}"
+    name: "{{ db_keycloak_username }}"
+    password: "{{ db_keycloak_password }}"
+    priv: "ALL"
+    no_password_changes: yes
+  no_log: true

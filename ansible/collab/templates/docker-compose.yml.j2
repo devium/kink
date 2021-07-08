@@ -25,11 +25,9 @@ services:
       - PGID=1000
       - TZ=Europe/Berlin
       - URL={{ collab_domain }}
-      - SUBDOMAINS=,
       - VALIDATION=http
-      - ONLY_SUBDOMAINS=false
     volumes:
-      - /home/ec2-user/hedgedoc/config:/config
+      - {{ home }}/hedgedoc/config:/config
     ports:
       - 443:443
       - 80:80

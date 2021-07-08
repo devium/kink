@@ -4,15 +4,15 @@ variable "ami" {
 }
 
 variable "bastion_instance_type" {
-  default = "t2.nano"
+  default = "t3.nano"
 }
 
 variable "collab_instance_type" {
-  default = "t2.nano"
+  default = "t3.nano"
 }
 
 variable "auth_instance_type" {
-  default = "t2.nano"
+  default = "t3.micro"
 }
 
 variable "key_name" {
