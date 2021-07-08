@@ -8,7 +8,11 @@ variable "bastion_instance_type" {
 }
 
 variable "collab_instance_type" {
-  default = "t2.micro"
+  default = "t2.nano"
+}
+
+variable "auth_instance_type" {
+  default = "t2.nano"
 }
 
 variable "key_name" {

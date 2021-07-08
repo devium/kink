@@ -27,3 +27,4 @@
     password: "{{ db_hedgedoc_password }}"
     priv: "ALL"
     no_password_changes: yes
+  no_log: true
