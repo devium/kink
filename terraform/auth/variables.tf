@@ -3,15 +3,7 @@ variable "ami" {
   default = "ami-089b5384aac360007"
 }
 
-variable "bastion_instance_type" {
-  default = "t3.nano"
-}
-
-variable "collab_instance_type" {
-  default = "t3.nano"
-}
-
-variable "auth_instance_type" {
+variable "instance_type" {
   default = "t3.micro"
 }
 
@@ -26,4 +18,7 @@ variable "cidr_vpc" {
 }
 
 variable "subnet_public_id" {
+}
+
+variable "zone_id" {
 }

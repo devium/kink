@@ -30,8 +30,3 @@
     src: custom/
     dest: "{{ home }}/keycloak/custom/"
   notify: "restart docker"
-
-- name: Run Keycloak
-  docker_compose:
-    project_src: "{{ home }}/keycloak"
-  become: yes

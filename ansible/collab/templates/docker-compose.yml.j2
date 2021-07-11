@@ -21,6 +21,7 @@ services:
       - CMD_OAUTH2_PROVIDERNAME=Keycloak
       - CMD_EMAIL=false
       - CMD_ALLOW_EMAIL_REGISTER=false
+      - CMD_ALLOW_ANONYMOUS=false
     ports:
       - 3000:3000
     restart: unless-stopped

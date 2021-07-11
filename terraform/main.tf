@@ -27,6 +27,10 @@ module "vpc" {
   cidr_private_backup = "192.168.3.0/24"
 }
 
+resource "aws_route53_zone" "primary" {
+  name = "kink.devium.net"
+}
+
 module "db" {
   source = "./db"
   depends_on = [module.vpc]
@@ -35,10 +39,29 @@ module "db" {
   db_password = var.db_password
 }
 
-module "deploy" {
-  source = "./deploy"
+module "bastion" {
+  source = "./bastion"
   depends_on = [module.vpc]
   vpc_id = module.vpc.vpc_id
   cidr_vpc = module.vpc.cidr_vpc
   subnet_public_id = module.vpc.subnet_public_id
+  zone_id = aws_route53_zone.primary.zone_id
+}
+
+module "auth" {
+  source = "./auth"
+  depends_on = [module.vpc]
+  vpc_id = module.vpc.vpc_id
+  cidr_vpc = module.vpc.cidr_vpc
+  subnet_public_id = module.vpc.subnet_public_id
+  zone_id = aws_route53_zone.primary.zone_id
+}
+
+module "collab" {
+  source = "./collab"
+  depends_on = [module.vpc]
+  vpc_id = module.vpc.vpc_id
+  cidr_vpc = module.vpc.cidr_vpc
+  subnet_public_id = module.vpc.subnet_public_id
+  zone_id = aws_route53_zone.primary.zone_id
 }

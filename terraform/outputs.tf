@@ -1,10 +1,10 @@
 resource "local_file" "AnsibleHosts" {
   content = templatefile("hosts.yml.tmpl",
     {
-      bastion = module.deploy.bastion_hostname,
-      db = module.db.db_private_address,
-      collab = module.deploy.collab_private_ip,
-      auth = module.deploy.auth_private_ip
+      bastion = module.bastion.hostname,
+      db = module.db.private_address,
+      collab = module.collab.private_ip,
+      auth = module.auth.private_ip
     }
   )
   filename = "../ansible/group_vars/all/hosts.yml"
