@@ -3,6 +3,7 @@ services:
   keycloak:
     image: quay.io/keycloak/keycloak:{{ keycloak_version }}
     container_name: keycloak
+    command: ["-Dkeycloak.profile=preview", "-Dkeycloak.profile.feature.declarative_user_profile=enabled"]
     environment:
       - KEYCLOAK_USER=admin
       - KEYCLOAK_PASSWORD={{ keycloak_password }}
@@ -12,8 +13,12 @@ services:
       - DB_DATABASE={{ db_keycloak_database }}
       - DB_USER={{ db_keycloak_username }}
       - DB_PASSWORD={{ db_keycloak_password }}
+      - KEYCLOAK_IMPORT=/opt/jboss/keycloak/realm-export.json
     ports:
       - 8080:8080
+    volumes:
+      - {{ home }}/keycloak/realm-export.json:/opt/jboss/keycloak/realm-export.json
+      - {{ home }}/keycloak/custom:/opt/jboss/keycloak/themes/custom
     restart: unless-stopped
 
   swag:

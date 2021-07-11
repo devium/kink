@@ -1,7 +1,12 @@
 ---
-- name: Create Keycloak dirs
+- name: Create Keycloak dirs 1/2
   file:
     path: "{{ home }}/keycloak/config/nginx/site-confs"
+    state: directory
+
+- name: Create Keycloak dirs 2/2
+  file:
+    path: "{{ home }}/keycloak/startup-scripts"
     state: directory
 
 - name: Copy docker-compose.yml to target machine
@@ -13,6 +18,17 @@
   template:
     src: keycloak.conf.j2
     dest: "{{ home }}/keycloak/config/nginx/site-confs/keycloak.conf"
+  notify: "restart docker"
+
+- name: Copy realm settings
+  copy:
+    src: realm-export.json
+    dest: "{{ home }}/keycloak/realm-export.json"
+
+- name: Copy custom theme
+  copy:
+    src: custom/
+    dest: "{{ home }}/keycloak/custom/"
   notify: "restart docker"
 
 - name: Run Keycloak

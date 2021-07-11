@@ -16,7 +16,7 @@
   postgresql_db:
     login_host: "{{ db_host }}"
     login_password: "{{ db_root_password }}"
-    name: " {{ db_hedgedoc_database }}"
+    name: "{{ db_hedgedoc_database }}"
 
 - name: Create HedgeDoc database user
   postgresql_user:

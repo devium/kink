@@ -8,9 +8,19 @@ services:
       - CMD_DOMAIN=localhost
       - CMD_DOMAIN={{ collab_domain }}
       - CMD_PORT=3000
-      - CMD_ALLOW_ANONYMOUS_EDITS=true
       - CMD_PROTOCOL_USESSL=true
       - CMD_SESSION_SECRET={{ hedgedoc_session_secret }}
+      - CMD_OAUTH2_USER_PROFILE_URL=https://{{ auth_domain }}/auth/realms/kink/protocol/openid-connect/userinfo
+      - CMD_OAUTH2_USER_PROFILE_USERNAME_ATTR=preferred_username
+      - CMD_OAUTH2_USER_PROFILE_DISPLAY_NAME_ATTR=name
+      - CMD_OAUTH2_USER_PROFILE_EMAIL_ATTR=email
+      - CMD_OAUTH2_TOKEN_URL=https://{{ auth_domain }}/auth/realms/kink/protocol/openid-connect/token
+      - CMD_OAUTH2_AUTHORIZATION_URL=https://{{ auth_domain }}/auth/realms/kink/protocol/openid-connect/auth
+      - CMD_OAUTH2_CLIENT_ID=hedgedoc
+      - CMD_OAUTH2_CLIENT_SECRET={{ keycloak_hedgedoc_secret }}
+      - CMD_OAUTH2_PROVIDERNAME=Keycloak
+      - CMD_EMAIL=false
+      - CMD_ALLOW_EMAIL_REGISTER=false
     ports:
       - 3000:3000
     restart: unless-stopped
