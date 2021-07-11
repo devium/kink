@@ -65,3 +65,12 @@ module "collab" {
   subnet_public_id = module.vpc.subnet_public_id
   zone_id = aws_route53_zone.primary.zone_id
 }
+
+module "matrix" {
+  source = "./matrix"
+  depends_on = [module.vpc]
+  vpc_id = module.vpc.vpc_id
+  cidr_vpc = module.vpc.cidr_vpc
+  subnet_public_id = module.vpc.subnet_public_id
+  zone_id = aws_route53_zone.primary.zone_id
+}
