@@ -20,8 +20,10 @@ matrix_ntpd_service: chronyd
 matrix_vars_yml_snapshotting_src: "{{ inventory_dir }}/host_vars/matrix/main.yml"
 matrix_nginx_proxy_proxy_matrix_client_api_forwarded_location_synapse_oidc_api_enabled: yes
 matrix_synapse_password_config_localdb_enabled: false
+matrix_synapse_enable_registration: false
 
 keycloak_matrix_secret: "{{ vault_keycloak_matrix_secret }}"
+matrix_synapse_admin_enabled: true
 
 matrix_synapse_configuration_extension_yaml: |
   oidc_providers:
