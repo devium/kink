@@ -18,3 +18,5 @@
 - hosts: auth
   roles:
     - { role: auth }
+
+- import_playbook: matrix-docker-ansible-deploy/setup.yml

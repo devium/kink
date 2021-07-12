@@ -45,3 +45,23 @@
     priv: "ALL"
     no_password_changes: yes
   no_log: true
+
+- name: Create matrix database
+  postgresql_db:
+    login_host: "{{ db_host }}"
+    login_password: "{{ db_root_password }}"
+    name: "{{ db_matrix_database }}"
+    lc_collate: "C"
+    lc_ctype: "C"
+    template: "template0"
+
+- name: Create matrix database user
+  postgresql_user:
+    login_host: "{{ db_host }}"
+    login_password: "{{ db_root_password }}"
+    db: "{{ db_matrix_database }}"
+    name: "{{ db_matrix_username }}"
+    password: "{{ db_matrix_password }}"
+    priv: "ALL"
+    no_password_changes: yes
+  no_log: true

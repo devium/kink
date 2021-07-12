@@ -1,23 +1,58 @@
 db_root_password: "{{ vault_db_root_password }}"
+ansible_python_interpreter: /usr/bin/python3
+ansible_user: ec2-user
+home: /home/ec2-user
 
+# ========
+# Domains
+# ========
+kink_domain: kink.devium.net
+collab_domain: collab.kink.devium.net
+auth_domain: auth.kink.devium.net
+matrix_domain: matrix.kink.devium.net
+element_domain: element.kink.devium.net
+
+# ========
+# HedgeDoc
+# ========
 db_hedgedoc_database: "hedgedoc"
 db_hedgedoc_username: "hedgedoc"
 db_hedgedoc_password: "{{ vault_db_hedgedoc_password }}"
 hedgedoc_version: "1.8.2"
 hedgedoc_session_secret: "{{ vault_hedgedoc_session_secret }}"
 
-ansible_python_interpreter: /usr/bin/python3
-
-kink_domain: kink.devium.net
-collab_domain: collab.kink.devium.net
-auth_domain: auth.kink.devium.net
-
-ansible_user: ec2-user
-home: /home/ec2-user
-
+# ========
+# Keycloak
+# ========
 keycloak_version: "14.0.0"
 keycloak_password: "{{ vault_keycloak_password }}"
 db_keycloak_database: "keycloak"
 db_keycloak_username: "keycloak"
 db_keycloak_password: "{{ vault_db_keycloak_password }}"
 keycloak_hedgedoc_secret: "{{ vault_keycloak_hedgedoc_secret }}"
+
+# ========
+# Matrix
+# ========
+db_matrix_database: "matrix"
+db_matrix_username: "matrix"
+db_matrix_password: "{{ vault_db_matrix_password }}"
+
+matrix_server_fqn_matrix: "{{ matrix_domain }}"
+matrix_server_fqn_element: "{{ element_domain }}"
+
+matrix_ssl_lets_encrypt_support_email: "a@b.com"
+matrix_coturn_turn_static_auth_secret: "{{ vault_matrix_coturn_turn_static_auth_secret }}"
+matrix_synapse_macaroon_secret_key: "{{ vault_matrix_synapse_macaroon_secret_key }}"
+
+matrix_postgres_enabled: false
+
+matrix_synapse_database_host: "{{ db_host }}"
+matrix_synapse_database_user: "{{ db_matrix_username }}"
+matrix_synapse_database_password: "{{ db_matrix_password }}"
+matrix_synapse_database_database: "{{ db_matrix_database }}"
+
+matrix_ntpd_package: chrony
+matrix_ntpd_service: chronyd
+
+matrix_vars_yml_snapshotting_src: "{{ inventory_dir }}/host_vars/matrix/main.yml"

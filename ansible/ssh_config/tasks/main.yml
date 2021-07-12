@@ -14,3 +14,5 @@
         HostName {{ collab_host }}
       Host auth
         HostName {{ auth_host }}
+      Host matrix
+        HostName {{ matrix_host }}

@@ -10,6 +10,8 @@ all:
           ansible_host: "{{ collab_host }}"
         auth:
           ansible_host: "{{ auth_host }}"
+        matrix:
+          ansible_host: "{{ matrix_host }}"
       vars:
         ansible_ssh_common_args: '-o ProxyCommand="ssh -W %h:%p -q {{ ansible_user }}@{{ bastion_host }}"'
 
@@ -17,3 +19,8 @@ all:
       hosts:
         collab:
         auth:
+        matrix:
+
+    matrix_servers:
+      hosts:
+        matrix:
