@@ -4,15 +4,6 @@ ansible_user: ec2-user
 home: /home/ec2-user
 
 # ========
-# Domains
-# ========
-kink_domain: kink.devium.net
-collab_domain: collab.kink.devium.net
-auth_domain: auth.kink.devium.net
-matrix_domain: matrix.kink.devium.net
-element_domain: element.kink.devium.net
-
-# ========
 # HedgeDoc
 # ========
 db_hedgedoc_database: "hedgedoc"

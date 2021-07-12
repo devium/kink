@@ -57,7 +57,7 @@ resource "aws_security_group" "matrix-sg" {
 
 resource "aws_route53_record" "matrix" {
   zone_id = var.zone_id
-  name = "matrix.kink.devium.net"
+  name = "matrix.${var.domain}"
   type = "A"
   ttl = "300"
   records = [aws_instance.matrix.public_ip]
@@ -66,7 +66,7 @@ resource "aws_route53_record" "matrix" {
 
 resource "aws_route53_record" "element" {
   zone_id = var.zone_id
-  name = "element.kink.devium.net"
+  name = "element.${var.domain}"
   type = "CNAME"
   ttl = "300"
   records = [aws_route53_record.matrix.name]

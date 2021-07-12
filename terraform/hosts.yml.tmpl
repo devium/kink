@@ -1,4 +1,10 @@
-bastion_host: ${bastion}
+domain: ${domain}
+collab_domain: "collab.{{ domain }}"
+auth_domain: "auth.{{ domain }}"
+matrix_domain: "matrix.{{ domain }}"
+element_domain: "element.{{ domain }}"
+
+bastion_host: "bastion.{{ domain }}"
 collab_host: ${collab}
 db_host: ${db}
 auth_host: ${auth}

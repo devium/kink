@@ -57,7 +57,7 @@ resource "aws_security_group" "auth-sg" {
 
 resource "aws_route53_record" "auth" {
   zone_id = var.zone_id
-  name = "auth.kink.devium.net"
+  name = "auth.${var.domain}"
   type = "A"
   ttl = "300"
   records = [aws_instance.auth.public_ip]

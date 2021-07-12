@@ -22,3 +22,6 @@ variable "subnet_public_id" {
 
 variable "zone_id" {
 }
+
+variable "domain" {
+}

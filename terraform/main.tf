@@ -28,7 +28,7 @@ module "vpc" {
 }
 
 resource "aws_route53_zone" "primary" {
-  name = "kink.devium.net"
+  name = var.domain
 }
 
 module "db" {
@@ -46,6 +46,7 @@ module "bastion" {
   cidr_vpc = module.vpc.cidr_vpc
   subnet_public_id = module.vpc.subnet_public_id
   zone_id = aws_route53_zone.primary.zone_id
+  domain = var.domain
 }
 
 module "auth" {
@@ -55,6 +56,7 @@ module "auth" {
   cidr_vpc = module.vpc.cidr_vpc
   subnet_public_id = module.vpc.subnet_public_id
   zone_id = aws_route53_zone.primary.zone_id
+  domain = var.domain
 }
 
 module "collab" {
@@ -64,6 +66,7 @@ module "collab" {
   cidr_vpc = module.vpc.cidr_vpc
   subnet_public_id = module.vpc.subnet_public_id
   zone_id = aws_route53_zone.primary.zone_id
+  domain = var.domain
 }
 
 module "matrix" {
@@ -73,4 +76,5 @@ module "matrix" {
   cidr_vpc = module.vpc.cidr_vpc
   subnet_public_id = module.vpc.subnet_public_id
   zone_id = aws_route53_zone.primary.zone_id
+  domain = var.domain
 }

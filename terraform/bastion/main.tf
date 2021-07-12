@@ -41,7 +41,7 @@ resource "aws_security_group" "bastion-sg" {
 
 resource "aws_route53_record" "bastion" {
   zone_id = var.zone_id
-  name = "bastion.kink.devium.net"
+  name = "bastion.${var.domain}"
   type = "A"
   ttl = "300"
   records = [aws_instance.bastion.public_ip]
