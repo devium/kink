@@ -39,6 +39,22 @@ resource "aws_security_group" "matrix-sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  # RTP fallback TCP (Jitsi)
+  ingress {
+    protocol = "tcp"
+    from_port = 4443
+    to_port = 4443
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # RTP fallback UDP (Jitsi)
+  ingress {
+    protocol = "udp"
+    from_port = 10000
+    to_port = 10000
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   # SSH
   ingress {
     protocol = "tcp"
@@ -67,6 +83,15 @@ resource "aws_route53_record" "matrix" {
 resource "aws_route53_record" "element" {
   zone_id = var.zone_id
   name = "element.${var.domain}"
+  type = "CNAME"
+  ttl = "300"
+  records = [aws_route53_record.matrix.name]
+  depends_on = [aws_instance.matrix]
+}
+
+resource "aws_route53_record" "jitsi" {
+  zone_id = var.zone_id
+  name = "jitsi.${var.domain}"
   type = "CNAME"
   ttl = "300"
   records = [aws_route53_record.matrix.name]

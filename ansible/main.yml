@@ -10,6 +10,7 @@
 - hosts: docker_hosts
   roles:
     - { role: docker }
+  tags: [ setup-all ]
 
 - hosts: collab
   roles:

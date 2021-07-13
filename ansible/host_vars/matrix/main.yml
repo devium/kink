@@ -1,7 +1,7 @@
 # Matrix variables need to override variables defined in group_vars/matrix_servers, so they are put in a smaller scope.
 
-matrix_server_fqn_matrix: "{{ matrix_domain }}"
-matrix_server_fqn_element: "{{ element_domain }}"
+# In this playbook we specify the matrix domain as the base domain.
+matrix_domain: "{{ domain }}"
 
 matrix_ssl_lets_encrypt_support_email: "a@b.com"
 matrix_coturn_turn_static_auth_secret: "{{ vault_matrix_coturn_turn_static_auth_secret }}"
@@ -18,7 +18,8 @@ matrix_ntpd_package: chrony
 matrix_ntpd_service: chronyd
 
 matrix_vars_yml_snapshotting_src: "{{ inventory_dir }}/host_vars/matrix/main.yml"
-matrix_nginx_proxy_proxy_matrix_client_api_forwarded_location_synapse_oidc_api_enabled: yes
+matrix_nginx_proxy_base_domain_serving_enabled: true
+matrix_nginx_proxy_proxy_matrix_client_api_forwarded_location_synapse_oidc_api_enabled: true
 matrix_synapse_password_config_localdb_enabled: false
 matrix_synapse_enable_registration: false
 
@@ -38,5 +39,16 @@ matrix_synapse_configuration_extension_yaml: |
     userinfo_endpoint: "https://{{ auth_domain }}/auth/realms/{{ keycloak_realm }}/protocol/openid-connect/userinfo"
     user_mapping_provider:
       config:
-        display_name_template: "{% raw %}{{ user.given_name }}{% endraw %} {% raw %}{{ user.family_name }}{% endraw %}"
+        localpart_template: "{% raw %}{{ user.preferred_username.split('@')[0] }}{% endraw %}"
+        display_name_template: "{% raw %}{{ localpart_template }}{% endraw %}"
         email_template: "{% raw %}{{ user.email }}{% endraw %}"
+
+matrix_jitsi_enabled: true
+
+# Run `bash inventory/scripts/jitsi-generate-passwords.sh` to generate these passwords,
+# or define your own strong passwords manually.
+matrix_jitsi_jicofo_component_secret: "{{ vault_matrix_jitsi_jicofo_component_secret }}"
+matrix_jitsi_jicofo_auth_password: "{{ vault_matrix_jitsi_jicofo_auth_password }}"
+matrix_jitsi_jvb_auth_password: "{{ vault_matrix_jitsi_jvb_auth_password }}"
+matrix_jitsi_jibri_recorder_password: "{{ vault_matrix_jitsi_jibri_recorder_password }}"
+matrix_jitsi_jibri_xmpp_password: "{{ vault_matrix_jitsi_jibri_xmpp_password }}"

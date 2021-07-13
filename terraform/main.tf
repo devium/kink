@@ -78,3 +78,14 @@ module "matrix" {
   zone_id = aws_route53_zone.primary.zone_id
   domain = var.domain
 }
+
+module "www" {
+  source = "./www"
+  depends_on = [module.vpc, module.matrix]
+  vpc_id = module.vpc.vpc_id
+  cidr_vpc = module.vpc.cidr_vpc
+  subnet_public_id = module.vpc.subnet_public_id
+  zone_id = aws_route53_zone.primary.zone_id
+  domain = var.domain
+  public_ip= module.matrix.public_ip
+}
