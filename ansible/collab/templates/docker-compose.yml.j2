@@ -23,6 +23,7 @@ services:
       - CMD_ALLOW_EMAIL_REGISTER=false
       - CMD_ALLOW_ANONYMOUS=false
       - CMD_ALLOW_ANONYMOUS_EDITS=true
+      - CMD_ALLOW_FREEURL=true
     ports:
       - 3000:3000
     restart: unless-stopped
