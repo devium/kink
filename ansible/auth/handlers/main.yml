@@ -1,7 +1,0 @@
----
-- name: Restart Keycloak and reverse proxy
-  docker_compose:
-    project_src: "{{ home }}/keycloak"
-    restarted: yes
-  become: yes
-  listen: "restart docker"

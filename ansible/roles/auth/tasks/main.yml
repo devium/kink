@@ -3,30 +3,42 @@
   file:
     path: "{{ home }}/keycloak/config/nginx/site-confs"
     state: directory
+  tags: [ setup-all, setup-keycloak ]
 
 - name: Create Keycloak dirs 2/2
   file:
     path: "{{ home }}/keycloak/startup-scripts"
     state: directory
+  tags: [ setup-all, setup-keycloak ]
 
 - name: Copy docker-compose.yml to target machine
   template:
     src: docker-compose.yml.j2
     dest: "{{ home }}/keycloak/docker-compose.yml"
+  tags: [ setup-all, setup-keycloak ]
 
 - name: Copy SWAG reverse proxy config for Keycloak
   template:
     src: keycloak.conf.j2
     dest: "{{ home }}/keycloak/config/nginx/site-confs/keycloak.conf"
-  notify: "restart docker"
+  tags: [ setup-all, setup-keycloak ]
 
 - name: Copy realm settings
   copy:
     src: realm-export.json
     dest: "{{ home }}/keycloak/realm-export.json"
+  tags: [ setup-all, setup-keycloak ]
 
 - name: Copy custom theme
   copy:
     src: custom/
     dest: "{{ home }}/keycloak/custom/"
-  notify: "restart docker"
+  tags: [ setup-all, setup-keycloak ]
+
+- name: Restart Keycloak and reverse proxy
+  docker_compose:
+    project_src: "{{ home }}/keycloak"
+    restarted: yes
+  become: yes
+  tags: [ start ]
+

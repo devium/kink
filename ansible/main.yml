@@ -1,23 +1,25 @@
 ---
 - hosts: bastion
   roles:
-    - { role: db }
+    - db
+  tags: [ setup-all, setup-db ]
 
 - hosts: bastion
   roles:
-    - { role: ssh_config }
+    - ssh_config
+  tags: [ setup-all, setup-ssh ]
 
 - hosts: docker_hosts
   roles:
-    - { role: docker }
-  tags: [ setup-all ]
+    - docker
+  tags: [ setup-all, setup-docker ]
 
 - hosts: collab
   roles:
-    - { role: collab }
+    - collab
 
 - hosts: auth
   roles:
-    - { role: auth }
+    - auth
 
 - import_playbook: matrix-docker-ansible-deploy/setup.yml

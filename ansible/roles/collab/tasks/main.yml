@@ -3,19 +3,23 @@
   file:
     path: "{{ home }}/hedgedoc/config/nginx/site-confs"
     state: directory
+  tags: [ setup-all, setup-hedgedoc ]
 
 - name: Copy docker-compose.yml to target machine
   template:
     src: docker-compose.yml.j2
     dest: "{{ home }}/hedgedoc/docker-compose.yml"
+  tags: [ setup-all, setup-hedgedoc ]
 
 - name: Copy SWAG reverse proxy config for HedgeDoc
   template:
     src: hedgedoc.conf.j2
     dest: "{{ home }}/hedgedoc/config/nginx/site-confs/hedgedoc.conf"
-  notify: "restart docker"
+  tags: [ setup-all, setup-hedgedoc ]
 
 - name: Run HedgeDoc and reverse proxy
   docker_compose:
     project_src: "{{ home }}/hedgedoc"
+    restarted: yes
   become: yes
+  tags: [ start ]
