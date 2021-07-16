@@ -47,6 +47,14 @@ resource "aws_security_group" "matrix-sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  # Matrix server federation
+  ingress {
+    protocol = "tcp"
+    from_port = 8448
+    to_port = 8448
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   # RTP fallback UDP (Jitsi)
   ingress {
     protocol = "udp"
