@@ -23,22 +23,191 @@
     dest: "{{ home }}/keycloak/config/nginx/site-confs/keycloak.conf"
   tags: [ setup-all, setup-keycloak ]
 
-- name: Copy realm settings
-  copy:
-    src: realm-export.json
-    dest: "{{ home }}/keycloak/realm-export.json"
-  tags: [ setup-all, setup-keycloak ]
-
 - name: Copy custom theme
   copy:
     src: custom/
     dest: "{{ home }}/keycloak/custom/"
   tags: [ setup-all, setup-keycloak ]
 
-- name: Restart Keycloak and reverse proxy
+# Apparently a simple docker-compose restart will not do.
+- name: Stop Keycloak and reverse proxy
   docker_compose:
     project_src: "{{ home }}/keycloak"
-    restarted: yes
+    state: absent
   become: yes
   tags: [ start ]
 
+- name: Start Keycloak and reverse proxy
+  docker_compose:
+    project_src: "{{ home }}/keycloak"
+    state: present
+  become: yes
+  tags: [ start ]
+
+- name: Create keycloak realm
+  community.general.keycloak_realm:
+    auth_realm: master
+    auth_username: admin
+    auth_password: "{{ keycloak_password }}"
+    auth_keycloak_url: "https://{{ auth_domain }}/auth"
+    id: "{{ keycloak_realm }}"
+    realm: "{{ keycloak_realm }}"
+    enabled: yes
+    user_managed_access_allowed: yes
+    account_theme: custom
+    login_theme: custom
+    registration_allowed: yes
+    edit_username_allowed: yes
+    duplicate_emails_allowed: yes
+    remember_me: yes
+  tags: [ init-all, init-keycloak ]
+
+- name: Create HedgeDoc client
+  community.general.keycloak_client:
+    auth_realm: master
+    auth_username: admin
+    auth_password: "{{ keycloak_password }}"
+    auth_keycloak_url: "https://{{ auth_domain }}/auth"
+    realm: "{{ keycloak_realm }}"
+    id: ansible-managed-client-hedgedoc
+    client_id: hedgedoc
+    secret: "{{ keycloak_hedgedoc_secret }}"
+    root_url: "https://{{ collab_domain }}"
+    admin_url: "https://{{ collab_domain }}"
+    web_origins: "https://{{ collab_domain }}"
+    redirect_uris: "https://{{ collab_domain }}/*"
+  tags: [ init-all, init-keycloak ]
+
+- name: Create Matrix client
+  community.general.keycloak_client:
+    auth_realm: master
+    auth_username: admin
+    auth_password: "{{ keycloak_password }}"
+    auth_keycloak_url: "https://{{ auth_domain }}/auth"
+    realm: "{{ keycloak_realm }}"
+    id: ansible-managed-client-matrix
+    client_id: matrix
+    secret: "{{ keycloak_matrix_secret }}"
+    root_url: "https://{{ matrix_domain }}"
+    admin_url: "https://{{ matrix_domain }}"
+    web_origins: "https://{{ matrix_domain }}"
+    redirect_uris: "https://{{ matrix_domain }}/*"
+  tags: [ init-all, init-keycloak ]
+
+- name: Get API access token
+  uri:
+    url: https://{{ auth_domain }}/auth/realms/master/protocol/openid-connect/token
+    method: POST
+    body_format: form-urlencoded
+    body:
+      client_id: admin-cli
+      username: admin
+      grant_type: password
+      password: "{{ keycloak_password }}"
+  register: access_token
+  tags: [ init-all, init-keycloak ]
+
+- name: Get client scopes
+  uri:
+    url: https://{{ auth_domain }}/auth/admin/realms/{{ keycloak_realm }}/client-scopes
+    method: GET
+    headers:
+      Content-Type: application/json
+      Authorization: "Bearer {{access_token.json.access_token}}"
+  register: client_scopes
+  tags: [ init-all, init-keycloak ]
+
+- name: Create client scope to include id in userinfo endpoint
+  uri:
+    url: https://{{ auth_domain }}/auth/admin/realms/{{ keycloak_realm }}/client-scopes
+    method: POST
+    headers:
+      Content-Type: application/json
+      Authorization: "Bearer {{access_token.json.access_token}}"
+    body_format: json
+    body: |
+      {
+        "attributes": {
+          "display.on.consent.screen": "true",
+          "include.in.token.scope": "true"
+        },
+        "id": "ansible-managed-scope-id",
+        "name": "ansible-managed-scope-id",
+        "protocol": "openid-connect",
+        "protocolMappers": [
+          {
+            "config": {
+              "access.token.claim": "true",
+              "claim.name": "id",
+              "id.token.claim": "true",
+              "jsonType.label": "String",
+              "user.attribute": "id",
+              "userinfo.token.claim": "true"
+            },
+            "consentRequired": false,
+            "name": "ansible-managed-mapper-id",
+            "protocol": "openid-connect",
+            "protocolMapper": "oidc-usermodel-property-mapper"
+          }
+        ]
+      }
+    status_code: [201]
+  tags: [ init-all, init-keycloak ]
+  changed_when: true
+  when: "'ansible-managed-scope-id' not in client_scopes.json | string"
+
+- name: Get HedgeDoc client
+  uri:
+    url: https://{{ auth_domain }}/auth/admin/realms/{{ keycloak_realm }}/clients/ansible-managed-client-hedgedoc
+    method: GET
+    headers:
+      Content-Type: application/json
+      Authorization: "Bearer {{access_token.json.access_token}}"
+  register: hedgedoc_client
+  tags: [ init-all, init-keycloak ]
+
+- name: Add id scope to HedgeDoc client default scopes
+  uri:
+    url: https://{{ auth_domain }}/auth/admin/realms/{{ keycloak_realm }}/clients/ansible-managed-client-hedgedoc/default-client-scopes/ansible-managed-scope-id
+    method: PUT
+    headers:
+      Content-Type: application/json
+      Authorization: "Bearer {{access_token.json.access_token}}"
+    status_code: [204]
+  tags: [ init-all, init-keycloak ]
+  changed_when: true
+  when: "'ansible-managed-scope-id' not in hedgedoc_client.json.defaultClientScopes"
+
+- name: Get identity providers
+  uri:
+    url: https://{{ auth_domain }}/auth/admin/realms/{{ keycloak_realm }}/identity-provider/instances
+    method: GET
+    headers:
+      Content-Type: application/json
+      Authorization: "Bearer {{access_token.json.access_token}}"
+  register: identity_providers
+  tags: [ init-all, init-keycloak ]
+
+- name: Create Google identity provider
+  uri:
+    url: https://{{ auth_domain }}/auth/admin/realms/{{ keycloak_realm }}/identity-provider/instances
+    method: POST
+    headers:
+      Content-Type: application/json
+      Authorization: "Bearer {{access_token.json.access_token}}"
+    body_format: json
+    body: |
+      {
+        "alias": "google",
+        "config": {
+            "clientId": "{{ keycloak_google_client_id }}",
+            "clientSecret": "{{ keycloak_google_client_secret }}",
+            "syncMode": "IMPORT"
+        },
+        "firstBrokerLoginFlowAlias": "first broker login",
+        "providerId": "google"
+      }
+    status_code: [201]
+  tags: [ init-all, init-keycloak ]
+  changed_when: true
+  when: "keycloak_google_client_id not in identity_providers.json | string"

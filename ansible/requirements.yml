@@ -1,0 +1,4 @@
+---
+# For keycloak modules
+collections:
+- name: community.general

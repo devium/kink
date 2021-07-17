@@ -21,7 +21,10 @@ db_keycloak_database: "keycloak"
 db_keycloak_username: "keycloak"
 db_keycloak_password: "{{ vault_db_keycloak_password }}"
 keycloak_hedgedoc_secret: "{{ vault_keycloak_hedgedoc_secret }}"
+keycloak_matrix_secret: "{{ vault_keycloak_matrix_secret }}"
 keycloak_realm: "kink"
+keycloak_google_client_id: "{{ vault_keycloak_google_client_id }}"
+keycloak_google_client_secret: "{{ vault_keycloak_google_client_secret }}"
 
 # ========
 # Matrix
