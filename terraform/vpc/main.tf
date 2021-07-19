@@ -5,7 +5,7 @@ resource "aws_vpc" "main" {
   enable_dns_hostnames = var.enable_dns_hostnames
 
   tags = {
-    Name = var.vpc_name
+    Name = var.identifier
   }
 }
 
@@ -13,7 +13,7 @@ resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.main.id
 
   tags = {
-    Name = "${var.vpc_name}-Gateway"
+    Name = var.identifier
   }
 }
 
@@ -29,7 +29,7 @@ resource "aws_subnet" "public" {
   availability_zone = "eu-central-1a"
 
   tags = {
-    Name = "${var.vpc_name}-net-public"
+    Name = "${var.identifier}-public"
   }
 }
 
@@ -39,7 +39,7 @@ resource "aws_subnet" "private" {
   availability_zone = "eu-central-1b"
 
   tags = {
-    Name = "${var.vpc_name}-net-private"
+    Name = "${var.identifier}-private"
   }
 }
 
@@ -49,12 +49,12 @@ resource "aws_subnet" "private_backup" {
   availability_zone = "eu-central-1c"
 
   tags = {
-    Name = "${var.vpc_name}-net-private-backup"
+    Name = "${var.identifier}-private-backup"
   }
 }
 
 resource "aws_db_subnet_group" "db_subnet" {
-  name = "${var.vpc_name}-db-subnet-group"
+  name = var.identifier
   subnet_ids = ["${aws_subnet.private.id}", "${aws_subnet.private_backup.id}"]
 }
 
@@ -63,7 +63,7 @@ resource "aws_eip" "gw" {
   depends_on = [aws_internet_gateway.igw]
 
   tags = {
-    Name = "${var.vpc_name}-EIP"
+    Name = var.identifier
   }
 }
 
@@ -72,7 +72,7 @@ resource "aws_nat_gateway" "gw" {
   allocation_id = aws_eip.gw.id
 
   tags = {
-    Name = "${var.vpc_name}-NAT"
+    Name = var.identifier
   }
 }
 
@@ -85,7 +85,7 @@ resource "aws_route_table" "private" {
   }
 
   tags = {
-    Name = "${var.vpc_name}-rt-private"
+    Name = "${var.identifier}-private"
   }
 }
 

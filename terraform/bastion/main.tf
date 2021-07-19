@@ -7,12 +7,12 @@ resource "aws_instance" "bastion" {
     associate_public_ip_address = true
 
   tags = {
-    Name = "Bastion"
+    Name = "${var.identifier}-bastion"
   }
 }
 
 resource "aws_security_group" "bastion-sg" {
-  name = "bastion-security-group"
+  name = "${var.identifier}-bastion"
   vpc_id = var.vpc_id
 
   # Ping

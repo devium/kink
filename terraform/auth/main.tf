@@ -7,12 +7,12 @@ resource "aws_instance" "auth" {
     associate_public_ip_address = true
 
   tags = {
-    Name = "Auth"
+    Name = "${var.identifier}-auth"
   }
 }
 
 resource "aws_security_group" "auth-sg" {
-  name = "auth-security-group"
+  name = "${var.identifier}-auth"
   vpc_id = var.vpc_id
 
   # Ping

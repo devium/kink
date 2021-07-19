@@ -1,6 +1,5 @@
 variable "vpc_name" {
   type = string
-  default = "kink"
 }
 
 variable "cidr_vpc" {
@@ -28,4 +27,7 @@ variable "cidr_private" {
 }
 
 variable "cidr_private_backup" {
+}
+
+variable "identifier" {
 }

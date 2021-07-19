@@ -35,14 +35,14 @@
     project_src: "{{ home }}/keycloak"
     state: absent
   become: yes
-  tags: [ start ]
+  tags: [ start, start-keycloak ]
 
 - name: Start Keycloak and reverse proxy
   docker_compose:
     project_src: "{{ home }}/keycloak"
     state: present
   become: yes
-  tags: [ start ]
+  tags: [ start, start-keycloak ]
 
 - name: Create keycloak realm
   community.general.keycloak_realm:

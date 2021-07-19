@@ -1,25 +1,3 @@
-variable "ami" {
-  # "Amazon Linux 2 AMI"
-  default = "ami-089b5384aac360007"
-}
-
-variable "instance_type" {
-  default = "t3.nano"
-}
-
-variable "key_name" {
-  default = "kink"
-}
-
-variable "vpc_id" {
-}
-
-variable "cidr_vpc" {
-}
-
-variable "subnet_public_id" {
-}
-
 variable "zone_id" {
 }
 

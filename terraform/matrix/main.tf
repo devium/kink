@@ -7,12 +7,12 @@ resource "aws_instance" "matrix" {
     associate_public_ip_address = true
 
   tags = {
-    Name = "Matrix"
+    Name = "${var.identifier}-matrix"
   }
 }
 
 resource "aws_security_group" "matrix-sg" {
-  name = "matrix-security-group"
+  name = "${var.identifier}-matrix"
   vpc_id = var.vpc_id
 
   # Ping

@@ -8,5 +8,5 @@ resource "local_file" "AnsibleHosts" {
       matrix = module.matrix.private_ip
     }
   )
-  filename = "../ansible/group_vars/all/hosts.yml"
+  filename = "../ansible/environments/${var.suffix}/group_vars/all/hosts.yml"
 }

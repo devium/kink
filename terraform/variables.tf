@@ -1,8 +1,17 @@
-variable "db_password" {
+variable "project_name" {
   type = string
-  sensitive = true
 }
 
 variable "domain" {
-  default = "kink.devium.net"
+  type = string
+}
+
+variable "suffix" {
+  type = string
+  default = "dev"
+}
+
+variable "db_password" {
+  type = string
+  sensitive = true
 }

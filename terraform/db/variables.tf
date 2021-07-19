@@ -12,3 +12,9 @@ variable "db_password" {
   type = string
   sensitive = true
 }
+
+variable "identifier" {
+}
+
+variable "db_name" {
+}

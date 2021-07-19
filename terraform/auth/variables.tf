@@ -8,7 +8,6 @@ variable "instance_type" {
 }
 
 variable "key_name" {
-  default = "kink"
 }
 
 variable "vpc_id" {
@@ -24,4 +23,7 @@ variable "zone_id" {
 }
 
 variable "domain" {
+}
+
+variable "identifier" {
 }

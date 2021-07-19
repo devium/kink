@@ -7,12 +7,12 @@ resource "aws_instance" "collab" {
   associate_public_ip_address = true
 
   tags = {
-    Name = "Collab"
+    Name = "${var.identifier}-collab"
   }
 }
 
 resource "aws_security_group" "collab-sg" {
-  name = "collab-security-group"
+  name = "${var.identifier}-collab"
   vpc_id = var.vpc_id
 
   # Ping
