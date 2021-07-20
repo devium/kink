@@ -55,6 +55,12 @@ module "db" {
   identifier = local.identifier
 }
 
+module "s3" {
+  source = "./s3"
+  bucket_name = "devium-${local.identifier}"
+  identifier = local.identifier
+}
+
 module "bastion" {
   source = "./bastion"
   depends_on = [module.vpc]

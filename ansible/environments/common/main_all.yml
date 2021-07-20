@@ -32,3 +32,9 @@ keycloak_google_client_secret: "{{ vault_keycloak_google_client_secret }}"
 db_matrix_database: "matrix"
 db_matrix_username: "matrix"
 db_matrix_password: "{{ vault_db_matrix_password }}"
+
+# ========
+# S3
+# ========
+s3_access_key_id: "{{ vault_s3_access_key_id }}"
+s3_access_key_secret: "{{ vault_s3_access_key_secret }}"
