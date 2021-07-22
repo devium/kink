@@ -107,6 +107,100 @@
   register: access_token
   tags: [ init-all, init-keycloak ]
 
+
+# Allow users to delete their own account by enabling delete-account as default role for the account client.
+- name: Get realm
+  uri:
+    url: https://{{ auth_domain }}/auth/admin/realms/{{ keycloak_realm }}
+    method: GET
+    headers:
+      Content-Type: application/json
+      Authorization: "Bearer {{access_token.json.access_token}}"
+  register: realm
+  tags: [ init-all, init-keycloak ]
+
+- name: Get clients
+  uri:
+    url: https://{{ auth_domain }}/auth/admin/realms/{{ keycloak_realm }}/clients
+    method: GET
+    headers:
+      Content-Type: application/json
+      Authorization: "Bearer {{access_token.json.access_token}}"
+  register: clients
+  tags: [ init-all, init-keycloak ]
+
+- name: Get account client roles
+  uri:
+    url: https://{{ auth_domain }}/auth/admin/realms/{{ keycloak_realm }}/clients/{{ (clients | json_query(query))[0] }}/roles
+    method: GET
+    headers:
+      Content-Type: application/json
+      Authorization: "Bearer {{access_token.json.access_token}}"
+  register: account_roles
+  vars:
+    query: "json[?clientId=='account'].id"
+  tags: [ init-all, init-keycloak ]
+
+- name: Get realm default roles
+  uri:
+    url: https://{{ auth_domain }}/auth/admin/realms/{{ keycloak_realm }}/roles-by-id/{{ realm.json.defaultRole.id }}/composites
+    method: GET
+    headers:
+      Content-Type: application/json
+      Authorization: "Bearer {{access_token.json.access_token}}"
+  register: default_roles
+  tags: [ init-all, init-keycloak ]
+
+- name: Add delete-account to default roles
+  uri:
+    url: https://{{ auth_domain }}/auth/admin/realms/{{ keycloak_realm }}/roles-by-id/{{ realm.json.defaultRole.id }}/composites
+    method: POST
+    headers:
+      Content-Type: application/json
+      Authorization: "Bearer {{access_token.json.access_token}}"
+    body_format: json
+    body: [{ "id": "{{ (account_roles | json_query(query))[0] }}" }]
+    status_code: [204]
+  changed_when: true
+  vars:
+    query: "json[?name=='delete-account'].id"
+  tags: [ init-all, init-keycloak ]
+  when: "'delete-account' not in default_roles.json | string"
+
+- name: Get delete_account required action
+  uri:
+    url: https://{{ auth_domain }}/auth/admin/realms/{{ keycloak_realm }}/authentication/required-actions/delete_account
+    method: GET
+    headers:
+      Content-Type: application/json
+      Authorization: "Bearer {{access_token.json.access_token}}"
+  register: delete_account_action
+  tags: [ init-all, init-keycloak ]
+
+- name: Enable delete-account required action
+  uri:
+    url: https://{{ auth_domain }}/auth/admin/realms/{{ keycloak_realm }}/authentication/required-actions/delete_account
+    method: PUT
+    headers:
+      Content-Type: application/json
+      Authorization: "Bearer {{access_token.json.access_token}}"
+    body_format: json
+    body: |
+      {
+        "alias": "delete_account",
+        "name": "Delete Account",
+        "providerId": "delete_account",
+        "enabled": true,
+        "defaultAction": false,
+        "priority": 60,
+        "config": {}
+      }
+    status_code: [204]
+  changed_when: true
+  tags: [ init-all, init-keycloak ]
+  when: "not delete_account_action.json.enabled"
+
+# HedgeDoc needs access to the OpenID user ID to allow for consistent username changes.
 - name: Get client scopes
   uri:
     url: https://{{ auth_domain }}/auth/admin/realms/{{ keycloak_realm }}/client-scopes
@@ -178,6 +272,8 @@
   changed_when: true
   when: "'ansible-managed-scope-id' not in hedgedoc_client.json.defaultClientScopes"
 
+
+# Register Google as an identity provider.
 - name: Get identity providers
   uri:
     url: https://{{ auth_domain }}/auth/admin/realms/{{ keycloak_realm }}/identity-provider/instances
@@ -212,7 +308,7 @@
   changed_when: true
   when: "keycloak_google_client_id not in identity_providers.json | string"
 
-- name: Get google mappers
+- name: Get Google mappers
   uri:
     url: https://{{ auth_domain }}/auth/admin/realms/{{ keycloak_realm }}/identity-provider/instances/google/mappers
     method: GET
