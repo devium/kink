@@ -44,8 +44,8 @@ matrix_synapse_configuration_extension_yaml: |
     userinfo_endpoint: "https://{{ auth_domain }}/auth/realms/{{ keycloak_realm }}/protocol/openid-connect/userinfo"
     user_mapping_provider:
       config:
-        localpart_template: "{% raw %}{{ user.preferred_username.split('@')[0] }}{% endraw %}"
-        display_name_template: "{% raw %}{{ localpart_template }}{% endraw %}"
+        localpart_template: "{% raw %}{{ user.sub.split('-')[0] }}{% endraw %}"
+        display_name_template: "{% raw %}{{ user.preferred_username }}{% endraw %}"
         email_template: "{% raw %}{{ user.email }}{% endraw %}"
 
 matrix_jitsi_enabled: true
