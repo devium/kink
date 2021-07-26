@@ -1,0 +1,48 @@
+---
+- name: Create keycloak realm
+  community.general.keycloak_realm:
+    auth_realm: master
+    auth_username: admin
+    auth_password: "{{ keycloak_password }}"
+    auth_keycloak_url: "https://{{ auth_domain }}/auth"
+    id: "{{ keycloak_realm }}"
+    realm: "{{ keycloak_realm }}"
+    enabled: yes
+    user_managed_access_allowed: yes
+    account_theme: custom
+    login_theme: custom
+    registration_allowed: yes
+    edit_username_allowed: yes
+    duplicate_emails_allowed: yes
+    remember_me: yes
+  register: kink_realm
+
+- name: Create HedgeDoc client
+  community.general.keycloak_client:
+    auth_realm: master
+    auth_username: admin
+    auth_password: "{{ keycloak_password }}"
+    auth_keycloak_url: "https://{{ auth_domain }}/auth"
+    realm: "{{ keycloak_realm }}"
+    client_id: hedgedoc
+    secret: "{{ keycloak_hedgedoc_secret }}"
+    root_url: "https://{{ collab_domain }}"
+    admin_url: "https://{{ collab_domain }}"
+    web_origins: "https://{{ collab_domain }}"
+    redirect_uris: "https://{{ collab_domain }}/*"
+  register: hedgedoc_client
+
+- name: Create Matrix client
+  community.general.keycloak_client:
+    auth_realm: master
+    auth_username: admin
+    auth_password: "{{ keycloak_password }}"
+    auth_keycloak_url: "https://{{ auth_domain }}/auth"
+    realm: "{{ keycloak_realm }}"
+    client_id: matrix
+    secret: "{{ keycloak_matrix_secret }}"
+    root_url: "https://{{ matrix_domain }}"
+    admin_url: "https://{{ matrix_domain }}"
+    web_origins: "https://{{ matrix_domain }}"
+    redirect_uris: "https://{{ matrix_domain }}/_synapse/client/oidc/callback"
+  register: matrix_client

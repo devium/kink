@@ -1,18 +1,13 @@
 ---
-- hosts: bastion
-  roles:
-    - db
-  tags: [ setup-all, setup-db ]
-
-- hosts: bastion
-  roles:
-    - ssh_config
-  tags: [ setup-all, setup-ssh ]
-
 - hosts: docker_hosts
   roles:
     - docker
   tags: [ setup-all, setup-docker ]
+
+- hosts: bastion
+  roles:
+    - bastion
+  tags: [ setup-all, setup-db ]
 
 - hosts: collab
   roles:

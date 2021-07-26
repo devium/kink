@@ -1,0 +1,96 @@
+---
+- name: Get identity providers
+  uri:
+    url: "{{ keycloak_realm_api_base }}/identity-provider/instances"
+    method: GET
+    headers: "{{ keycloak_api_headers }}"
+  register: identity_providers
+
+- name: Create Google identity provider
+  uri:
+    url: "{{ keycloak_realm_api_base }}/identity-provider/instances"
+    method: POST
+    headers: "{{ keycloak_api_headers }}"
+    body_format: json
+    body: |
+      {
+        "alias": "google",
+        "config": {
+            "clientId": "{{ keycloak_google_client_id }}",
+            "clientSecret": "{{ keycloak_google_client_secret }}",
+            "syncMode": "IMPORT"
+        },
+        "firstBrokerLoginFlowAlias": "first broker login",
+        "providerId": "google"
+      }
+    status_code: [201]
+  changed_when: true
+  when: "keycloak_google_client_id not in identity_providers.json | string"
+
+- name: Get Google mappers
+  uri:
+    url: "{{ keycloak_realm_api_base }}/identity-provider/instances/google/mappers"
+    method: GET
+    headers: "{{ keycloak_api_headers }}"
+  register: google_mappers
+
+- name: Create Google first name mapper
+  uri:
+    url: "{{ keycloak_realm_api_base }}/identity-provider/instances/google/mappers"
+    method: POST
+    headers: "{{ keycloak_api_headers }}"
+    body_format: json
+    body: |
+      {
+        "name": "firstName",
+        "identityProviderAlias": "google",
+        "identityProviderMapper": "hardcoded-attribute-idp-mapper",
+        "config": {
+          "syncMode": "INHERIT",
+          "attribute": "firstName"
+        }
+      }
+    status_code: [201]
+  changed_when: true
+  when: "'firstName' not in google_mappers.json | string"
+
+- name: Create Google last name mapper
+  uri:
+    url: "{{ keycloak_realm_api_base }}/identity-provider/instances/google/mappers"
+    method: POST
+    headers: "{{ keycloak_api_headers }}"
+    body_format: json
+    body: |
+      {
+        "name": "lastName",
+        "identityProviderAlias": "google",
+        "identityProviderMapper": "hardcoded-attribute-idp-mapper",
+        "config": {
+          "syncMode": "INHERIT",
+          "attribute": "lastName"
+        }
+      }
+    status_code: [201]
+  changed_when: true
+  when: "'lastName' not in google_mappers.json | string"
+
+- name: Create Google username mapper
+  uri:
+    url: "{{ keycloak_realm_api_base }}/identity-provider/instances/google/mappers"
+    method: POST
+    headers: "{{ keycloak_api_headers }}"
+    body_format: json
+    body: |
+      {
+        "name": "username",
+        "identityProviderAlias": "google",
+        "identityProviderMapper": "google-user-attribute-mapper",
+        "config": {
+          "syncMode": "INHERIT",
+          "jsonField": "given_name",
+          "userAttribute": "username"
+        }
+      }
+    status_code: [201]
+  changed_when: true
+  when: "'username' not in google_mappers.json | string"

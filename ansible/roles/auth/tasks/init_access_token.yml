@@ -1,0 +1,12 @@
+---
+- name: Get API access token
+  uri:
+    url: https://{{ auth_domain }}/auth/realms/master/protocol/openid-connect/token
+    method: POST
+    body_format: form-urlencoded
+    body:
+      client_id: admin-cli
+      username: admin
+      grant_type: password
+      password: "{{ keycloak_password }}"
+  register: access_token

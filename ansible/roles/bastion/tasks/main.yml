@@ -1,4 +1,22 @@
 ---
+- name: Create ssh config file
+  copy:
+    content: ""
+    dest: ~/.ssh/config
+    force: no
+    mode: 0600
+
+- name: Create ssh config entries for other EC2 instances
+  blockinfile:
+    path: ~/.ssh/config
+    block: |
+      Host collab
+        HostName {{ collab_host }}
+      Host auth
+        HostName {{ auth_host }}
+      Host matrix
+        HostName {{ matrix_host }}
+
 - name: Install requirements for psycopg2
   package:
     name:
@@ -11,6 +29,23 @@
 - name: Install psycopg2 for Postgres access
   pip:
     name: psycopg2-binary
+
+- name: Install Postgres client
+  shell:
+    cmd: amazon-linux-extras install -y {{ amazon_postgres_package }}
+    creates: /usr/bin/psql
+  become: yes
+
+- name: Create psql service file
+  copy:
+    dest: "{{ home }}/.pg_service.conf"
+    content: |
+      [db]
+      host={{ db_host }}
+      port=5432
+      user=postgres
+    mode: 0600
+  no_log: true
 
 - name: Create HedgeDoc database
   postgresql_db:

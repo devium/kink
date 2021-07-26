@@ -1,0 +1,14 @@
+---
+- name: Stop Keycloak and reverse proxy
+  docker_compose:
+    project_src: "{{ home }}/keycloak"
+    state: absent
+  become: yes
+  tags:
+    - stop-keycloak
+
+- name: Start Keycloak and reverse proxy
+  docker_compose:
+    project_src: "{{ home }}/keycloak"
+    state: present
+  become: yes

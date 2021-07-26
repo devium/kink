@@ -4,6 +4,11 @@ ansible_user: ec2-user
 home: /home/ec2-user
 
 # ========
+# Bastion
+# ========
+amazon_postgres_package: postgresql13
+
+# ========
 # HedgeDoc
 # ========
 db_hedgedoc_database: "hedgedoc"
@@ -23,8 +28,12 @@ db_keycloak_password: "{{ vault_db_keycloak_password }}"
 keycloak_hedgedoc_secret: "{{ vault_keycloak_hedgedoc_secret }}"
 keycloak_matrix_secret: "{{ vault_keycloak_matrix_secret }}"
 keycloak_realm: "kink"
+keycloak_realm_api_base: "https://{{ auth_domain }}/auth/admin/realms/{{ keycloak_realm }}"
 keycloak_google_client_id: "{{ vault_keycloak_google_client_id }}"
 keycloak_google_client_secret: "{{ vault_keycloak_google_client_secret }}"
+keycloak_api_headers:
+    Content-Type: application/json
+    Authorization: "Bearer {{ access_token.json.access_token }}"
 
 # ========
 # Matrix

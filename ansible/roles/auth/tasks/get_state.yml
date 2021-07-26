@@ -1,0 +1,14 @@
+---
+- name: Get realm
+  uri:
+    url: "{{ keycloak_realm_api_base }}"
+    method: GET
+    headers: "{{ keycloak_api_headers }}"
+  register: realm
+
+- name: Get clients
+  uri:
+    url: "{{ keycloak_realm_api_base }}/clients"
+    method: GET
+    headers: "{{ keycloak_api_headers }}"
+  register: clients
