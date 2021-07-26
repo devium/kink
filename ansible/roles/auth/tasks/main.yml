@@ -18,21 +18,22 @@
   tags: 
     - init-all
     - init-keycloak
+    - init-keycloak-authentication
+    - init-keycloak-google
+    - init-keycloak-delete-account
 
 - import_tasks: "{{ role_path }}/tasks/get_state.yml"
   tags: 
     - init-all
     - init-keycloak
+    - init-keycloak-authentication
+    - init-keycloak-delete-account
 
 - import_tasks: "{{ role_path }}/tasks/init_delete_account.yml"
   tags: 
     - init-all
     - init-keycloak
-
-- import_tasks: "{{ role_path }}/tasks/init_delete_account.yml"
-  tags: 
-    - init-all
-    - init-keycloak
+    - init-keycloak-delete-account
 
 - import_tasks: "{{ role_path }}/tasks/init_hedgedoc_mapping.yml"
   tags: 
@@ -43,3 +44,10 @@
   tags: 
     - init-all
     - init-keycloak
+    - init-keycloak-google
+
+- import_tasks: "{{ role_path }}/tasks/init_authentication.yml"
+  tags: 
+    - init-all
+    - init-keycloak
+    - init-keycloak-authentication
