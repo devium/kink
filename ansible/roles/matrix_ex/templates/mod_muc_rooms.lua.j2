@@ -55,7 +55,11 @@ function handle_get_all_rooms(event)
     end
 
     -- create json response
-    return { status_code = 200; body = json.encode(rooms_json); headers = { content_type = "application/json" } };
+    headers = {
+        content_type = "application/json",
+        access_control_allow_origin = "*"
+    };
+    return { status_code = 200; body = json.encode(rooms_json); headers=headers };
 end
 
 
