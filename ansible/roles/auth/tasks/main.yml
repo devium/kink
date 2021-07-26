@@ -1,13 +1,7 @@
 ---
-- name: Create Keycloak dirs 1/2
+- name: Create Keycloak dir
   file:
     path: "{{ home }}/keycloak/config/nginx/site-confs"
-    state: directory
-  tags: [ setup-all, setup-keycloak ]
-
-- name: Create Keycloak dirs 2/2
-  file:
-    path: "{{ home }}/keycloak/startup-scripts"
     state: directory
   tags: [ setup-all, setup-keycloak ]
 
