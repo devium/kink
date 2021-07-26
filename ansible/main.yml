@@ -22,9 +22,8 @@
   roles:
     - auth
 
-- import_playbook: matrix-docker-ansible-deploy/setup.yml
-
 - hosts: matrix
   roles:
     - matrix_ex
-  tags: [ setup-all ]
+
+- import_playbook: matrix-docker-ansible-deploy/setup.yml

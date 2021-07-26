@@ -1,4 +1,0 @@
-matrix_jitsi_xmpp_muc_domain: muc.meet.jitsi
-matrix_base_data_path: "/matrix"
-matrix_jitsi_prosody_base_path: "{{ matrix_base_data_path }}/jitsi/prosody"
-matrix_jitsi_prosody_plugins_path: "{{ matrix_jitsi_prosody_base_path }}/prosody-plugins-custom"
