@@ -17,3 +17,23 @@
   copy:
     src: custom/
     dest: "{{ home }}/keycloak/custom/"
+
+- name: Create tranlsation dirs
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "{{ home }}/keycloak/custom/login/messages"
+    - "{{ home }}/keycloak/custom/account/messages"
+
+- name: Download login translations
+  get_url:
+    url: "{{ keycloak_translations_login_url }}/messages_{{ item }}.properties"
+    dest: "{{ home }}/keycloak/custom/login/messages"
+  with_items: "{{ keycloak_locales_download }}"
+
+- name: Download account translations
+  get_url:
+    url: "{{ keycloak_translations_account_url }}/messages_{{ item }}.properties"
+    dest: "{{ home }}/keycloak/custom/account/messages"
+  with_items: "{{ keycloak_locales_download }}"

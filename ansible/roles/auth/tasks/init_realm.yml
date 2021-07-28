@@ -15,6 +15,8 @@
     edit_username_allowed: yes
     duplicate_emails_allowed: yes
     remember_me: yes
+    internationalization_enabled: yes
+    supported_locales: "{{ keycloak_locales }}"
   register: kink_realm
 
 - name: Create HedgeDoc client

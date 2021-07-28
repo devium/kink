@@ -13,6 +13,7 @@
   tags: 
     - init-all
     - init-keycloak
+    - init-keycloak-realm
 
 - import_tasks: "{{ role_path }}/tasks/init_access_token.yml"
   tags: 

@@ -1,4 +1,13 @@
 ---
+- name: Set password policy
+  uri:
+    url: "{{ keycloak_realm_api_base }}"
+    method: PUT
+    headers: "{{ keycloak_api_headers }}"
+    body_format: json
+    body: { "passwordPolicy": "length(8)" }
+    status_code: [204]
+
 - name: Check unregistered required actions
   uri:
     url: "{{ keycloak_realm_api_base }}/authentication/unregistered-required-actions"
