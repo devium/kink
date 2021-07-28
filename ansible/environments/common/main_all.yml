@@ -38,6 +38,7 @@ keycloak_translations_login_url: https://raw.githubusercontent.com/keycloak/keyc
 keycloak_translations_account_url: https://raw.githubusercontent.com/keycloak/keycloak/{{ keycloak_version }}/themes/src/main/resources-community/theme/keycloak.v2/account/messages/
 keycloak_locales: ["ca","cs","da","de", "en", "es","fr","hu","it","ja","lt","nl","no","pl","pt-BR","ru","sk","sv","tr","zh-CN"]
 keycloak_locales_download: "{{ keycloak_locales | difference(['en']) | replace('-', '_') }}"
+keycloak_password_policy: "length(8)"
 
 # ========
 # Matrix

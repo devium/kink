@@ -5,8 +5,10 @@
     method: PUT
     headers: "{{ keycloak_api_headers }}"
     body_format: json
-    body: { "passwordPolicy": "length(8)" }
+    body: { "passwordPolicy": "{{ keycloak_password_policy }}" }
     status_code: [204]
+  changed_when: true
+  when: "'passwordPolicy' not in realm.json or realm.json.passwordPolicy != keycloak_password_policy"
 
 - name: Check unregistered required actions
   uri:
