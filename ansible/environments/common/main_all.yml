@@ -43,6 +43,11 @@ db_matrix_username: "matrix"
 db_matrix_password: "{{ vault_db_matrix_password }}"
 
 # ========
+# Homer
+# ========
+homer_version: "21.07.1"
+
+# ========
 # S3
 # ========
 s3_access_key_id: "{{ vault_s3_access_key_id }}"

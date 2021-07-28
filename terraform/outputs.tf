@@ -5,7 +5,8 @@ resource "local_file" "AnsibleHosts" {
       db = module.db.private_address,
       collab = module.collab.private_ip,
       auth = module.auth.private_ip,
-      matrix = module.matrix.private_ip
+      matrix = module.matrix.private_ip,
+      www = module.www.private_ip,
       bucket_name = module.s3.bucket_name
     }
   )

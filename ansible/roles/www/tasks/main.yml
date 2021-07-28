@@ -1,0 +1,69 @@
+---
+- name: Create Homer dirs
+  file:
+    path: "{{ item }}"
+    state: directory
+  tags: [ setup-all, setup-homer ]
+  with_items:
+    - "{{ home }}/homer/config/nginx/site-confs"
+    - "{{ home }}/homer/config/www"
+    - "{{ home }}/homer/assets/tools"
+    - "{{ home }}/homer/assets/icons"
+
+- name: Copy docker-compose.yml to target machine
+  template:
+    src: docker-compose.yml.j2
+    dest: "{{ home }}/homer/docker-compose.yml"
+  tags: [ setup-all, setup-homer ]
+
+- name: Copy SWAG reverse proxy config for Homer
+  template:
+    src: homer.conf.j2
+    dest: "{{ home }}/homer/config/nginx/site-confs/homer.conf"
+  tags: [ setup-all, setup-homer ]
+
+- name: Copy Homer config
+  template:
+    src: config.yml.j2
+    dest: "{{ home }}/homer/assets/config.yml"
+  tags: [ init-all, init-homer ]
+
+- name: Copy Jitsi rooms page
+  template:
+    src: rooms.html.j2
+    dest: "{{ home }}/homer/config/www/rooms.html"
+  tags: [ init-all, init-homer ]
+
+- name: Get logos
+  get_url:
+    url: "{{ item.url }}"
+    dest: "{{ home }}/homer/assets/tools/{{ item.file }}"
+  with_items:
+    - { file: hedgedoc.png, url: "https://raw.githubusercontent.com/hedgedoc/hedgedoc/1.8.2/public/icons/android-chrome-192x192.png" }
+    - { file: element.png, url: "https://raw.githubusercontent.com/vector-im/element-web/v1.7.33/res/vector-icons/180.png" }
+    - { file: jitsi.png, url: "https://raw.githubusercontent.com/jitsi/jitsi-meet/stable/jitsi-meet_5963/images/jitsiLogo_square.png" }
+    - { file: keycloak.png, url: "https://raw.githubusercontent.com/keycloak/keycloak-misc/main/logo/keycloak_icon_256px.png" }
+  tags: [ init-all, init-homer ]
+
+- name: Get favicons
+  get_url:
+    url: "{{ item.url }}"
+    dest: "{{ home }}/homer/assets/icons/{{ item.file }}"
+  with_items:
+    - { file: favicon-32x32.png, url: "https://i.imgur.com/BwoTrVB.png" }
+    - { file: favicon-16x16.png, url: "https://i.imgur.com/VAqHKJK.png" }
+    - { file: icon-any.png, url: "https://i.imgur.com/7G457X6.png" }
+  tags: [ init-all, init-homer ]
+
+- name: Remove svg icon
+  file:
+    path: "{{ home }}/homer/assets/icons/icon_any.svg"
+    state: absent
+  tags: [ init-all, init-homer ]
+
+- name: Run Homer and reverse proxy
+  docker_compose:
+    project_src: "{{ home }}/homer"
+    restarted: yes
+  become: yes
+  tags: [ start, start-homer ]

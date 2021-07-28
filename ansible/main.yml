@@ -21,4 +21,8 @@
   roles:
     - matrix_ex
 
+- hosts: www
+  roles:
+    - www
+
 - import_playbook: matrix-docker-ansible-deploy/setup.yml

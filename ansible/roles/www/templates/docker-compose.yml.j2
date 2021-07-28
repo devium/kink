@@ -1,0 +1,34 @@
+version: '3'
+services:
+  homer:
+    image: b4bz/homer:{{ homer_version }}
+    container_name: hedgedoc
+    environment:
+      - UID=1000
+      - GID=1000
+    volumes:
+      - {{ home }}/homer/assets/:/www/assets/
+    ports:
+      - 8080:8080
+    restart: unless-stopped
+
+  swag:
+    image: ghcr.io/linuxserver/swag
+    container_name: swag
+    cap_add:
+      - NET_ADMIN
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Berlin
+      - URL={{ domain }}
+      - SUBDOMAINS=www,
+      - VALIDATION=http
+    volumes:
+      - {{ home }}/homer/config:/config
+    ports:
+      - 443:443
+      - 80:80
+    restart: unless-stopped
+    depends_on:
+      - homer

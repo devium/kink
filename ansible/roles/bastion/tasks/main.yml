@@ -16,6 +16,8 @@
         HostName {{ auth_host }}
       Host matrix
         HostName {{ matrix_host }}
+      Host www
+        HostName {{ www_host }}
 
 - name: Install requirements for psycopg2
   package:
