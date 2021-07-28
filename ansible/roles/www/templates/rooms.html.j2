@@ -13,23 +13,33 @@
 
   function refresh() {
     $.getJSON('https://{{ jitsi_domain }}/rooms', function(data) {
-    $("#rooms").empty();
+      $("#rooms").empty();
+      
       $.each(data, function(_, room) {
-        var room_name = room.jid.split("@")[0]
-        var row = '<a target="_blank" rel="noopener noreferrer" href="https://{{ jitsi_domain }}/' + room_name + '">' + room_name + '</a>: ';
-        var names = $.map(room.participants, function(participant, _) {
+        var room_name = decodeURIComponent(room.jid.split("@")[0]);
+        var row = $('<p>');
+        $('<a>', {
+          target: 'blank',
+          rel: 'noopener noreferrer',
+          href: 'https://{{ jitsi_domain }}/' + room_name,
+          text: room_name,
+        })
+        .appendTo(row);
+        
+        $(document.createTextNode(': ' + $.map(room.participants, function(participant, _) {
           return participant.display_name;
-        });
-        row = row + names.join(', ');
-        row = '<p>' + row + '</p>';
-        $(row).appendTo("#rooms");
+        }).join(', ')))
+        .appendTo(row);
+        
+        row.appendTo("#rooms");
       });
+      
       if (data.length == 0) {
         $("<p>Keine R&auml;ume offen.</p>").appendTo("#rooms");
       }
     });
   };
-  
+
   $(function() {
     inheritStyle();
     refresh();

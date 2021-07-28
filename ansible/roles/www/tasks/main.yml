@@ -55,12 +55,6 @@
     - { file: icon-any.png, url: "https://i.imgur.com/7G457X6.png" }
   tags: [ init-all, init-homer ]
 
-- name: Remove svg icon
-  file:
-    path: "{{ home }}/homer/assets/icons/icon_any.svg"
-    state: absent
-  tags: [ init-all, init-homer ]
-
 - name: Run Homer and reverse proxy
   docker_compose:
     project_src: "{{ home }}/homer"
