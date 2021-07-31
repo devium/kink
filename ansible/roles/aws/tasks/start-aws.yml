@@ -1,0 +1,16 @@
+---
+- name: Start RDS instance
+  rds_instance:
+    db_instance_identifier: "{{ aws_rds_db }}"
+    state: started
+
+# Note: This will likely change the instances' IP addresses, so make sure to reapply terraform.
+- name: Start EC2 instances
+  ec2_instance:
+    instance_ids:
+      - "{{ aws_ec2_bastion }}"
+      - "{{ aws_ec2_collab }}"
+      - "{{ aws_ec2_auth }}"
+      - "{{ aws_ec2_matrix }}"
+      - "{{ aws_ec2_www }}"
+    state: started

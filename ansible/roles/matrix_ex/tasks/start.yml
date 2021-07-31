@@ -1,0 +1,25 @@
+- name: Run Jitsi Keycloak middleware
+  docker_compose:
+    project_src: "{{ home }}/jitsi-keycloak"
+    restarted: yes
+  become: yes
+
+- name: Stop Jitsi services
+  service:
+    name: "{{ item }}"
+    state: stopped
+  with_items:
+    - "matrix-jitsi-prosody.service"
+    - "matrix-jitsi-web.service"
+    - "matrix-jitsi-jicofo.service"
+  become: yes
+
+- name: Start Jitsi services
+  service:
+    name: "{{ item }}"
+    state: started
+  with_items:
+    - "matrix-jitsi-prosody.service"
+    - "matrix-jitsi-web.service"
+    - "matrix-jitsi-jicofo.service"
+  become: yes

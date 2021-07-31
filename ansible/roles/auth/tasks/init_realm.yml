@@ -48,3 +48,18 @@
     web_origins: "https://{{ matrix_domain }}"
     redirect_uris: "https://{{ matrix_domain }}/_synapse/client/oidc/callback"
   register: matrix_client
+
+- name: Create Jitsi client
+  community.general.keycloak_client:
+    auth_realm: master
+    auth_username: admin
+    auth_password: "{{ keycloak_password }}"
+    auth_keycloak_url: "https://{{ auth_domain }}/auth"
+    realm: "{{ keycloak_realm }}"
+    client_id: jitsi
+    root_url: "https://{{ jitsi_auth_domain }}"
+    admin_url: "https://{{ jitsi_auth_domain }}"
+    web_origins: "https://{{ jitsi_auth_domain }}"
+    redirect_uris: "https://{{ jitsi_auth_domain }}*"
+    public_client: yes
+  register: jitsi_client

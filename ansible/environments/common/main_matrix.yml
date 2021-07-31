@@ -9,7 +9,7 @@ matrix_synapse_macaroon_secret_key: "{{ vault_matrix_synapse_macaroon_secret_key
 
 matrix_postgres_enabled: false
 
-matrix_synapse_database_host: "{{ db_host }}"
+matrix_synapse_database_host: "{{ hostvars['localhost']['db_host'] }}"
 matrix_synapse_database_user: "{{ db_matrix_username }}"
 matrix_synapse_database_password: "{{ db_matrix_password }}"
 matrix_synapse_database_database: "{{ db_matrix_database }}"
@@ -49,6 +49,7 @@ matrix_synapse_configuration_extension_yaml: |
         email_template: "{% raw %}{{ user.email }}{% endraw %}"
 
 matrix_jitsi_enabled: true
+matrix_jitsi_version: stable-5963
 
 # Run `bash inventory/scripts/jitsi-generate-passwords.sh` to generate these passwords,
 # or define your own strong passwords manually.
@@ -57,6 +58,10 @@ matrix_jitsi_jicofo_auth_password: "{{ vault_matrix_jitsi_jicofo_auth_password }
 matrix_jitsi_jvb_auth_password: "{{ vault_matrix_jitsi_jvb_auth_password }}"
 matrix_jitsi_jibri_recorder_password: "{{ vault_matrix_jitsi_jibri_recorder_password }}"
 matrix_jitsi_jibri_xmpp_password: "{{ vault_matrix_jitsi_jibri_xmpp_password }}"
+
+matrix_jitsi_enable_auth: true
+matrix_jitsi_enable_guests: true
+matrix_jitsi_auth_type: jwt
 
 matrix_jitsi_xmpp_modules: "muc_rooms"
 matrix_jitsi_prosody_container_http_host_bind_port: 5280
@@ -70,3 +75,8 @@ matrix_nginx_proxy_proxy_jitsi_additional_server_configuration_blocks:
       proxy_set_header Host $host;
       proxy_set_header X-Forwarded-For $remote_addr;
     }
+matrix_ssl_additional_domains_to_obtain_certificates_for:
+  - "{{ jitsi_auth_domain }}"
+matrix_jitsi_web_environment_variables_extension: "TOKEN_AUTH_URL=https://{{ jitsi_auth_domain }}/{room}"
+
+jitsi_jwt_secret: "{{ vault_jitsi_jwt_secret }}"

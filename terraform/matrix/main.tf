@@ -105,3 +105,12 @@ resource "aws_route53_record" "jitsi" {
   records = [aws_route53_record.matrix.name]
   depends_on = [aws_instance.matrix]
 }
+
+resource "aws_route53_record" "jitsi_auth" {
+  zone_id = var.zone_id
+  name = "auth.jitsi.${var.domain}"
+  type = "CNAME"
+  ttl = "300"
+  records = [aws_route53_record.matrix.name]
+  depends_on = [aws_instance.matrix]
+}

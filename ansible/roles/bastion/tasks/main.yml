@@ -11,13 +11,13 @@
     path: ~/.ssh/config
     block: |
       Host collab
-        HostName {{ collab_host }}
+        HostName {{ hostvars['localhost']['collab_private_ip'] }}
       Host auth
-        HostName {{ auth_host }}
+        HostName {{ hostvars['localhost']['auth_private_ip'] }}
       Host matrix
-        HostName {{ matrix_host }}
+        HostName {{ hostvars['localhost']['matrix_private_ip'] }}
       Host www
-        HostName {{ www_host }}
+        HostName {{ hostvars['localhost']['www_private_ip'] }}
 
 - name: Install requirements for psycopg2
   package:
@@ -43,7 +43,7 @@
     dest: "{{ home }}/.pg_service.conf"
     content: |
       [db]
-      host={{ db_host }}
+      host={{ hostvars['localhost']['db_host'] }}
       port=5432
       user=postgres
     mode: 0600
@@ -51,13 +51,13 @@
 
 - name: Create HedgeDoc database
   postgresql_db:
-    login_host: "{{ db_host }}"
+    login_host: "{{ hostvars['localhost']['db_host'] }}"
     login_password: "{{ db_root_password }}"
     name: "{{ db_hedgedoc_database }}"
 
 - name: Create HedgeDoc database user
   postgresql_user:
-    login_host: "{{ db_host }}"
+    login_host: "{{ hostvars['localhost']['db_host'] }}"
     login_password: "{{ db_root_password }}"
     db: "{{ db_hedgedoc_database }}"
     name: "{{ db_hedgedoc_username }}"
@@ -68,13 +68,13 @@
 
 - name: Create Keycloak database
   postgresql_db:
-    login_host: "{{ db_host }}"
+    login_host: "{{ hostvars['localhost']['db_host'] }}"
     login_password: "{{ db_root_password }}"
     name: "{{ db_keycloak_database }}"
 
 - name: Create Keycloak database user
   postgresql_user:
-    login_host: "{{ db_host }}"
+    login_host: "{{ hostvars['localhost']['db_host'] }}"
     login_password: "{{ db_root_password }}"
     db: "{{ db_keycloak_database }}"
     name: "{{ db_keycloak_username }}"
@@ -85,7 +85,7 @@
 
 - name: Create matrix database
   postgresql_db:
-    login_host: "{{ db_host }}"
+    login_host: "{{ hostvars['localhost']['db_host'] }}"
     login_password: "{{ db_root_password }}"
     name: "{{ db_matrix_database }}"
     lc_collate: "C"
@@ -94,7 +94,7 @@
 
 - name: Create matrix database user
   postgresql_user:
-    login_host: "{{ db_host }}"
+    login_host: "{{ hostvars['localhost']['db_host'] }}"
     login_password: "{{ db_root_password }}"
     db: "{{ db_matrix_database }}"
     name: "{{ db_matrix_username }}"

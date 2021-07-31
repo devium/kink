@@ -33,7 +33,7 @@ server {
         }
 
         location /.well-known/matrix {
-                proxy_pass https://{{ matrix_host }}/.well-known/matrix;
+                proxy_pass https://{{ matrix_domain }}/.well-known/matrix;
                 proxy_set_header X-Forwarded-For $remote_addr;
         }
 

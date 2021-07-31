@@ -19,6 +19,7 @@
   tags: 
     - init-all
     - init-keycloak
+    - init-keycloak-mappers
     - init-keycloak-authentication
     - init-keycloak-google
     - init-keycloak-delete-account
@@ -40,6 +41,12 @@
   tags: 
     - init-all
     - init-keycloak
+
+- import_tasks: "{{ role_path }}/tasks/init_name_mappers.yml"
+  tags:
+    - init-all
+    - init-keycloak
+    - init-keycloak-mappers
 
 - import_tasks: "{{ role_path }}/tasks/init_google_provider.yml"
   tags: 

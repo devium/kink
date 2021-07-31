@@ -8,7 +8,7 @@ services:
       - KEYCLOAK_PASSWORD={{ keycloak_password }}
       - PROXY_ADDRESS_FORWARDING=true
       - DB_VENDOR=postgres
-      - DB_ADDR={{ db_host }}
+      - DB_ADDR={{ hostvars['localhost']['db_host'] }}
       - DB_DATABASE={{ db_keycloak_database }}
       - DB_USER={{ db_keycloak_username }}
       - DB_PASSWORD={{ db_keycloak_password }}

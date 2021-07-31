@@ -1,0 +1,77 @@
+---
+# We don't use first and last names here so map to username instead for apps that use it.
+- name: Get client scopes
+  uri:
+    url: "{{ keycloak_realm_api_base }}/client-scopes"
+    method: GET
+    headers: "{{ keycloak_api_headers }}"
+  register: client_scopes
+
+- name: Get protocol mappers for profile scope
+  uri:
+    url: "{{ keycloak_realm_api_base }}/client-scopes/{{ profile_id }}"
+    method: GET
+    headers: "{{ keycloak_api_headers }}"
+  vars:
+    query: "json[?name=='profile'].id"
+    profile_id: "{{ (client_scopes | json_query(query))[0] }}"
+  register: profile
+
+- name: Remap given name (first name) to username
+  uri:
+    url: "{{ keycloak_realm_api_base }}/client-scopes/{{ profile_id }}/protocol-mappers/models/{{ mapper.id }}"
+    method: PUT
+    headers: "{{ keycloak_api_headers }}"
+    body_format: json
+    body: |
+      {
+        "id": "{{ mapper.id }}",
+        "protocolMapper": "oidc-usermodel-property-mapper",
+        "config": {
+          "userinfo.token.claim": "true",
+          "user.attribute": "username",
+          "id.token.claim": "true",
+          "access.token.claim": "true",
+          "claim.name": "given_name",
+          "jsonType.label": "String"
+        }
+      }
+    status_code: [204]
+  vars:
+    scope_query: "json[?name=='profile'].id"
+    profile_id: "{{ (client_scopes | json_query(scope_query))[0] }}"
+    mapper_query: "json.protocolMappers[?name=='given name']"
+    mapper: "{{ (profile | json_query(mapper_query))[0] }}"
+  changed_when: true
+  when: "mapper.config['user.attribute'] != 'username'"
+
+- name: Remap family name (last name) to empty string
+  uri:
+    url: "{{ keycloak_realm_api_base }}/client-scopes/{{ profile_id }}/protocol-mappers/models/{{ mapper.id }}"
+    method: PUT
+    headers: "{{ keycloak_api_headers }}"
+    body_format: json
+    body: |
+      {
+        "id": "{{ mapper.id }}",
+        "protocol":"openid-connect",
+        "config":{
+          "id.token.claim":"true",
+          "access.token.claim":"true",
+          "userinfo.token.claim":"true",
+          "access.tokenResponse.claim":"false",
+          "claim.name":"family_name",
+          "jsonType.label":"String",
+          "claim.value": "#"
+        },
+        "name":"testmap",
+        "protocolMapper":"oidc-hardcoded-claim-mapper"
+      }
+    status_code: [204]
+  vars:
+    scope_query: "json[?name=='profile'].id"
+    profile_id: "{{ (client_scopes | json_query(scope_query))[0] }}"
+    mapper_query: "json.protocolMappers[?name=='family name']"
+    mapper: "{{ (profile | json_query(mapper_query))[0] }}"
+  changed_when: true
+  when: "mapper.protocolMapper != 'oidc-hardcoded-claim-mapper'"

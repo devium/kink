@@ -1,0 +1,11 @@
+- name: Create Prosody plugin dir
+  file:
+    path: "{{ matrix_jitsi_prosody_plugins_path }}"
+    state: directory
+  become: yes
+
+- name: Copy status Prosody script
+  template:
+    src: mod_muc_rooms.lua.j2
+    dest: "{{ matrix_jitsi_prosody_plugins_path }}/mod_muc_rooms.lua"
+  become: yes

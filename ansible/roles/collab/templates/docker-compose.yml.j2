@@ -4,7 +4,7 @@ services:
     image: quay.io/hedgedoc/hedgedoc:{{ hedgedoc_version }}
     container_name: hedgedoc
     environment:
-      - CMD_DB_URL=postgres://{{ db_hedgedoc_username }}:{{ db_hedgedoc_password }}@{{ db_host }}:5432/{{ db_hedgedoc_database }}
+      - CMD_DB_URL=postgres://{{ db_hedgedoc_username }}:{{ db_hedgedoc_password }}@{{ hostvars['localhost']['db_host'] }}:5432/{{ db_hedgedoc_database }}
       - CMD_DOMAIN=localhost
       - CMD_DOMAIN={{ collab_domain }}
       - CMD_PORT=3000

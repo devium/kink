@@ -1,0 +1,8 @@
+- name: Update packages
+  yum:
+    name: "*"
+    state: latest
+    update_only: yes
+  become: yes
+  vars:
+    ansible_python_interpreter: /usr/bin/python2

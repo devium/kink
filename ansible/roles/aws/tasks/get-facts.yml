@@ -1,0 +1,23 @@
+---
+- name: Get collab private IP
+  ec2_instance:
+    instance_ids: 
+      - "{{ aws_ec2_collab }}"
+      - "{{ aws_ec2_auth }}"
+      - "{{ aws_ec2_matrix }}"
+      - "{{ aws_ec2_www }}"
+  register: ec2
+
+- name: Get DB hostname
+  rds_instance:
+    db_instance_identifier: "{{ aws_rds_db }}"
+  register: rds
+
+- name: Save private IP addresses and hostnames
+  set_fact:
+    collab_private_ip: "{{ (ec2.instances | selectattr('instance_id', 'equalto', aws_ec2_collab) | first).private_ip_address }}"
+    auth_private_ip: "{{ (ec2.instances | selectattr('instance_id', 'equalto', aws_ec2_auth) | first).private_ip_address }}"
+    matrix_private_ip: "{{ (ec2.instances | selectattr('instance_id', 'equalto', aws_ec2_matrix) | first).private_ip_address }}"
+    www_private_ip: "{{ (ec2.instances | selectattr('instance_id', 'equalto', aws_ec2_www) | first).private_ip_address }}"
+    db_host: "{{ rds.endpoint.address }}"
+  run_once: true

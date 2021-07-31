@@ -1,0 +1,13 @@
+- import_tasks: "{{ role_path }}/tasks/stop-aws.yml"
+  tags: 
+    - stop-aws
+    - never
+
+- import_tasks: "{{ role_path }}/tasks/start-aws.yml"
+  tags: 
+    - start-aws
+    - never
+
+- import_tasks: "{{ role_path }}/tasks/get-facts.yml"
+  tags:
+    - always

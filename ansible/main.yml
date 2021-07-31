@@ -1,4 +1,14 @@
 ---
+- hosts: localhost
+  roles:
+    - aws
+  run_once: yes
+
+- hosts: all,!localhost
+  roles:
+    - update
+  tags: [ setup-all, update ]
+
 - hosts: docker_hosts
   roles:
     - docker
@@ -17,12 +27,12 @@
   roles:
     - auth
 
-- hosts: matrix
-  roles:
-    - matrix_ex
-
 - hosts: www
   roles:
     - www
 
 - import_playbook: matrix-docker-ansible-deploy/setup.yml
+
+- hosts: matrix
+  roles:
+    - matrix_ex

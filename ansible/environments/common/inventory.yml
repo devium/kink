@@ -1,21 +1,23 @@
 all:
   hosts:
+    localhost:
+      ansible_connection: local
     bastion:
-      ansible_host: "{{ bastion_host }}"
+      ansible_host: "{{ bastion_domain }}"
 
   children:
     gatewayed:
       hosts:
         collab:
-          ansible_host: "{{ collab_host }}"
+          ansible_host: "{{ hostvars['localhost']['collab_private_ip'] }}"
         auth:
-          ansible_host: "{{ auth_host }}"
+          ansible_host: "{{ hostvars['localhost']['auth_private_ip'] }}"
         matrix:
-          ansible_host: "{{ matrix_host }}"
+          ansible_host: "{{ hostvars['localhost']['matrix_private_ip'] }}"
         www:
-          ansible_host: "{{ www_host }}"
+          ansible_host: "{{ hostvars['localhost']['www_private_ip'] }}"
       vars:
-        ansible_ssh_common_args: '-o ProxyCommand="ssh -W %h:%p -q {{ ansible_user }}@{{ bastion_host }}"'
+        ansible_ssh_common_args: '-o ProxyCommand="ssh -W %h:%p -q {{ ansible_user }}@{{ bastion_domain }}"'
 
     docker_hosts:
       hosts:
