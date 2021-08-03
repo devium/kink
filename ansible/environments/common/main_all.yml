@@ -46,6 +46,7 @@ keycloak_password_policy: "length(8)"
 db_matrix_database: "matrix"
 db_matrix_username: "matrix"
 db_matrix_password: "{{ vault_db_matrix_password }}"
+matrix_jitsi_unlisted_room_prefix: "_"
 
 # ========
 # Homer

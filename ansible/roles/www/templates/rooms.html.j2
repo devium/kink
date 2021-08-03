@@ -37,6 +37,7 @@
       if (data.length == 0) {
         $("<p>Keine R&auml;ume offen.</p>").appendTo("#rooms");
       }
+      $("<p>R&auml;ume, die mit <i>{{ matrix_jitsi_unlisted_room_prefix }}</i> beginnen, werden nicht gelistet.</p>").appendTo("#rooms");
     });
   };
 
@@ -76,7 +77,8 @@
 
 <body>
 <div class="outer">
-  <div id = "rooms"></div>
+  <div id = "rooms">
+  </div>
 </div>
 </body>
 

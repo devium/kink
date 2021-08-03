@@ -26,13 +26,13 @@
   template:
     src: config.yml.j2
     dest: "{{ home }}/homer/assets/config.yml"
-  tags: [ init-all, init-homer ]
+  tags: [ setup-all, setup-homer ]
 
 - name: Copy Jitsi rooms page
   template:
     src: rooms.html.j2
     dest: "{{ home }}/homer/config/www/rooms.html"
-  tags: [ init-all, init-homer ]
+  tags: [ setup-all, setup-homer ]
 
 - name: Get logos
   get_url:
@@ -44,7 +44,7 @@
     - { file: jitsi.png, url: "https://raw.githubusercontent.com/jitsi/jitsi-meet/stable/jitsi-meet_5963/images/jitsiLogo_square.png" }
     - { file: keycloak.png, url: "https://raw.githubusercontent.com/keycloak/keycloak-misc/main/logo/keycloak_icon_256px.png" }
     - { file: excalidraw.png, url: "https://raw.githubusercontent.com/excalidraw/excalidraw/v0.9.0/public/logo-180x180.png" }
-  tags: [ init-all, init-homer ]
+  tags: [ setup-all, setup-homer ]
 
 - name: Get favicons
   get_url:
@@ -54,7 +54,7 @@
     - { file: favicon-32x32.png, url: "https://i.imgur.com/BwoTrVB.png" }
     - { file: favicon-16x16.png, url: "https://i.imgur.com/VAqHKJK.png" }
     - { file: icon-any.png, url: "https://i.imgur.com/7G457X6.png" }
-  tags: [ init-all, init-homer ]
+  tags: [ setup-all, setup-homer ]
 
 - name: Run Homer and reverse proxy
   docker_compose:

@@ -24,34 +24,36 @@ function handle_get_all_rooms(event)
     local rooms_json = array();
 
     for room in raw_rooms do
-
-        local room_jid = room.jid;
-        local participant_count = 0;
-        local occupants_json = array();
-        local occupants = room._occupants;
-        if occupants then
-            for _, occupant in room:each_occupant() do
-                -- filter focus as we keep it as hidden participant
-                if string.sub(occupant.nick,-string.len("/focus"))~="/focus" then
-                    for _, pr in occupant:each_session() do
-                        participant_count = participant_count + 1;
-                        local nick = pr:get_child_text("nick", "http://jabber.org/protocol/nick") or "";
-                        local email = pr:get_child_text("email") or "";
-                        occupants_json:push({
-                            jid = tostring(occupant.nick),
-                            email = tostring(email),
-                            display_name = tostring(nick)});
+        -- Hide rooms starting with the specified prefix.
+        if string.sub(room.jid, 1, string.len("{{ matrix_jitsi_unlisted_room_prefix }}")) ~= "{{ matrix_jitsi_unlisted_room_prefix }}" then
+            local room_jid = room.jid;
+            local participant_count = 0;
+            local occupants_json = array();
+            local occupants = room._occupants;
+            if occupants then
+                for _, occupant in room:each_occupant() do
+                    -- Filter focus as we keep it as hidden participant
+                    if string.sub(occupant.nick,-string.len("/focus"))~="/focus" then
+                        for _, pr in occupant:each_session() do
+                            participant_count = participant_count + 1;
+                            local nick = pr:get_child_text("nick", "http://jabber.org/protocol/nick") or "";
+                            local email = pr:get_child_text("email") or "";
+                            occupants_json:push({
+                                jid = tostring(occupant.nick),
+                                email = tostring(email),
+                                display_name = tostring(nick)});
+                        end
                     end
                 end
             end
+
+            rooms_json:push({
+                jid = room_jid,
+                participant_count = participant_count,
+                participants = occupants_json
+            });
+
         end
-
-        rooms_json:push({
-            jid = room_jid,
-            participant_count = participant_count,
-            participants = occupants_json
-        });
-
     end
 
     -- create json response
