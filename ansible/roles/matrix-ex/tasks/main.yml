@@ -21,6 +21,7 @@
   tags: 
     - setup-all
     - setup-matrix-ex
+    - setup-jitsi
     - setup-jitsi-keycloak
 
 - import_tasks: "{{ role_path }}/tasks/start.yml"

@@ -24,7 +24,6 @@ matrix_ntpd_package: chrony
 matrix_ntpd_service: chronyd
 
 matrix_vars_yml_snapshotting_src: "{{ inventory_dir }}/host_vars/matrix/main.yml"
-matrix_nginx_proxy_base_domain_serving_enabled: true
 matrix_nginx_proxy_proxy_matrix_client_api_forwarded_location_synapse_oidc_api_enabled: true
 matrix_synapse_password_config_localdb_enabled: false
 matrix_synapse_enable_registration: false
@@ -78,5 +77,8 @@ matrix_nginx_proxy_proxy_jitsi_additional_server_configuration_blocks:
 matrix_ssl_additional_domains_to_obtain_certificates_for:
   - "{{ jitsi_auth_domain }}"
 matrix_jitsi_web_environment_variables_extension: "TOKEN_AUTH_URL=https://{{ jitsi_auth_domain }}/{room}"
+matrix_jitsi_prosody_container_extra_arguments:
+  - "-e JWT_APP_ID=jitsi"
+  - "-e JWT_APP_SECRET={{ jitsi_jwt_secret }}"
 
 jitsi_jwt_secret: "{{ vault_jitsi_jwt_secret }}"

@@ -19,7 +19,7 @@ all:
         draw:
           ansible_host: "{{ hostvars['localhost']['draw_private_ip'] }}"
       vars:
-        ansible_ssh_common_args: '-o ProxyCommand="ssh -W %h:%p -q {{ ansible_user }}@{{ bastion_domain }}"'
+        ansible_ssh_common_args: '-o ProxyCommand="ssh -W %h:%p -q {{ ansible_user }}@{{ bastion_domain }}" -o "StrictHostKeyChecking no"'
 
     docker_hosts:
       hosts:

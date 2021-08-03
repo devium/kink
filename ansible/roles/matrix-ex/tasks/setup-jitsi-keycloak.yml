@@ -19,14 +19,6 @@
     dest: "{{ matrix_nginx_proxy_confd_path }}/jitsi-auth.conf"
   become: yes
 
-- name: Add prosody JWT configuration
-  blockinfile:
-    block: |
-      JWT_APP_ID=jitsi
-      JWT_APP_SECRET={{ jitsi_jwt_secret }}
-    path: "{{ matrix_jitsi_prosody_base_path }}/env"
-  become: yes
-
 - name: Modify Jitsi Nginx config to forward XMPP URL params
   lineinfile:
     path: "{{ matrix_nginx_proxy_confd_path }}/matrix-jitsi.conf"

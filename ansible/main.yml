@@ -39,4 +39,4 @@
 
 - hosts: matrix
   roles:
-    - matrix_ex
+    - matrix-ex

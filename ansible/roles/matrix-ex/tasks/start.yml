@@ -15,6 +15,11 @@
     - "matrix-jitsi-jvb.service"
   become: yes
 
+- name: Reload systemd
+  service:
+    daemon_reload: yes
+  become: yes
+
 - name: Start Jitsi services
   service:
     name: "{{ item }}"
