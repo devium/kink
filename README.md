@@ -116,8 +116,8 @@ ansible-playbook main.yml [--diff] --tags update
 
 ### Stop/start AWS EC2 and RDS instances
 ```bash
-ansible-playbook main.yml [--diff] --tags stop-aws
-ansible-playbook main.yml [--diff] --tags start-aws
+ansible-playbook main.yml [--diff] --limit localhost --tags stop-aws
+ansible-playbook main.yml [--diff] --limit localhost --tags start-aws
 ```
 Make sure to rerun `terraform apply` after since IP addresses have likely changed and domains need to be updated.
 

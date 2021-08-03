@@ -9,7 +9,7 @@
       username: admin
       grant_type: password
       password: "{{ keycloak_password }}"
-  register: access_token
+  register: access_token_1
 
 - name: Increase access token lifespan
   community.general.keycloak_realm:
@@ -19,7 +19,7 @@
     auth_keycloak_url: "https://{{ auth_domain }}/auth"
     realm: "master"
     access_token_lifespan: 300
-  when: access_token.json.expires_in < 300
+  when: access_token_1.json.expires_in < 300
 
 - name: Get new, longer-lasting API access token
   uri:
@@ -31,5 +31,15 @@
       username: admin
       grant_type: password
       password: "{{ keycloak_password }}"
-  register: access_token
-  when: access_token.json.expires_in < 300
+  register: access_token_2
+  when: access_token_1.json.expires_in < 300
+
+- name: Save first access token
+  set_fact:
+    access_token: "{{ access_token_1.json.access_token }}"
+  when: access_token_1.json.expires_in >= 300
+
+- name: Save second access token
+  set_fact:
+    access_token: "{{ access_token_2.json.access_token }}"
+  when: access_token_1.json.expires_in < 300
