@@ -43,6 +43,7 @@
     - { file: element.png, url: "https://raw.githubusercontent.com/vector-im/element-web/v1.7.33/res/vector-icons/180.png" }
     - { file: jitsi.png, url: "https://raw.githubusercontent.com/jitsi/jitsi-meet/stable/jitsi-meet_5963/images/jitsiLogo_square.png" }
     - { file: keycloak.png, url: "https://raw.githubusercontent.com/keycloak/keycloak-misc/main/logo/keycloak_icon_256px.png" }
+    - { file: excalidraw.png, url: "https://raw.githubusercontent.com/excalidraw/excalidraw/v0.9.0/public/logo-180x180.png" }
   tags: [ init-all, init-homer ]
 
 - name: Get favicons

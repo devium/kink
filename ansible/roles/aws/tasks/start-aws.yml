@@ -13,4 +13,5 @@
       - "{{ aws_ec2_auth }}"
       - "{{ aws_ec2_matrix }}"
       - "{{ aws_ec2_www }}"
+      - "{{ aws_ec2_draw }}"
     state: started

@@ -1,0 +1,35 @@
+---
+- name: Install git
+  package:
+    name:
+      - git
+    state: present
+  become: yes
+  tags: [ setup-all, setup-excalidraw ]
+
+- name: Create Excalidraw dirs
+  file:
+    path: "{{ home }}/excalidraw/config/nginx/site-confs"
+    state: directory
+  tags: [ setup-all, setup-excalidraw ]
+
+- name: Copy docker-compose.yml to target machine
+  template:
+    src: docker-compose.yml.j2
+    dest: "{{ home }}/excalidraw/docker-compose.yml"
+  tags: [ setup-all, setup-excalidraw ]
+
+- name: Copy SWAG reverse proxy config for Excalidraw
+  template:
+    src: excalidraw.conf.j2
+    dest: "{{ home }}/excalidraw/config/nginx/site-confs/excalidraw.conf"
+  tags: [ setup-all, setup-excalidraw ]
+
+- name: Run Excalidraw and reverse proxy
+  docker_compose:
+    project_src: "{{ home }}/excalidraw"
+    files:
+      - docker-compose.yml
+    restarted: yes
+  become: yes
+  tags: [ start ]

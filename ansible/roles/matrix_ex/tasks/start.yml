@@ -12,6 +12,7 @@
     - "matrix-jitsi-prosody.service"
     - "matrix-jitsi-web.service"
     - "matrix-jitsi-jicofo.service"
+    - "matrix-jitsi-jvb.service"
   become: yes
 
 - name: Start Jitsi services
@@ -22,4 +23,5 @@
     - "matrix-jitsi-prosody.service"
     - "matrix-jitsi-web.service"
     - "matrix-jitsi-jicofo.service"
+    - "matrix-jitsi-jvb.service"
   become: yes

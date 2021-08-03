@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+  excalidraw:
+    image: excalidraw/excalidraw:{{ excalidraw_version }}
+    container_name: excalidraw
+    restart: unless-stopped
+    stdin_open: true
+    healthcheck:
+      disable: true
+
+  swag:
+    image: ghcr.io/linuxserver/swag
+    container_name: swag
+    cap_add:
+      - NET_ADMIN
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Berlin
+      - URL={{ draw_domain }}
+      - VALIDATION=http
+    volumes:
+      - {{ home }}/excalidraw/config:/config
+    ports:
+      - 443:443
+      - 80:80
+    restart: unless-stopped
+    depends_on:
+      - excalidraw
+
+volumes:
+  notused:

@@ -16,6 +16,8 @@ all:
           ansible_host: "{{ hostvars['localhost']['matrix_private_ip'] }}"
         www:
           ansible_host: "{{ hostvars['localhost']['www_private_ip'] }}"
+        draw:
+          ansible_host: "{{ hostvars['localhost']['draw_private_ip'] }}"
       vars:
         ansible_ssh_common_args: '-o ProxyCommand="ssh -W %h:%p -q {{ ansible_user }}@{{ bastion_domain }}"'
 
@@ -25,6 +27,7 @@ all:
         auth:
         matrix:
         www:
+        draw:
 
     matrix_servers:
       hosts:

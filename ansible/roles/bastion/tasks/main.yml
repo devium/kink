@@ -18,6 +18,8 @@
         HostName {{ hostvars['localhost']['matrix_private_ip'] }}
       Host www
         HostName {{ hostvars['localhost']['www_private_ip'] }}
+      Host draw
+        HostName {{ hostvars['localhost']['draw_private_ip'] }}
 
 - name: Install requirements for psycopg2
   package:

@@ -7,6 +7,8 @@ element_domain: "element.{{ domain }}"
 jitsi_domain: "jitsi.{{ domain }}"
 jitsi_auth_domain: "auth.{{ jitsi_domain }}"
 www_domain: "www.{{ domain }}"
+draw_domain: "draw.{{ domain }}"
+
 s3_bucket_name: ${bucket_name}
 
 aws_ec2_bastion: "${bastion_id}"
@@ -14,4 +16,5 @@ aws_ec2_collab: "${collab_id}"
 aws_ec2_auth: "${auth_id}"
 aws_ec2_matrix: "${matrix_id}"
 aws_ec2_www: "${www_id}"
+aws_ec2_draw: "${draw_id}"
 aws_rds_db: "${db_id}"

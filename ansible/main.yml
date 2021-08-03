@@ -31,6 +31,10 @@
   roles:
     - www
 
+- hosts: draw
+  roles:
+    - draw
+
 - import_playbook: matrix-docker-ansible-deploy/setup.yml
 
 - hosts: matrix

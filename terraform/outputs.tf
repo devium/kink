@@ -10,6 +10,7 @@ resource "local_file" "AnsibleHosts" {
       auth_id = module.auth.instance_id
       matrix_id = module.matrix.instance_id
       www_id = module.www.instance_id
+      draw_id = module.draw.instance_id
 
       db_id = module.db.instance_id
     }
