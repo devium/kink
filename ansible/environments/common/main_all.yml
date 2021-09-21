@@ -1,5 +1,5 @@
 db_root_password: "{{ vault_db_root_password }}"
-ansible_python_interpreter: /usr/bin/python3
+ansible_python_interpreter: python3
 ansible_user: ec2-user
 home: /home/ec2-user
 

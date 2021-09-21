@@ -15,12 +15,13 @@ terraform login
 ```
 Prepare variable file:
 ```bash
+cd terraform
 touch {dev|prod}.tfvars
 ```
 Fill in the following variables:
 ```ini
 project_name = "PROJECT_NAME"
-domain = "{dev|prod}.DOMAIN"
+domain = "{dev|prod|?}.DOMAIN"
 suffix = "{dev|prod}"
 db_password = "DB_ROOT_PASSWORD"
 ```
@@ -49,6 +50,12 @@ sudo ./aws/install
 Get AWS key/secret from https://console.aws.amazon.com/iamv2/home#/users and configure the AWS CLI:
 ```bash
 aws configure
+```
+
+### Init submodules
+```bash
+git submodule init
+git submodule update
 ```
 
 ### Other requirements
@@ -99,10 +106,10 @@ ansible-vault edit ansible/environments/{dev|prod}/group_vars/all/vault
 ### Run entire Ansible playbook
 Make sure you run `terraform apply` before this at least once to update your environment's `hosts.yml` and S3 credentials. This playbook uses EC2 instance IDs to query their private IP addresses.
 ```bash
-ansible-playbook main.yml [--diff] --tags --limit localhost,bastion,auth --tags setup-all,start
+ansible-playbook main.yml [--diff] --limit localhost,bastion,auth --tags setup-all,start
 # Wait for Keycloak to start.
-ansible-playbook main.yml [--diff] --tags --limit localhost,auth --tags init-all
-ansible-playbook main.yml [--diff] --tags --limit '!bastion,!auth' --tags setup-all,start
+ansible-playbook main.yml [--diff] --limit localhost,auth --tags init-all
+ansible-playbook main.yml [--diff] --limit '!bastion,!auth' --tags setup-all,start
 ```
 
 ### Limitations
