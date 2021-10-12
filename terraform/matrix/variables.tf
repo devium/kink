@@ -27,3 +27,7 @@ variable "domain" {
 
 variable "identifier" {
 }
+
+variable "volume_size" {
+  default = 8
+}

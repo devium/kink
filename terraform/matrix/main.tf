@@ -4,7 +4,10 @@ resource "aws_instance" "matrix" {
   subnet_id = var.subnet_public_id
   key_name = var.key_name
   vpc_security_group_ids = [ aws_security_group.matrix-sg.id ]
-    associate_public_ip_address = true
+  associate_public_ip_address = true
+  root_block_device {
+    volume_size = var.volume_size
+  }
 
   tags = {
     Name = "${var.identifier}-matrix"
