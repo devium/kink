@@ -11,12 +11,29 @@
     }
   }
 
-  function refresh() {
+  function requestNotificationPermission() {
+    if (!Notification) {
+      console.warn('Notifications not available.');
+      return;
+    }
+
+    if (Notification.permission !== 'granted') {
+      Notification.requestPermission();
+    }
+  }
+
+  var rooms = [];
+
+  function refresh(notifications_enabled) {
     $.getJSON('https://{{ jitsi_domain }}/rooms', function(data) {
       $("#rooms").empty();
+
+      var rooms_new = [];
       
       $.each(data, function(_, room) {
         var room_name = decodeURIComponent(room.jid.split("@")[0]);
+        rooms_new.push(room_name);
+
         var row = $('<p>');
         $('<a>', {
           target: 'blank',
@@ -26,13 +43,21 @@
         })
         .appendTo(row);
         
-        $(document.createTextNode(': ' + $.map(room.participants, function(participant, _) {
+        $(document.createTextNode(' (' + room.participant_count + '): ' + $.map(room.participants, function(participant, _) {
           return participant.display_name;
         }).join(', ')))
         .appendTo(row);
         
         row.appendTo("#rooms");
       });
+
+      if (notifications_enabled) {
+        var room_diff = $(rooms_new).not(rooms);
+        if (room_diff.length > 0) {
+          notify(room_diff[0]);
+        }
+      } 
+      rooms = rooms_new;
       
       if (data.length == 0) {
         $("<p>Keine R&auml;ume offen.</p>").appendTo("#rooms");
@@ -41,11 +66,27 @@
     });
   };
 
+  function notify(room_name) {
+    if (Notification.permission !== 'granted') {
+      return;
+    }
+    else {
+      var notification = new Notification('Neuer Jitsi-Raum', {
+       icon: 'https://{{ domain }}/assets/icons/icon-any.png',
+       body: 'Ein neuer Jitsi-Raum wurde geöffnet: ' + room_name,
+      });
+      notification.onclick = function() {
+        window.open('https://{{ jitsi_domain }}/' + room_name);
+      };
+    }
+  }
+
   $(function() {
     inheritStyle();
-    refresh();
+    requestNotificationPermission();
+    refresh(false);
     setInterval(function() {
-      refresh();
+      refresh(true);
     }, 10000);
   });
 </script>
