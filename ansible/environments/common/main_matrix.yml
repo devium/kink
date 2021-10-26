@@ -48,7 +48,7 @@ matrix_synapse_configuration_extension_yaml: |
         email_template: "{% raw %}{{ user.email }}{% endraw %}"
 
 matrix_jitsi_enabled: true
-matrix_jitsi_version: stable-6173
+matrix_jitsi_version: stable-6433
 
 # Run `bash inventory/scripts/jitsi-generate-passwords.sh` to generate these passwords,
 # or define your own strong passwords manually.
@@ -82,7 +82,3 @@ matrix_jitsi_prosody_container_extra_arguments:
   - "-e JWT_APP_SECRET={{ jitsi_jwt_secret }}"
 
 jitsi_jwt_secret: "{{ vault_jitsi_jwt_secret }}"
-
-# TODO: Remove this in later Jitsi versions as it will be the default.
-matrix_jitsi_web_custom_config_extension: |
-  config.enableReactions = true;
