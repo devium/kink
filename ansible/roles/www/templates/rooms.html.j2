@@ -28,9 +28,17 @@
     $.getJSON('https://{{ jitsi_domain }}/rooms', function(data) {
       $("#rooms").empty();
 
+      if (data.num_rooms == 0) {
+        $("<p>Keine R&auml;ume offen.</p>").appendTo("#rooms");
+      } else if (data.num_rooms == 1) {
+        $("<p>1 offener Raum.</p>").appendTo("#rooms");
+      } else if (data.num_rooms > 1) {
+        $("<p>" + data.num_rooms +  " offene R&auml;ume.</p>").appendTo("#rooms");
+      }
+
       var rooms_new = [];
       
-      $.each(data, function(_, room) {
+      $.each(data.rooms, function(_, room) {
         var room_name = decodeURIComponent(room.jid.split("@")[0]);
         rooms_new.push(room_name);
 
@@ -58,10 +66,7 @@
         }
       } 
       rooms = rooms_new;
-      
-      if (data.length == 0) {
-        $("<p>Keine R&auml;ume offen.</p>").appendTo("#rooms");
-      }
+
       $("<p>R&auml;ume, die mit <i>{{ matrix_jitsi_unlisted_room_prefix }}</i> beginnen, werden nicht gelistet.</p>").appendTo("#rooms");
     });
   };

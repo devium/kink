@@ -22,8 +22,10 @@ function handle_get_all_rooms(event)
     end
 
     local rooms_json = array();
+    local num_rooms = 0;
 
     for room in raw_rooms do
+        num_rooms = num_rooms + 1;
         -- Hide rooms starting with the specified prefix.
         if string.sub(room.jid, 1, string.len("{{ matrix_jitsi_unlisted_room_prefix }}")) ~= "{{ matrix_jitsi_unlisted_room_prefix }}" then
             local room_jid = room.jid;
@@ -61,7 +63,11 @@ function handle_get_all_rooms(event)
         content_type = "application/json",
         access_control_allow_origin = "*"
     };
-    return { status_code = 200; body = json.encode(rooms_json); headers=headers };
+    body = {
+        num_rooms = num_rooms,
+        rooms = rooms_json
+    }
+    return { status_code = 200; body = json.encode(body); headers=headers };
 end
 
 
