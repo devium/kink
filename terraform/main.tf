@@ -2,7 +2,7 @@ terraform {
   backend "remote" {
     organization = "devium"
     workspaces {
-      prefix = "kink-"
+      prefix = "autsch-"
     }
   }
   required_providers {

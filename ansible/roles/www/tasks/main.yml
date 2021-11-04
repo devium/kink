@@ -51,9 +51,9 @@
     url: "{{ item.url }}"
     dest: "{{ home }}/homer/assets/icons/{{ item.file }}"
   with_items:
-    - { file: favicon-32x32.png, url: "https://i.imgur.com/BwoTrVB.png" }
-    - { file: favicon-16x16.png, url: "https://i.imgur.com/VAqHKJK.png" }
-    - { file: icon-any.png, url: "https://i.imgur.com/7G457X6.png" }
+    - { file: favicon-32x32.png, url: "https://devium.s3.eu-central-1.amazonaws.com/public/possum-mood-favicon-32.png" }
+    - { file: favicon-16x16.png, url: "https://devium.s3.eu-central-1.amazonaws.com/public/possum-mood-favicon-16.png" }
+    - { file: icon-any.png, url: "https://devium.s3.eu-central-1.amazonaws.com/public/possum-mood.png" }
   tags: [ setup-all, setup-homer ]
 
 - name: Run Homer and reverse proxy
