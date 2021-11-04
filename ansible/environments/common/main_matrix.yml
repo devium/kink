@@ -76,6 +76,7 @@ matrix_nginx_proxy_proxy_jitsi_additional_server_configuration_blocks:
     }
 matrix_ssl_additional_domains_to_obtain_certificates_for:
   - "{{ jitsi_auth_domain }}"
+# Note: this variable is currently ignored but we'll keep it for potential fixes later.
 matrix_jitsi_web_environment_variables_extension: "TOKEN_AUTH_URL=https://{{ jitsi_auth_domain }}/{room}"
 matrix_jitsi_prosody_container_extra_arguments:
   - "-e JWT_APP_ID=jitsi"
