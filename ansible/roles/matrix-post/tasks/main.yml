@@ -11,13 +11,13 @@
   tags:
     - always
 
-- import_tasks: "{{ role_path }}/tasks/setup-prosody-plugins.yml"
+- import_tasks: "{{ role_path }}/tasks/setup_prosody_plugins.yml"
   tags: 
     - setup-all
     - setup-matrix-post
     - setup-prosody-plugins
 
-- import_tasks: "{{ role_path }}/tasks/setup-jitsi-keycloak.yml"
+- import_tasks: "{{ role_path }}/tasks/setup_jitsi_keycloak.yml"
   tags: 
     - setup-all
     - setup-matrix-post
