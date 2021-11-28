@@ -60,7 +60,7 @@ resource "aws_security_group" "collab-sg" {
 
 resource "aws_route53_record" "collab" {
   zone_id = var.zone_id
-  name = "collab.${var.domain}"
+  name = "doc.${var.domain}"
   type = "A"
   ttl = "300"
   records = [aws_instance.collab.public_ip]
