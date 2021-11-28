@@ -11,21 +11,9 @@
   tags:
     - always
 
-- import_tasks: "{{ role_path }}/tasks/setup-prosody-plugins.yml"
+- import_tasks: "{{ role_path }}/tasks/setup_jvb_conf.yml"
   tags: 
     - setup-all
-    - setup-matrix-ex
-    - setup-prosody-plugins
-
-- import_tasks: "{{ role_path }}/tasks/setup-jitsi-keycloak.yml"
-  tags: 
-    - setup-all
-    - setup-matrix-ex
+    - setup-matrix-pre
     - setup-jitsi
-    - setup-jitsi-keycloak
-
-- import_tasks: "{{ role_path }}/tasks/start.yml"
-  tags: 
-    - start
-    - start-matrix-ex
-    - start-jitsi-keycloak
+    - setup-jvb-conf

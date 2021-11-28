@@ -1,0 +1,12 @@
+# Workaround for jitsi-meet issue #7227
+- name: Create jvb dir
+  file:
+    dest: "{{ matrix_jitsi_jvb_base_path }}"
+    state: directory
+  become: yes
+
+- name: Copy jvb config patch script
+  copy:
+    src: "20-disable-trust-bwe"
+    dest: "{{ matrix_jitsi_jvb_base_path }}/20-disable-trust-bwe"
+  become: yes

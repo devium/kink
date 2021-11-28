@@ -35,8 +35,12 @@
   roles:
     - draw
 
+- hosts: matrix
+  roles:
+    - matrix-pre
+
 - import_playbook: matrix-docker-ansible-deploy/setup.yml
 
 - hosts: matrix
   roles:
-    - matrix-ex
+    - matrix-post

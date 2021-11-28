@@ -81,5 +81,7 @@ matrix_jitsi_web_environment_variables_extension: "TOKEN_AUTH_URL=https://{{ jit
 matrix_jitsi_prosody_container_extra_arguments:
   - "-e JWT_APP_ID=jitsi"
   - "-e JWT_APP_SECRET={{ jitsi_jwt_secret }}"
+matrix_jitsi_jvb_container_extra_arguments:
+  - "--mount type=bind,src={{ matrix_jitsi_jvb_base_path }}/20-disable-trust-bwe,dst=/etc/cont-init.d/20-disable-trust-bwe"
 
 jitsi_jwt_secret: "{{ vault_jitsi_jwt_secret }}"

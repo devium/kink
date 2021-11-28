@@ -1,0 +1,36 @@
+- name: Create dirs for jitsi-keycloak
+  file:
+    path: "{{ home }}/jitsi-keycloak/config"
+    state: directory
+
+- name: Copy jitsi-keycloak docker-compose file
+  template:
+    src: docker-compose.yml.j2
+    dest: "{{ home }}/jitsi-keycloak/docker-compose.yml"
+
+- name: Copy jitsi-keycloak config file
+  template:
+    src: keycloak.json.j2
+    dest: "{{ home }}/jitsi-keycloak/config/keycloak.json"
+
+- name: Copy jitsi-keycloak nginx config
+  template:
+    src: jitsi-auth.conf.j2
+    dest: "{{ matrix_nginx_proxy_confd_path }}/jitsi-auth.conf"
+  become: yes
+
+- name: Modify Jitsi Nginx config to forward XMPP URL params
+  lineinfile:
+    path: "{{ matrix_nginx_proxy_confd_path }}/matrix-jitsi.conf"
+    search_string: "proxy_pass $backend/xmpp-websocket;"
+    line: "proxy_pass $backend/xmpp-websocket$is_args$args;"
+  become: yes
+
+- name: Modify Jitsi Web environment config
+# Note: this used to be accessible via matrix_jitsi_web_environment_variables_extension
+# TODO: Remove when they fix this variable again.
+  lineinfile:
+    path: "{{ matrix_jitsi_web_base_path }}/env"
+    search_string: "TOKEN_AUTH_URL"
+    line: "TOKEN_AUTH_URL=https://{{ jitsi_auth_domain }}/{room}"
+  become: yes

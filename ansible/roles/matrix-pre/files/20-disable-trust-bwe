@@ -1,0 +1,3 @@
+#!/usr/bin/with-contenv bash
+
+sed -i -e '/videobridge {/a    cc {\n        trust-bwe=false\n    }' /config/jvb.conf
