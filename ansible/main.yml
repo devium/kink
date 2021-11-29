@@ -35,6 +35,10 @@
   roles:
     - draw
 
+- hosts: next
+  roles:
+    - next
+
 - hosts: matrix
   roles:
     - matrix-pre

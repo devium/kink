@@ -106,15 +106,12 @@ ansible-vault edit ansible/environments/{dev|prod}/group_vars/all/vault
 ### Run entire Ansible playbook
 Make sure you run `terraform apply` before this at least once to update your environment's `hosts.yml` and S3 credentials. This playbook uses EC2 instance IDs to query their private IP addresses.
 ```bash
-ansible-playbook main.yml [--diff] --limit localhost,bastion,auth --tags setup-all,start
-# Wait for Keycloak to start.
-ansible-playbook main.yml [--diff] --limit localhost,auth --tags init-all
-ansible-playbook main.yml [--diff] --limit '!bastion,!auth' --tags setup-all,start
+ansible-playbook main.yml [--diff] --tags setup-all,start,wait-for-startup,init-all
 ```
 
 ### Limitations
 - Private server IP addresses are queried from AWS from `localhost`, so be sure to always include `localhost` in `--limit`.
-- Running `ansible-playbook` with both `start` and `init-all` tasks will most likely fail as Keycloak takes a few minutes to start and won't be ready in time for the `init-keycloak` tasks.
+- Running `ansible-playbook` with both `start` and `init-all` tasks will most likely fail as Keycloak takes a few minutes to start and won't be ready in time for the `init-keycloak` tasks. To avoid this, include the `wait-for-startup` tag.
 
 ### Update EC2 packages
 ```bash

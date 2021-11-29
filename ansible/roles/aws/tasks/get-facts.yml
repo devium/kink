@@ -1,5 +1,5 @@
 ---
-- name: Get collab private IP
+- name: Get instance private IPs
   ec2_instance:
     instance_ids: 
       - "{{ aws_ec2_collab }}"
@@ -7,6 +7,7 @@
       - "{{ aws_ec2_matrix }}"
       - "{{ aws_ec2_www }}"
       - "{{ aws_ec2_draw }}"
+      - "{{ aws_ec2_next }}"
   register: ec2
 
 - name: Get DB hostname
@@ -21,5 +22,6 @@
     matrix_private_ip: "{{ (ec2.instances | selectattr('instance_id', 'equalto', aws_ec2_matrix) | first).private_ip_address }}"
     www_private_ip: "{{ (ec2.instances | selectattr('instance_id', 'equalto', aws_ec2_www) | first).private_ip_address }}"
     draw_private_ip: "{{ (ec2.instances | selectattr('instance_id', 'equalto', aws_ec2_draw) | first).private_ip_address }}"
+    next_private_ip: "{{ (ec2.instances | selectattr('instance_id', 'equalto', aws_ec2_next) | first).private_ip_address }}"
     db_host: "{{ rds.endpoint.address }}"
   run_once: true

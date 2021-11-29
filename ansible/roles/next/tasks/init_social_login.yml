@@ -1,0 +1,55 @@
+---
+- name: Configure general sociallogin settings
+  community.docker.docker_container_exec:
+    container: nextcloud
+    user: "www-data"
+    command: php occ config:app:set sociallogin {{ item.key }} --value={{ item.value }}
+  become: yes
+  changed_when: true
+  vars:
+    sociallogin_config: "{{ (app_config.stdout | from_json).apps.sociallogin }}"
+  when: item.key not in sociallogin_config or sociallogin_config[item.key] != item.value
+  with_items:
+    - { key: disable_registration, value: "" }
+    - { key: create_disabled_users, value: "" }
+    - { key: allow_login_connect, value: "1"}
+    - { key: prevent_create_email_exists, value: ""}
+    - { key: update_profile_on_login, value: "1"}
+    - { key: no_prune_user_groups, value: ""}
+    - { key: auto_create_groups, value: ""}
+    - { key: restrict_users_wo_mapped_groups, value: ""}
+    - { key: restrict_users_wo_assigned_groups, value: ""}
+    - { key: disable_notify_admins, value: ""}
+    - { key: hide_default_login, value: "1"}
+
+- name: Configure keycloak
+  community.docker.docker_container_exec:
+    container: nextcloud
+    user: "www-data"
+    command: php occ config:app:set sociallogin custom_providers --value='{{ config | tojson }}'
+  vars:
+    sociallogin_config: "{{ (app_config.stdout | from_json).apps.sociallogin }}"
+    config:
+      {
+        "custom_oidc": [
+          {
+            "name": "keycloak",
+            "title": "keycloak",
+            "authorizeUrl": "https://{{ auth_domain }}/auth/realms/{{ keycloak_realm }}/protocol/openid-connect/auth",
+            "tokenUrl": "https://{{ auth_domain }}/auth/realms/{{ keycloak_realm }}/protocol/openid-connect/token",
+            "displayNameClaim": "",
+            "userInfoUrl": "https://{{ auth_domain }}/auth/realms/{{ keycloak_realm }}/protocol/openid-connect/userinfo",
+            "logoutUrl": "",
+            "clientId": "nextcloud",
+            "clientSecret": "{{ keycloak_nextcloud_secret }}",
+            "scope": "openid",
+            "groupsClaim": "groups",
+            "style": "keycloak",
+            "defaultGroup": "default",
+            "groupMapping": { "/admin": "admin" }
+          }
+        ]
+      }
+  become: yes
+  changed_when: true
+  when: "'custom_providers' not in sociallogin_config"

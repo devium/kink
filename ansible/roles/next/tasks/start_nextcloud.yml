@@ -1,0 +1,15 @@
+---
+- name: Run NextCloud and reverse proxy
+  docker_compose:
+    project_src: "{{ home }}/nextcloud"
+    restarted: yes
+  become: yes
+  tags:
+    - start
+    - start-nextcloud
+
+- name: Wait for startup
+  wait_for:
+    timeout: 5
+  tags:
+    - wait-for-startup

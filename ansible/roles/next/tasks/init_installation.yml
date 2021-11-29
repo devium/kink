@@ -1,0 +1,60 @@
+---
+- name: Get nextcloud status
+  community.docker.docker_container_exec:
+    container: nextcloud
+    user: "www-data"
+    command: "php occ status"
+  register: status
+  become: yes
+  changed_when: false
+
+- name: Init nextcloud installation
+  community.docker.docker_container_exec:
+    container: nextcloud
+    user: "www-data"
+    command: "php occ maintenance:install --database 'pgsql' --database-host {{ hostvars['localhost']['db_host'] }} --database-name '{{ db_nextcloud_database }}' --database-user '{{ db_nextcloud_username }}' --database-pass '{{ db_nextcloud_password }}' --admin-user admin --admin-pass '{{ nextcloud_admin_password }}'"
+  become: yes
+  changed_when: true
+  when: "'installed: false' in status.stdout"
+
+- name: Get system config
+  community.docker.docker_container_exec:
+    container: nextcloud
+    user: "www-data"
+    command: "php occ config:list system"
+  register: system_config
+  become: yes
+  changed_when: false
+
+- name: Add trusted domain
+  community.docker.docker_container_exec:
+    container: nextcloud
+    user: "www-data"
+    command: "php occ config:system:set trusted_domains 1 --value '{{ next_domain }}'"
+  become: yes
+  changed_when: true
+  when: next_domain not in (system_config.stdout | from_json).system.trusted_domains
+
+- name: Get user groups
+  community.docker.docker_container_exec:
+    container: nextcloud
+    user: "www-data"
+    command: "php occ group:list"
+  register: user_groups
+  become: yes
+  changed_when: false
+
+- name: Add default user group
+  community.docker.docker_container_exec:
+    container: nextcloud
+    user: "www-data"
+    command: "php occ group:add default"
+  become: yes
+  changed_when: true
+  when: "'- default:' not in user_groups.stdout"
+
+- name: Delete default files
+  file:
+    state: absent
+    path: /var/lib/docker/volumes/nextcloud_nextcloud/_data/core/skeleton/
+  become: yes

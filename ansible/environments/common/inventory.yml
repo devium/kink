@@ -18,6 +18,8 @@ all:
           ansible_host: "{{ hostvars['localhost']['www_private_ip'] }}"
         draw:
           ansible_host: "{{ hostvars['localhost']['draw_private_ip'] }}"
+        next:
+          ansible_host: "{{ hostvars['localhost']['next_private_ip'] }}"
       vars:
         ansible_ssh_common_args: '-o ProxyCommand="ssh -W %h:%p -q {{ ansible_user }}@{{ bastion_domain }}" -o "StrictHostKeyChecking no"'
 
@@ -28,6 +30,7 @@ all:
         matrix:
         www:
         draw:
+        next:
 
     matrix_servers:
       hosts:

@@ -27,6 +27,7 @@ db_keycloak_username: "keycloak"
 db_keycloak_password: "{{ vault_db_keycloak_password }}"
 keycloak_hedgedoc_secret: "{{ vault_keycloak_hedgedoc_secret }}"
 keycloak_matrix_secret: "{{ vault_keycloak_matrix_secret }}"
+keycloak_nextcloud_secret: "{{ vault_keycloak_nextcloud_secret }}"
 keycloak_realm: "autsch"
 keycloak_realm_api_base: "https://{{ auth_domain }}/auth/admin/realms/{{ keycloak_realm }}"
 keycloak_google_client_id: "{{ vault_keycloak_google_client_id }}"
@@ -63,3 +64,12 @@ s3_access_key_secret: "{{ vault_s3_access_key_secret }}"
 # Excalidraw
 # ========
 excalidraw_version: "sha-4df401d"
+
+# ========
+# NextCloud
+# ========
+db_nextcloud_database: "nextcloud"
+db_nextcloud_username: "nextcloud"
+db_nextcloud_password: "{{ vault_db_nextcloud_password }}"
+nextcloud_version: "22-apache"
+nextcloud_admin_password: "{{ vault_nextcloud_admin_password }}"

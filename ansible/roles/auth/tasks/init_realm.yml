@@ -63,3 +63,18 @@
     redirect_uris: "https://{{ jitsi_auth_domain }}*"
     public_client: yes
   register: jitsi_client
+
+- name: Create NextCloud client
+  community.general.keycloak_client:
+    auth_realm: master
+    auth_username: admin
+    auth_password: "{{ keycloak_password }}"
+    auth_keycloak_url: "https://{{ auth_domain }}/auth"
+    realm: "{{ keycloak_realm }}"
+    client_id: nextcloud
+    secret: "{{ keycloak_nextcloud_secret }}"
+    root_url: "https://{{ next_domain }}"
+    admin_url: "https://{{ next_domain }}"
+    web_origins: "https://{{ next_domain }}"
+    redirect_uris: "https://{{ next_domain }}*"
+  register: nextcloud_client

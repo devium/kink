@@ -12,3 +12,9 @@
     project_src: "{{ home }}/keycloak"
     state: present
   become: yes
+
+- name: Wait for startup
+  wait_for:
+    timeout: 60
+  tags:
+    - wait-for-startup

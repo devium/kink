@@ -20,6 +20,8 @@
         HostName {{ hostvars['localhost']['www_private_ip'] }}
       Host draw
         HostName {{ hostvars['localhost']['draw_private_ip'] }}
+      Host next
+        HostName {{ hostvars['localhost']['next_private_ip'] }}
 
 - name: Install requirements for psycopg2
   package:
@@ -101,6 +103,23 @@
     db: "{{ db_matrix_database }}"
     name: "{{ db_matrix_username }}"
     password: "{{ db_matrix_password }}"
+    priv: "ALL"
+    no_password_changes: yes
+  no_log: true
+
+- name: Create NextCloud database
+  postgresql_db:
+    login_host: "{{ hostvars['localhost']['db_host'] }}"
+    login_password: "{{ db_root_password }}"
+    name: "{{ db_nextcloud_database }}"
+
+- name: Create NextCloud database user
+  postgresql_user:
+    login_host: "{{ hostvars['localhost']['db_host'] }}"
+    login_password: "{{ db_root_password }}"
+    db: "{{ db_nextcloud_database }}"
+    name: "{{ db_nextcloud_username }}"
+    password: "{{ db_nextcloud_password }}"
     priv: "ALL"
     no_password_changes: yes
   no_log: true
