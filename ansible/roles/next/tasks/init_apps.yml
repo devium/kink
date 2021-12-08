@@ -15,9 +15,12 @@
     command: "php occ app:install {{ item }}"
   become: yes
   changed_when: true
-  when: (app_config_tmp.stdout | from_json).apps[item] is not defined
+  vars:
+    app_config_apps: "{{ (app_config_tmp.stdout | from_json).apps }}"
+  when: app_config_apps[item] is not defined
   with_items:
     - calendar
+    - logreader
     - sociallogin
 
 - name: Get app config again
@@ -36,7 +39,9 @@
     command: "php occ app:enable {{ item }}"
   become: yes
   changed_when: true
-  when: (app_config.stdout | from_json).apps[item].enabled == "no"
+  vars:
+    app_config_apps: "{{ (app_config.stdout | from_json).apps }}"
+  when: "'enabled' not in app_config_apps[item] or app_config_apps[item].enabled == 'no'"
   with_items:
     - calendar
     - logreader
@@ -49,7 +54,9 @@
     command: "php occ app:disable {{ item }}"
   become: yes
   changed_when: true
-  when: (app_config.stdout | from_json).apps[item].enabled == "yes"
+  vars:
+    app_config_apps: "{{ (app_config.stdout | from_json).apps }}"
+  when: app_config_apps[item].enabled == "yes"
   with_items:
     - accessibility
     - activity
