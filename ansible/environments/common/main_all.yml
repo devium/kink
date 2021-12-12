@@ -14,13 +14,13 @@ amazon_postgres_package: postgresql13
 db_hedgedoc_database: "hedgedoc"
 db_hedgedoc_username: "hedgedoc"
 db_hedgedoc_password: "{{ vault_db_hedgedoc_password }}"
-hedgedoc_version: "1.8.2"
+hedgedoc_version: "1.9.2"
 hedgedoc_session_secret: "{{ vault_hedgedoc_session_secret }}"
 
 # ========
 # Keycloak
 # ========
-keycloak_version: "14.0.0"
+keycloak_version: "15.0.1"
 keycloak_password: "{{ vault_keycloak_password }}"
 db_keycloak_database: "keycloak"
 db_keycloak_username: "keycloak"

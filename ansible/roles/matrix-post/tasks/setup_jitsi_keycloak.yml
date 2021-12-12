@@ -25,12 +25,3 @@
     search_string: "proxy_pass $backend/xmpp-websocket;"
     line: "proxy_pass $backend/xmpp-websocket$is_args$args;"
   become: yes
-
-- name: Modify Jitsi Web environment config
-# Note: this used to be accessible via matrix_jitsi_web_environment_variables_extension
-# TODO: Remove when they fix this variable again.
-  lineinfile:
-    path: "{{ matrix_jitsi_web_base_path }}/env"
-    search_string: "TOKEN_AUTH_URL"
-    line: "TOKEN_AUTH_URL=https://{{ jitsi_auth_domain }}/{room}"
-  become: yes
