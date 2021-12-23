@@ -44,6 +44,7 @@
     - { file: jitsi.png, url: "https://raw.githubusercontent.com/jitsi/jitsi-meet/stable/jitsi-meet_5963/images/jitsiLogo_square.png" }
     - { file: keycloak.png, url: "https://raw.githubusercontent.com/keycloak/keycloak-misc/main/logo/keycloak_icon_256px.png" }
     - { file: excalidraw.png, url: "https://raw.githubusercontent.com/excalidraw/excalidraw/v0.9.0/public/logo-180x180.png" }
+    - { file: nextcloud.png, url: "https://raw.githubusercontent.com/nextcloud/server/v23.0.0/themes/example/core/img/favicon-touch.png" }
   tags: [ setup-all, setup-homer ]
 
 - name: Get favicons

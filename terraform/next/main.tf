@@ -50,6 +50,14 @@ resource "aws_security_group" "next-sg" {
     cidr_blocks = [var.cidr_vpc]
   }
 
+  # Collabora
+  ingress {
+    protocol = "tcp"
+    from_port = 9980
+    to_port = 9980
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   egress {
     protocol = "-1"
     from_port = 0

@@ -12,7 +12,7 @@
   community.docker.docker_container_exec:
     container: nextcloud
     user: "www-data"
-    command: "php occ maintenance:install --database 'pgsql' --database-host {{ hostvars['localhost']['db_host'] }} --database-name '{{ db_nextcloud_database }}' --database-user '{{ db_nextcloud_username }}' --database-pass '{{ db_nextcloud_password }}' --admin-user admin --admin-pass '{{ nextcloud_admin_password }}'"
+    command: "php occ maintenance:install --database 'pgsql' --database-host {{ hostvars['localhost']['db_host'] }} --database-name '{{ db_nextcloud_database }}' --database-user '{{ db_nextcloud_username }}' --database-pass '{{ db_nextcloud_password }}' --admin-user admin2 --admin-pass '{{ nextcloud_admin_password }}'"
   become: yes
   changed_when: true
   when: "'installed: false' in status.stdout"
