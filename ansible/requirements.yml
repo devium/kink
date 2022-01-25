@@ -1,7 +1,0 @@
----
-collections:
-- name: community.general
-- name: community.aws
-- name: community.postgresql
-- name: community.docker
-- name: ansible.posix
