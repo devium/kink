@@ -6,8 +6,8 @@ terraform {
   }
 }
 
-resource "hcloud_server" "master" {
-  name = "${var.prefix}-master"
+resource "hcloud_server" "worker" {
+  name = "${var.prefix}-${var.name}"
   image = var.image
   server_type = var.server_type
   ssh_keys = var.ssh_keys

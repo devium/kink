@@ -1,4 +1,4 @@
-project_name = 
-domain       = 
-suffix       = 
-hcloud_token = 
+project_name       = ""
+environment_suffix = ""
+hcloud_token       = ""
+ssh_keys           = []
