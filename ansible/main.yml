@@ -5,3 +5,10 @@
   tags: 
     - setup-all
     - update
+
+- hosts: all
+  roles:
+    - network
+  tags:
+    - setup-all
+    - setup-network

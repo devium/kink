@@ -12,7 +12,7 @@ output "hosts" {
         }
       }
     ]
-    floating = {
+    floating_ip = {
       ipv4_address = module.network.floating_ipv4
       ipv6_address = module.network.floating_ipv6
     }
@@ -35,4 +35,14 @@ resource "local_file" "AnsibleInventory" {
     }
   })
   filename = "../ansible/environments/${var.environment_suffix}/inventory.yml"
+}
+
+resource "local_file" "AnsibleVariables" {
+  content = yamlencode({
+    floating_ip = {
+      ipv4_address = module.network.floating_ipv4
+      ipv6_address = module.network.floating_ipv6
+    }
+  })
+  filename = "../ansible/environments/${var.environment_suffix}/group_vars/all/env.yml"
 }

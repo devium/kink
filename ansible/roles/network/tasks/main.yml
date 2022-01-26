@@ -1,0 +1,8 @@
+---
+- name: Copy floating IP network config
+  template:
+    src: 60-floating-ip.yaml.j2
+    dest: /etc/netplan/60-floating-ip.yaml
+  notify: Restart networking 
+
+- meta: flush_handlers
