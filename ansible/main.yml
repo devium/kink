@@ -12,3 +12,10 @@
   tags:
     - setup-all
     - setup-network
+
+- hosts: all
+  roles:
+    - docker
+  tags:
+    - setup-all
+    - setup-docker

@@ -6,3 +6,13 @@
   notify: Restart networking 
 
 - meta: flush_handlers
+
+- name: Create Kubelet service config dif
+  file:
+    path: /etc/systemd/system/kubelet.service.d
+    state: directory
+
+- name: Add Hetzner Cloud systemd config
+  copy:
+    src: 20-hetzner-cloud.conf
+    dest: /etc/systemd/system/kubelet.service.d/20-hetzner-cloud.conf
