@@ -1,0 +1,12 @@
+"all":
+  "children":
+    "workers":
+      "worker0": null
+      "worker1": null
+  "hosts":
+    "master":
+      "ansible_host": "195.201.18.5"
+    "worker0":
+      "ansible_host": "159.69.159.128"
+    "worker1":
+      "ansible_host": "195.201.17.219"

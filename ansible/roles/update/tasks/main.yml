@@ -1,0 +1,7 @@
+---
+- name: Update packages
+  apt:
+    name: "*"
+    state: latest
+    only_upgrade: yes
+  become: yes

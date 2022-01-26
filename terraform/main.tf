@@ -41,8 +41,9 @@ module "network" {
 }
 
 module "master" {
-  source = "./master"
+  source = "./node"
   prefix = local.prefix
+  name = "master"
   image = var.image
   server_type = var.master_server_type
   ssh_keys = var.ssh_keys
@@ -52,7 +53,7 @@ module "master" {
 
 module "worker" {
   count = var.num_workers
-  source = "./worker"
+  source = "./node"
   prefix = local.prefix
   name = "worker${count.index}"
   image = var.image
