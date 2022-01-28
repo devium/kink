@@ -48,7 +48,7 @@ matrix_synapse_configuration_extension_yaml: |
         email_template: "{% raw %}{{ user.email }}{% endraw %}"
 
 matrix_jitsi_enabled: true
-matrix_jitsi_version: stable-6726
+matrix_jitsi_version: stable-6826
 
 # Run `bash inventory/scripts/jitsi-generate-passwords.sh` to generate these passwords,
 # or define your own strong passwords manually.
