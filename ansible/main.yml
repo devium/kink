@@ -1,21 +1,21 @@
 ---
 - hosts: all
   roles:
-    - update
-  tags: 
-    - setup-all
-    - update
+    - role: update
+      tags: 
+        - setup-all
+        - update
 
 - hosts: all
   roles:
-    - network
-  tags:
-    - setup-all
-    - setup-network
+    - role: network
+      tags:
+        - setup-all
+        - setup-network
 
 - hosts: all
   roles:
-    - docker
-  tags:
-    - setup-all
-    - setup-docker
+    - role: tools
+      tags:
+        - setup-all
+        - setup-tools

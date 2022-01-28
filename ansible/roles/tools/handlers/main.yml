@@ -1,0 +1,13 @@
+---
+- name: Remove previous Docker key
+  file:
+    path: /usr/share/keyrings/docker-archive-keyring.gpg
+    state: absent
+
+- name: Dearmor Docker key
+  command:
+    chdir: /usr/share/keyrings/
+    cmd: gpg -o docker-archive-keyring.gpg --dearmor docker-archive-keyring-armored.gpg
+  tags:
+    - setup-all
+    - setup-docker

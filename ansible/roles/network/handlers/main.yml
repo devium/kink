@@ -1,4 +1,4 @@
 ---
 - name: Restart networking
-  shell:
+  command:
     cmd: netplan apply

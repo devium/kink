@@ -7,7 +7,7 @@
 
 - meta: flush_handlers
 
-- name: Create Kubelet service config dif
+- name: Create Kubelet service config dir
   file:
     path: /etc/systemd/system/kubelet.service.d
     state: directory

@@ -1,0 +1,8 @@
+---
+- import_tasks: "{{ role_path }}/tasks/setup_docker.yml"
+  tags:
+    - setup-docker
+
+- import_tasks: "{{ role_path }}/tasks/setup_kubernetes.yml"
+  tags:
+    - setup-kubernetes
