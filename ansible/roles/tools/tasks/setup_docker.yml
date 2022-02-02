@@ -3,6 +3,8 @@
   get_url:
     url: https://download.docker.com/linux/ubuntu/gpg
     dest: /usr/share/keyrings/docker-archive-keyring-armored.gpg
+    checksum: sha256:1500c1f56fa9e26b9b8f42452a553675796ade0807cdce11975eb98170b3a570
+
   notify: 
     - Remove previous Docker key
     - Dearmor Docker key
