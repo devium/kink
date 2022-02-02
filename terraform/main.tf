@@ -62,3 +62,13 @@ module "worker" {
   location = var.location
   network_id = module.network.network_id
 }
+
+resource "hcloud_floating_ip_assignment" "master_ipv4" {
+  floating_ip_id = module.network.floating_ipv4_id
+  server_id = module.master.id
+}
+
+resource "hcloud_floating_ip_assignment" "master_ipv6" {
+  floating_ip_id = module.network.floating_ipv6_id
+  server_id = module.master.id
+}

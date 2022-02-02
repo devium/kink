@@ -8,3 +8,8 @@
   command:
     chdir: /usr/share/keyrings/
     cmd: gpg -o docker-archive-keyring.gpg --dearmor docker-archive-keyring-armored.gpg
+
+- name: Restart Docker daemon
+  systemd:
+    name: docker
+    state: restarted

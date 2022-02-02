@@ -1,4 +1,8 @@
 ---
+- import_tasks: "{{ role_path }}/tasks/setup_packages.yml"
+  tags:
+    - setup-packages
+
 - import_tasks: "{{ role_path }}/tasks/setup_docker.yml"
   tags:
     - setup-docker
@@ -6,3 +10,7 @@
 - import_tasks: "{{ role_path }}/tasks/setup_kubernetes.yml"
   tags:
     - setup-kubernetes
+
+- import_tasks: "{{ role_path }}/tasks/init_kubernetes.yml"
+  tags:
+    - init-kubernetes

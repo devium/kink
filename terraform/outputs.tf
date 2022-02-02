@@ -29,7 +29,9 @@ resource "local_file" "AnsibleInventory" {
       }
       children = {
         workers = {
-          for k, worker in module.worker: worker.name => null
+          hosts = {
+            for k, worker in module.worker: worker.name => null
+          }
         }
       }
     }
@@ -43,6 +45,8 @@ resource "local_file" "AnsibleVariables" {
       ipv4_address = module.network.floating_ipv4
       ipv6_address = module.network.floating_ipv6
     }
+    network_id = module.network.network_id
+    hcloud_token = var.hcloud_token
   })
   filename = "../ansible/environments/${var.environment_suffix}/group_vars/all/env.yml"
 }
