@@ -7,7 +7,7 @@
 
 - name: Add Kubernetes repository
   apt_repository:
-    filename: kubernetes.list
+    filename: kubernetes
     repo: deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main
 
 - name: Install Kubernetes

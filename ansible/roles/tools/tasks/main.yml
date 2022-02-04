@@ -11,6 +11,11 @@
   tags:
     - setup-kubernetes
 
+- import_tasks: "{{ role_path }}/tasks/setup_helm.yml"
+  when: inventory_hostname == "master"
+  tags:
+    - setup-helm
+
 - import_tasks: "{{ role_path }}/tasks/init_kubernetes.yml"
   tags:
     - init-kubernetes
