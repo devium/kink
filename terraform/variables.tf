@@ -11,6 +11,10 @@ variable "hcloud_token" {
   sensitive = true
 }
 
+variable "domain" {
+  type = string
+}
+
 variable "image" {
   default = "ubuntu-20.04"
 }
@@ -41,4 +45,16 @@ variable "num_workers" {
 
 variable "ip_range" {
   default = "10.0.0.0/16"
+}
+
+variable "aws_credentials" {
+  default = "$HOME/.aws/credentials"
+}
+
+variable "aws_profile" {
+  default = "default"
+}
+
+variable "aws_region" {
+  default = "eu-central-1"
 }

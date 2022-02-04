@@ -2,3 +2,4 @@ project_name       = ""
 environment_suffix = ""
 hcloud_token       = ""
 ssh_keys           = []
+domain             = ""

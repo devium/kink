@@ -24,11 +24,17 @@ data "assert_test" "workspace" {
 
 # Identifier prefix for any resources allocated.
 locals {
-  prefix = "${var.project_name}-${var.environment_suffix}"
+  prefix = "${var.project_name}"
 }
 
 provider "hcloud" {
   token = var.hcloud_token
+}
+
+provider "aws" {
+  shared_credentials_file = var.aws_credentials
+  profile = var.aws_profile
+  region = var.aws_region
 }
 
 
@@ -71,4 +77,10 @@ resource "hcloud_floating_ip_assignment" "master_ipv4" {
 resource "hcloud_floating_ip_assignment" "master_ipv6" {
   floating_ip_id = module.network.floating_ipv6_id
   server_id = module.master.id
+}
+
+module "domain" {
+  source = "./domain"
+  domain = var.domain
+  floating_ipv4 = module.network.floating_ipv4
 }
