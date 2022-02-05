@@ -1,0 +1,26 @@
+---
+- name: Apply terraform project
+  community.general.terraform:
+    project_path: "{{ role_path }}/files"
+    workspace: "{{ environment_suffix }}"
+    variables:
+      project_name: "{{ project_name }}"
+      environment_suffix: "{{ environment_suffix }}"
+      hcloud_token: "{{ hcloud_token }}"
+      ssh_keys: "{{ [ssh_key] | to_json }}"
+      domain: "{{ domain }}"
+    state: present
+    plan_file: "{{ role_path }}/files/terraform.tfstate.d/{{ environment_suffix }}/tfplan"
+  register: terraform_result
+
+- name: Print Terraform output
+  debug:
+    msg: "{{ terraform_result.stdout }}"
+
+- meta: refresh_inventory
+
+- name: Wait for servers to be reachable
+  wait_for:
+    host: "{{ item.value.ansible_host }}"
+    port: 22
+  with_dict: "{{ hostvars }}"

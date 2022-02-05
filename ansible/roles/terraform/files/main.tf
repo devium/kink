@@ -1,9 +1,5 @@
 terraform {
-  backend "remote" {
-    organization = "autsch"
-    workspaces {
-      prefix = "autsch-"
-    }
+  backend "local" {
   }
   required_providers {
     hcloud = {
@@ -55,6 +51,9 @@ module "master" {
   ssh_keys = var.ssh_keys
   location = var.location
   network_id = module.network.network_id
+  depends_on = [
+    module.network
+  ]
 }
 
 module "worker" {
@@ -67,6 +66,9 @@ module "worker" {
   ssh_keys = var.ssh_keys
   location = var.location
   network_id = module.network.network_id
+  depends_on = [
+    module.network
+  ]
 }
 
 resource "hcloud_floating_ip_assignment" "master_ipv4" {

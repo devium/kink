@@ -27,6 +27,13 @@ resource "local_file" "AnsibleInventory" {
           ansible_host = worker.ipv4_address
         }
       }
+      vars = {
+        floating_ip = {
+          ipv4_address = module.network.floating_ipv4
+          ipv6_address = module.network.floating_ipv6
+        }
+        network_id = module.network.network_id
+      }
       children = {
         workers = {
           hosts = {
@@ -36,17 +43,5 @@ resource "local_file" "AnsibleInventory" {
       }
     }
   })
-  filename = "../ansible/environments/${var.environment_suffix}/inventory.yml"
-}
-
-resource "local_file" "AnsibleVariables" {
-  content = yamlencode({
-    floating_ip = {
-      ipv4_address = module.network.floating_ipv4
-      ipv6_address = module.network.floating_ipv6
-    }
-    network_id = module.network.network_id
-    hcloud_token = var.hcloud_token
-  })
-  filename = "../ansible/environments/${var.environment_suffix}/group_vars/all/env.yml"
+  filename = "../../../environments/${var.environment_suffix}/inventory.yml"
 }

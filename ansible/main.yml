@@ -1,4 +1,8 @@
 ---
+- hosts: localhost
+  roles:
+    - role: terraform
+
 - hosts: all
   roles:
     - role: update

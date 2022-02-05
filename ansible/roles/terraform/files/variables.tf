@@ -28,7 +28,7 @@ variable "workers_server_type" {
 }
 
 variable "ssh_keys" {
-  default = []
+  type = list(string)
 }
 
 variable "zone" {
