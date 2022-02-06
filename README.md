@@ -4,29 +4,28 @@
 ### Install tooling:
 * Ansible: https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html
 * Terraform: https://learn.hashicorp.com/tutorials/terraform/install-cli
-* AWS CLI: https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
 
 ### Install Ansible modules
 ```bash
 ansible-galaxy install -r requirements.yml
 ```
 
-### Configure AWS CLI
-Get AWS key/secret from https://console.aws.amazon.com/iamv2/home#/users and configure the AWS CLI:
-```bash
-aws configure
-```
-
-### Get Hetzner API key
-Create a new project on Hetzner Cloud and generate an API token for it. Save that token for `secrets.yml`.
-
 ### Create `secrets.yml`
 Create a `secrets.yml` in `environments/{dev|prod}/group_vars/all/` and fill in the following values:
 ```yaml
-project_name:
-hcloud_token:
-ssh_key:
-domain:
+# Name used for prefixes on servers and other resources.
+project_name: 
+# Hetzner Cloud project API token
+hcloud_token: 
+# Hetzner DNS API token
+hdns_token: 
+# Hetzner DNS zone ID of the desired hosted zone (check URL in DNS console)
+hdns_zone_id: 
+# SSH key name as defined in Hetzner Cloud
+ssh_key: 
+# Fully qualified domain name of the desired root domain
+domain: 
+
 ```
 
 ## Deployment

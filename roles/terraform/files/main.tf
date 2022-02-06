@@ -27,12 +27,6 @@ provider "hcloud" {
   token = var.hcloud_token
 }
 
-provider "aws" {
-  shared_credentials_file = var.aws_credentials
-  profile = var.aws_profile
-  region = var.aws_region
-}
-
 
 module "network" {
   source = "./network"
@@ -83,6 +77,8 @@ resource "hcloud_floating_ip_assignment" "master_ipv6" {
 
 module "domain" {
   source = "./domain"
-  domain = var.domain
+  root_subdomain = var.root_subdomain
   floating_ipv4 = module.network.floating_ipv4
+  hdns_token = var.hdns_token
+  hdns_zone_id = var.hdns_zone_id
 }

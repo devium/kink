@@ -1,11 +1,19 @@
-resource "aws_route53_zone" "primary" {
-  name = var.domain
+terraform {
+  required_providers {
+    hetznerdns = {
+      source = "timohirt/hetznerdns"
+    }
+  }
 }
 
-resource "aws_route53_record" "floating" {
-  zone_id = aws_route53_zone.primary.zone_id
-  name = var.domain
+provider "hetznerdns" {
+  apitoken = var.hdns_token
+}
+
+resource "hetznerdns_record" "root" {
+  zone_id = var.hdns_zone_id
+  name = var.root_subdomain
+  value = var.floating_ipv4
   type = "A"
-  ttl = "300"
-  records = [var.floating_ipv4]
+  ttl = 300
 }

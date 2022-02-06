@@ -3,12 +3,7 @@
   community.general.terraform:
     project_path: "{{ role_path }}/files"
     workspace: "{{ environment_suffix }}"
-    variables:
-      project_name: "{{ project_name }}"
-      environment_suffix: "{{ environment_suffix }}"
-      hcloud_token: "{{ hcloud_token }}"
-      ssh_keys: "{{ [ssh_key] | to_json }}"
-      domain: "{{ domain }}"
+    variables: "{{ terraform_variables }}"
     state: absent
   register: terraform_result
 

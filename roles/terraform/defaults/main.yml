@@ -1,0 +1,9 @@
+---
+terraform_variables:
+  project_name: "{{ project_name }}"
+  environment_suffix: "{{ environment_suffix }}"
+  hcloud_token: "{{ hcloud_token }}"
+  hdns_token: "{{ hdns_token }}"
+  hdns_zone_id: "{{ hdns_zone_id }}"
+  ssh_keys: "{{ [ssh_key] | to_json }}"
+  root_subdomain: "{{ root_subdomain }}"

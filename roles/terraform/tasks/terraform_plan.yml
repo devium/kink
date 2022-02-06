@@ -3,14 +3,10 @@
   community.general.terraform:
     project_path: "{{ role_path }}/files"
     workspace: "{{ environment_suffix }}"
-    variables:
-      project_name: "{{ project_name }}"
-      environment_suffix: "{{ environment_suffix }}"
-      hcloud_token: "{{ hcloud_token }}"
-      ssh_keys: "{{ [ssh_key] | to_json }}"
-      domain: "{{ domain }}"
+    variables: "{{ terraform_variables }}"
     state: planned
     plan_file: "{{ role_path }}/files/terraform.tfstate.d/{{ environment_suffix }}/tfplan"
+    force_init: yes
   register: terraform_result
 
 - name: Print Terraform output

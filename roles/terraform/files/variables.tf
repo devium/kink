@@ -11,8 +11,17 @@ variable "hcloud_token" {
   sensitive = true
 }
 
-variable "domain" {
+variable "hdns_token" {
   type = string
+  sensitive = true
+}
+
+variable "hdns_zone_id" {
+  type = string
+}
+
+variable "ssh_keys" {
+  type = list(string)
 }
 
 variable "image" {
@@ -25,10 +34,6 @@ variable "master_server_type" {
 
 variable "workers_server_type" {
   default = "cx21"
-}
-
-variable "ssh_keys" {
-  type = list(string)
 }
 
 variable "zone" {
@@ -47,14 +52,6 @@ variable "ip_range" {
   default = "10.0.0.0/16"
 }
 
-variable "aws_credentials" {
-  default = "$HOME/.aws/credentials"
-}
-
-variable "aws_profile" {
-  default = "default"
-}
-
-variable "aws_region" {
-  default = "eu-central-1"
+variable "root_subdomain" {
+  default = "@"
 }
