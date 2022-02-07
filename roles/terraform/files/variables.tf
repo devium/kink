@@ -21,7 +21,7 @@ variable "image" {
 }
 
 variable "master_server_type" {
-  default = "cx11"
+  default = "cx21"
 }
 
 variable "workers_server_type" {

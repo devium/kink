@@ -7,5 +7,17 @@ terraform_root_subdomain: "{{ (domain | split('.'))[:-2] | join('.') | default('
 terraform_ssh_key: "{{ ssh_key }}"
 terraform_workspace: "{{ stage }}"
 
-tools_hcloud_token: "{{ hcloud_token }}"
-tools_network_id: "{{ network_id }}"
+netplan_remove_existing: false
+netplan_config_file: /etc/netplan/60-floating-ip.yaml
+netplan_configuration:
+  network:
+   version: 2
+   renderer: networkd
+   ethernets:
+     eth0:
+       addresses:
+       - "{{ floating_ip.ipv4_address }}/32"
+       - "{{ floating_ip.ipv6_address }}/64"
+
+rke2_download_kubeconf: true
+rke2_download_kubeconf_path: "{{ ansible_inventory_sources[0] | dirname }}"

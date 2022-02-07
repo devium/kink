@@ -1,8 +1,0 @@
-network:
-   version: 2
-   renderer: networkd
-   ethernets:
-     eth0:
-       addresses:
-       - {{ floating_ip.ipv4_address }}/32
-       - {{ floating_ip.ipv6_address }}/64

@@ -4,19 +4,14 @@
   roles:
     - role: update
       tags: 
-        - setup-all
         - update
 
-- hosts: all
+- hosts: master
   roles:
-    - role: network
-      tags:
-        - setup-all
-        - setup-network
+    - role: mrlesmithjr.netplan
 
 - hosts: all
   roles:
-    - role: tools
+    - role: lablabs.rke2
       tags:
-        - setup-all
-        - setup-tools
+        - setup-kubernetes

@@ -1,11 +1,20 @@
 resource "local_file" "AnsibleInventory" {
   content = yamlencode({
     all = {
-      hosts = {
-        for k, worker in concat([module.master], module.worker): worker.name => {
-          ansible_host = worker.ipv4_address
+      hosts = merge(
+        {
+          (module.master.name) = {
+            ansible_host = module.master.ipv4_address
+            rke2_type = "server"
+          }
+        },
+        {
+          for k, worker in concat(module.worker): worker.name => {
+            ansible_host = worker.ipv4_address
+            rke2_type = "agent"
+          }
         }
-      }
+      )
       vars = {
         floating_ip = {
           ipv4_address = module.network.floating_ipv4
@@ -14,9 +23,20 @@ resource "local_file" "AnsibleInventory" {
         network_id = module.network.network_id
       }
       children = {
+        masters = {
+          hosts = {
+            (module.master.name) = null
+          }
+        }
         workers = {
           hosts = {
             for k, worker in module.worker: worker.name => null
+          }
+        }
+        k8s_cluster = {
+          children = {
+            masters = null
+            workers = null
           }
         }
       }

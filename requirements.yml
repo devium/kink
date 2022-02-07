@@ -1,3 +1,9 @@
+roles:
+  - name: mrlesmithjr.netplan
+    version: v0.3.0
+  - name: lablabs.rke2
+    version: 1.5.0
+
 collections:
-- kubernetes.core
-- community.general
+  - name: community.general
+    version: 4.4.0
