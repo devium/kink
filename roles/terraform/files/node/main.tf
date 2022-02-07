@@ -7,7 +7,7 @@ terraform {
 }
 
 resource "hcloud_server" "node" {
-  name = "${var.prefix}-${var.name}"
+  name = var.name
   image = var.image
   server_type = var.server_type
   ssh_keys = var.ssh_keys

@@ -1,11 +1,3 @@
-variable "project_name" {
-  type = string
-}
-
-variable "environment_suffix" {
-  type = string
-}
-
 variable "hcloud_token" {
   type = string
   sensitive = true
@@ -54,4 +46,8 @@ variable "ip_range" {
 
 variable "root_subdomain" {
   default = "@"
+}
+
+variable "inventory_file" {
+  type = string
 }

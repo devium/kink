@@ -1,0 +1,11 @@
+stage: "{{ lookup('env', 'ANSIBLE_STAGE') }}"
+
+terraform_hcloud_token: "{{ hcloud_token }}"
+terraform_hdns_token: "{{ hdns_token }}"
+terraform_hdns_zone_id: "{{ hdns_zone_id }}"
+terraform_root_subdomain: "{{ (domain | split('.'))[:-2] | join('.') | default('@', true) }}"
+terraform_ssh_key: "{{ ssh_key }}"
+terraform_workspace: "{{ stage }}"
+
+tools_hcloud_token: "{{ hcloud_token }}"
+tools_network_id: "{{ network_id }}"

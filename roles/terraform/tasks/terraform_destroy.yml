@@ -1,8 +1,7 @@
----
 - name: Destroy terraform project
   community.general.terraform:
     project_path: "{{ role_path }}/files"
-    workspace: "{{ environment_suffix }}"
+    workspace: "{{ terraform_workspace }}"
     variables: "{{ terraform_variables }}"
     state: absent
   register: terraform_result

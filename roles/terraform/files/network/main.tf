@@ -7,7 +7,7 @@ terraform {
 }
 
 resource "hcloud_network" "network" {
-  name = var.prefix
+  name = "network"
   ip_range = var.ip_range
 }
 
@@ -19,13 +19,13 @@ resource "hcloud_network_subnet" "subnet" {
 }
 
 resource "hcloud_floating_ip" "floating_ipv4" {
-  name = "${var.prefix}-ipv4"
+  name = "floating-ipv4"
   type = "ipv4"
   home_location = var.location
 }
 
 resource "hcloud_floating_ip" "floating_ipv6" {
-  name = "${var.prefix}-ipv6"
+  name = "floating-ipv6"
   type = "ipv6"
   home_location = var.location
 }

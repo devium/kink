@@ -1,4 +1,0 @@
----
-environment_suffix: "{{ lookup('env', 'ANSIBLE_ENV') }}"
-kubernetes_version: v1.23.3
-root_subdomain: "{{ (domain | split('.'))[:-2] | join('.') | default('@', true) }}"

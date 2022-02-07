@@ -1,4 +1,3 @@
----
 - name: Init master node
   block:
     - name: Install Kubernetes Python library
@@ -23,8 +22,8 @@
           shell:
             cmd: |
               kubeadm init \
-              --pod-network-cidr=10.244.0.0/16 \
-              --kubernetes-version={{ kubernetes_version }} \
+              --pod-network-cidr={{ tools_kubernetes_pods_cidr }} \
+              --kubernetes-version={{ tools_kubernetes_version }} \
               --ignore-preflight-errors=NumCPU \
               --upload-certs \
               --apiserver-cert-extra-sans 10.0.0.1
@@ -49,13 +48,13 @@
               name: hcloud
               namespace: kube-system
             stringData:
-              token: "{{ hcloud_token }}"
-              network: "{{ network_id }}"
+              token: "{{ tools_hcloud_token }}"
+              network: "{{ tools_network_id }}"
           - metadata:
               name: hcloud-csi
               namespace: kube-system
             stringData:
-              token: "{{ hcloud_token }}"
+              token: "{{ tools_hcloud_token }}"
 
     - name: Create Kubernetes resource definition directory
       file:

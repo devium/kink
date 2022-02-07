@@ -1,7 +1,4 @@
----
-- hosts: localhost
-  roles:
-    - role: terraform
+- import_playbook: webservers.yml
 
 - hosts: all
   roles:

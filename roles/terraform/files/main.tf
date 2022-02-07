@@ -12,17 +12,6 @@ terraform {
   }
 }
 
-# Sanity check to ensure the correct variable set for the workspace is selected.
-data "assert_test" "workspace" {
-  test = terraform.workspace == var.environment_suffix
-  throw = "Selected workspace doesn't fit variable set."
-}
-
-# Identifier prefix for any resources allocated.
-locals {
-  prefix = "${var.project_name}"
-}
-
 provider "hcloud" {
   token = var.hcloud_token
 }
@@ -30,7 +19,6 @@ provider "hcloud" {
 
 module "network" {
   source = "./network"
-  prefix = local.prefix
   ip_range = var.ip_range
   zone = var.zone
   location = var.location
@@ -38,7 +26,6 @@ module "network" {
 
 module "master" {
   source = "./node"
-  prefix = local.prefix
   name = "master"
   image = var.image
   server_type = var.master_server_type
@@ -53,7 +40,6 @@ module "master" {
 module "worker" {
   count = var.num_workers
   source = "./node"
-  prefix = local.prefix
   name = "worker${count.index}"
   image = var.image
   server_type = var.workers_server_type

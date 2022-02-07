@@ -1,11 +1,10 @@
----
 - name: Apply terraform project
   community.general.terraform:
     project_path: "{{ role_path }}/files"
-    workspace: "{{ environment_suffix }}"
+    workspace: "{{ terraform_workspace }}"
     variables: "{{ terraform_variables }}"
     state: present
-    plan_file: "{{ role_path }}/files/terraform.tfstate.d/{{ environment_suffix }}/tfplan"
+    plan_file: "{{ terraform_plan_file }}"
   register: terraform_result
 
 - name: Print Terraform output

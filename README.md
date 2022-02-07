@@ -11,10 +11,8 @@ ansible-galaxy install -r requirements.yml
 ```
 
 ### Create `secrets.yml`
-Create a `secrets.yml` in `environments/{dev|prod}/group_vars/all/` and fill in the following values:
+Create a `secrets.yml` in `inventories/{dev|prod}/group_vars/all/` and fill in the following values:
 ```yaml
-# Name used for prefixes on servers and other resources.
-project_name: 
 # Hetzner Cloud project API token
 hcloud_token: 
 # Hetzner DNS API token
@@ -29,9 +27,9 @@ domain:
 ```
 
 ## Deployment
-Set the Ansible environment:
+Set the Ansible stage:
 ```bash
-export ANSIBLE_ENV={dev|prod}
+export ANSIBLE_STAGE={dev|prod}
 ```
 Run the Ansible playbook:
 ```bash

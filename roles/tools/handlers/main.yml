@@ -1,4 +1,3 @@
----
 - name: Remove previous Docker key
   file:
     path: /usr/share/keyrings/docker-archive-keyring.gpg

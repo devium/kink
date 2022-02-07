@@ -1,4 +1,3 @@
----
 - name: Download Helm signing key
   get_url:
     url: https://baltocdn.com/helm/signing.asc

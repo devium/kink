@@ -1,4 +1,3 @@
----
 - name: Download Kubernetes signing key
   get_url:
     url: https://packages.cloud.google.com/apt/doc/apt-key.gpg

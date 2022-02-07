@@ -1,9 +1,16 @@
----
+terraform_hcloud_token:
+terraform_hdns_token:
+terraform_hdns_zone_id:
+terraform_root_subdomain:
+terraform_ssh_key:
+
+terraform_inventory_file: "{{ ansible_inventory_sources[0] }}"
+terraform_plan_file: "{{ role_path }}/files/terraform.tfstate.d/{{ terraform_workspace }}/tfplan"
+
 terraform_variables:
-  project_name: "{{ project_name }}"
-  environment_suffix: "{{ environment_suffix }}"
-  hcloud_token: "{{ hcloud_token }}"
-  hdns_token: "{{ hdns_token }}"
-  hdns_zone_id: "{{ hdns_zone_id }}"
-  ssh_keys: "{{ [ssh_key] | to_json }}"
-  root_subdomain: "{{ root_subdomain }}"
+  inventory_file: "{{ terraform_inventory_file }}"
+  hcloud_token: "{{ terraform_hcloud_token }}"
+  hdns_token: "{{ terraform_hdns_token }}"
+  hdns_zone_id: "{{ terraform_hdns_zone_id }}"
+  ssh_keys: "{{ [terraform_ssh_key] | to_json }}"
+  root_subdomain: "{{ terraform_root_subdomain }}"

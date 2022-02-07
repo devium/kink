@@ -1,4 +1,3 @@
----
 - name: Copy floating IP network config
   template:
     src: 60-floating-ip.yaml.j2
