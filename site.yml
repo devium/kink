@@ -6,9 +6,11 @@
       tags: 
         - update
 
-- hosts: master
+- hosts: all
   roles:
     - role: mrlesmithjr.netplan
+      tags:
+        - setup-netplan
 
 - hosts: all
   roles:

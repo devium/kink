@@ -16,6 +16,8 @@ netplan_configuration:
    ethernets:
      eth0:
        addresses:
+       - "{{ ansible_host }}/32"
+       - "{{ ipv6_address }}/64"
        - "{{ floating_ip.ipv4_address }}/32"
        - "{{ floating_ip.ipv6_address }}/64"
 

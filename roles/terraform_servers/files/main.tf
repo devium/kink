@@ -65,6 +65,7 @@ module "domain" {
   source = "./domain"
   root_subdomain = var.root_subdomain
   floating_ipv4 = module.network.floating_ipv4
+  floating_ipv6 = module.network.floating_ipv6
   hdns_token = var.hdns_token
   hdns_zone_id = var.hdns_zone_id
 }
