@@ -1,11 +1,11 @@
 stage: "{{ lookup('env', 'ANSIBLE_STAGE') }}"
 
-terraform_hcloud_token: "{{ hcloud_token }}"
-terraform_hdns_token: "{{ hdns_token }}"
-terraform_hdns_zone_id: "{{ hdns_zone_id }}"
-terraform_root_subdomain: "{{ (domain | split('.'))[:-2] | join('.') | default('@', true) }}"
-terraform_ssh_key: "{{ ssh_key }}"
-terraform_workspace: "{{ stage }}"
+terraform_servers_workspace: "{{ stage }}"
+terraform_servers_hcloud_token: "{{ hcloud_token }}"
+terraform_servers_hdns_token: "{{ hdns_token }}"
+terraform_servers_hdns_zone_id: "{{ hdns_zone_id }}"
+terraform_servers_root_subdomain: "{{ (domain | split('.'))[:-2] | join('.') | default('@', true) }}"
+terraform_servers_ssh_key: "{{ ssh_key }}"
 
 netplan_remove_existing: false
 netplan_config_file: /etc/netplan/60-floating-ip.yaml
@@ -23,3 +23,8 @@ netplan_configuration:
 
 rke2_download_kubeconf: true
 rke2_download_kubeconf_path: "{{ ansible_inventory_sources[0] | dirname }}"
+rke2_download_kubeconf_file_name: rke2.yaml
+
+terraform_cluster_workspace: "{{ stage }}"
+terraform_cluster_kubeconf_file: "{{ rke2_download_kubeconf_path }}/{{ rke2_download_kubeconf_file_name }}"
+terraform_cluster_hcloud_token: "{{ hcloud_token }}"

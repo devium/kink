@@ -1,10 +1,10 @@
 - name: Plan terraform project
   community.general.terraform:
     project_path: "{{ role_path }}/files"
-    workspace: "{{ terraform_servers_workspace }}"
-    variables: "{{ terraform_servers_variables }}"
+    workspace: "{{ terraform_cluster_workspace }}"
+    variables: "{{ terraform_cluster_variables }}"
     state: planned
-    plan_file: "{{ terraform_servers_plan_file }}"
+    plan_file: "{{ terraform_cluster_plan_file }}"
     force_init: yes
   register: terraform_result
 

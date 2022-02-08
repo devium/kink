@@ -17,3 +17,5 @@
     - role: lablabs.rke2
       tags:
         - setup-kubernetes
+
+- import_playbook: cluster.yml
