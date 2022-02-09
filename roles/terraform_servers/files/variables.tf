@@ -16,6 +16,14 @@ variable "ssh_keys" {
   type = list(string)
 }
 
+variable "domain" {
+  type = string
+}
+
+variable "jitsi_subdomain" {
+  type = string
+}
+
 variable "image" {
   default = "ubuntu-20.04"
 }
@@ -42,10 +50,6 @@ variable "num_workers" {
 
 variable "ip_range" {
   default = "10.0.0.0/16"
-}
-
-variable "root_subdomain" {
-  default = "@"
 }
 
 variable "inventory_file" {

@@ -1,4 +1,8 @@
-variable "root_subdomain" {
+variable "domain" {
+  type = string
+}
+
+variable "jitsi_subdomain" {
   type = string
 }
 

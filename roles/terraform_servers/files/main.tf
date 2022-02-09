@@ -63,7 +63,8 @@ resource "hcloud_floating_ip_assignment" "master_ipv6" {
 
 module "domain" {
   source = "./domain"
-  root_subdomain = var.root_subdomain
+  domain = var.domain
+  jitsi_subdomain = var.jitsi_subdomain
   floating_ipv4 = module.network.floating_ipv4
   floating_ipv6 = module.network.floating_ipv6
   hdns_token = var.hdns_token

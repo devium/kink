@@ -2,9 +2,19 @@ terraform_cluster_workspace: default
 
 terraform_cluster_kubeconf_file:
 terraform_cluster_hcloud_token:
+terraform_cluster_floating_ipv4:
+terraform_cluster_domain:
+terraform_cluster_jitsi_subdomain: jitsi
+terraform_cluster_use_production_cert: false
+terraform_cluster_cert_email:
 
 terraform_cluster_plan_file: "{{ role_path }}/files/terraform.tfstate.d/{{ terraform_cluster_workspace }}/tfplan"
 
 terraform_cluster_variables:
   kubeconf_file: "{{ terraform_cluster_kubeconf_file }}"
   hcloud_token: "{{ terraform_cluster_hcloud_token }}"
+  floating_ipv4: "{{ terraform_cluster_floating_ipv4 }}"
+  domain: "{{ terraform_cluster_domain }}"
+  jitsi_subdomain: "{{ terraform_cluster_jitsi_subdomain }}"
+  use_production_cert: "{{ terraform_cluster_use_production_cert | to_json }}"
+  cert_email: "{{ terraform_cluster_cert_email }}"

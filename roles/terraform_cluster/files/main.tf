@@ -19,29 +19,25 @@ provider "helm" {
   }
 }
 
-resource "kubectl_manifest" "secrets" {
-  yaml_body = yamlencode({
-    apiVersion = "v1"
-    kind = "Secret"
-    metadata = {
-      name = "hcloud-csi"
-      namespace = "kube-system"
-    }
-    stringData = {
-      token: var.hcloud_token
-    }
-  })
+
+module "hetzner" {
+  source = "./hetzner"
+  hcloud_token = var.hcloud_token
+  hcloud_csi_version = var.hcloud_csi_version
 }
 
-data "http" "csi_manifest" {
-  url = "https://raw.githubusercontent.com/hetznercloud/csi-driver/${var.hcloud_csi_version}/deploy/kubernetes/hcloud-csi.yml"
+module "cert_manager" {
+  source = "./cert_manager"
+  use_production_cert = var.use_production_cert
+  cert_email = var.cert_email
+  release_name = var.release_name
+  domain = var.domain
 }
 
-data "kubectl_file_documents" "csi_documents" {
-  content = data.http.csi_manifest.body
-}
-
-resource "kubectl_manifest" "hcloud_csi" {
-  for_each = data.kubectl_file_documents.csi_documents.manifests
-  yaml_body = each.value
+module "jitsi" {
+  source = "./jitsi"
+  floating_ipv4 = var.floating_ipv4
+  domain = var.domain
+  jitsi_subdomain = var.jitsi_subdomain
+  release_name = var.release_name
 }

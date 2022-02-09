@@ -4,7 +4,8 @@ terraform_servers_workspace: "{{ stage }}"
 terraform_servers_hcloud_token: "{{ hcloud_token }}"
 terraform_servers_hdns_token: "{{ hdns_token }}"
 terraform_servers_hdns_zone_id: "{{ hdns_zone_id }}"
-terraform_servers_root_subdomain: "{{ (domain | split('.'))[:-2] | join('.') | default('@', true) }}"
+terraform_servers_domain: "{{ domain }}"
+terraform_servers_jitsi_subdomain: "{{ jitsi_subdomain }}"
 terraform_servers_ssh_key: "{{ ssh_key }}"
 
 netplan_remove_existing: false
@@ -28,3 +29,8 @@ rke2_download_kubeconf_file_name: rke2.yaml
 terraform_cluster_workspace: "{{ stage }}"
 terraform_cluster_kubeconf_file: "{{ rke2_download_kubeconf_path }}/{{ rke2_download_kubeconf_file_name }}"
 terraform_cluster_hcloud_token: "{{ hcloud_token }}"
+terraform_cluster_floating_ipv4: "{{ floating_ip.ipv4_address }}"
+terraform_cluster_domain: "{{ domain }}"
+terraform_cluster_jitsi_subdomain: "{{ jitsi_subdomain }}"
+terraform_cluster_use_production_cert: "{{ stage == 'prod' }}"
+terraform_cluster_cert_email: "{{ cert_email }}"
