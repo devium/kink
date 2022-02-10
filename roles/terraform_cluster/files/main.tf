@@ -40,4 +40,5 @@ module "jitsi" {
   domain = var.domain
   jitsi_subdomain = var.jitsi_subdomain
   release_name = var.release_name
+  jitsi_version = var.jitsi_version
 }

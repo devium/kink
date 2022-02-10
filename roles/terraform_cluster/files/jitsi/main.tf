@@ -20,14 +20,13 @@ resource "helm_release" "jitsi" {
 
   values = [
     yamlencode({
-      publicURL = local.jitsi_domain
+      publicURL = "https://${local.jitsi_domain}"
       web = {
+        image = {
+          tag = var.jitsi_version
+        }
         ingress = {
           enabled = true
-          annotations = {
-            "kubernetes.io/ingress.class" = "nginx"
-            "cert-manager.io/cluster-issuer" = "letsencrypt"
-          }
           hosts = [{
             host = local.jitsi_domain
             paths = [
@@ -42,15 +41,34 @@ resource "helm_release" "jitsi" {
           }]
         }
       }
-      jvb = {
-        publicIP = var.floating_ipv4
 
+      jvb = {
+        image = {
+          tag = var.jitsi_version
+        }
         service = {
           enabled = true
         }
 
         useHostPort = true
         useNodeIP = true
+      }
+
+      jicofo = {
+        image = {
+          tag = var.jitsi_version
+        }
+      }
+
+
+      prosody = {
+        image = {
+          tag = var.jitsi_version
+        }
+
+        persistence = {
+          enabled = false
+        }
       }
     })
   ]

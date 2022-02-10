@@ -7,7 +7,7 @@ terraform {
 }
 
 locals {
-  acme_server = var.use_production_cert ? "https://acme-v02.api.letsencrypt.org/directory" : "https://acme-staging-v02.api.letsencrypt.org/directory"
+  acme_server = "https://acme${var.use_production_cert ? "" : "-staging"}-v02.api.letsencrypt.org/directory"
 }
 
 resource "helm_release" "cert_manager" {

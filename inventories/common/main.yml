@@ -32,5 +32,6 @@ terraform_cluster_hcloud_token: "{{ hcloud_token }}"
 terraform_cluster_floating_ipv4: "{{ floating_ip.ipv4_address }}"
 terraform_cluster_domain: "{{ domain }}"
 terraform_cluster_jitsi_subdomain: "{{ jitsi_subdomain }}"
-terraform_cluster_use_production_cert: "{{ stage == 'prod' }}"
+terraform_cluster_jitsi_version: stable-6865
+terraform_cluster_use_production_cert: true # "{{ stage == 'prod' }}"
 terraform_cluster_cert_email: "{{ cert_email }}"

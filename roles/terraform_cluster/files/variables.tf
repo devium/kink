@@ -19,6 +19,10 @@ variable "jitsi_subdomain" {
   type = string
 }
 
+variable "jitsi_version" {
+  type = string
+}
+
 variable "hcloud_csi_version" {
   default = "v1.6.0"
 }
