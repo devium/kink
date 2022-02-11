@@ -5,9 +5,14 @@ terraform_cluster_hcloud_token:
 terraform_cluster_floating_ipv4:
 terraform_cluster_domain:
 terraform_cluster_jitsi_subdomain: jitsi
-terraform_cluster_jitsi_version: stable-6726
 terraform_cluster_use_production_cert: false
 terraform_cluster_cert_email:
+
+terraform_cluster_versions:
+  jitsi: stable-6726
+  jitsi_helm: v1.0.0
+  hcloud_csi: v1.6.0
+  cert_manager_helm: v1.7.1
 
 terraform_cluster_plan_file: "{{ role_path }}/files/terraform.tfstate.d/{{ terraform_cluster_workspace }}/tfplan"
 
@@ -17,6 +22,6 @@ terraform_cluster_variables:
   floating_ipv4: "{{ terraform_cluster_floating_ipv4 }}"
   domain: "{{ terraform_cluster_domain }}"
   jitsi_subdomain: "{{ terraform_cluster_jitsi_subdomain }}"
-  jitsi_version: "{{ terraform_cluster_jitsi_version }}"
   use_production_cert: "{{ terraform_cluster_use_production_cert | to_json }}"
   cert_email: "{{ terraform_cluster_cert_email }}"
+  versions: "{{ terraform_cluster_versions | to_json }}"

@@ -17,6 +17,7 @@ resource "helm_release" "cert_manager" {
 
   repository = "https://charts.jetstack.io"
   chart = "cert-manager"
+  version = var.versions.cert_manager_helm
 
   values = [
     yamlencode({

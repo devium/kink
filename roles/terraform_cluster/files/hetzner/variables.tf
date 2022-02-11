@@ -3,6 +3,6 @@ variable "hcloud_token" {
   sensitive = true
 }
 
-variable "hcloud_csi_version" {
-  type = string
+variable "versions" {
+  type = map
 }

@@ -23,7 +23,7 @@ provider "helm" {
 module "hetzner" {
   source = "./hetzner"
   hcloud_token = var.hcloud_token
-  hcloud_csi_version = var.hcloud_csi_version
+  versions = var.versions
 }
 
 module "cert_manager" {
@@ -32,6 +32,7 @@ module "cert_manager" {
   cert_email = var.cert_email
   release_name = var.release_name
   domain = var.domain
+  versions = var.versions
 }
 
 module "jitsi" {
@@ -40,5 +41,5 @@ module "jitsi" {
   domain = var.domain
   jitsi_subdomain = var.jitsi_subdomain
   release_name = var.release_name
-  jitsi_version = var.jitsi_version
+  versions = var.versions
 }

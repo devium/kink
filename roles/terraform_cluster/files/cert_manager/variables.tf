@@ -13,3 +13,7 @@ variable "release_name" {
 variable "domain" {
   type = string
 }
+
+variable "versions" {
+  type = map
+}

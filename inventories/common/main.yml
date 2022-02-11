@@ -22,6 +22,7 @@ netplan_configuration:
        - "{{ floating_ip.ipv4_address }}/32"
        - "{{ floating_ip.ipv6_address }}/64"
 
+rke2_version: v1.22.6+rke2r1
 rke2_download_kubeconf: true
 rke2_download_kubeconf_path: "{{ ansible_inventory_sources[0] | dirname }}"
 rke2_download_kubeconf_file_name: rke2.yaml
@@ -32,6 +33,11 @@ terraform_cluster_hcloud_token: "{{ hcloud_token }}"
 terraform_cluster_floating_ipv4: "{{ floating_ip.ipv4_address }}"
 terraform_cluster_domain: "{{ domain }}"
 terraform_cluster_jitsi_subdomain: "{{ jitsi_subdomain }}"
-terraform_cluster_jitsi_version: stable-6865
 terraform_cluster_use_production_cert: true # "{{ stage == 'prod' }}"
 terraform_cluster_cert_email: "{{ cert_email }}"
+
+terraform_cluster_versions:
+  jitsi: stable-6865
+  jitsi_helm: v1.0.0
+  hcloud_csi: v1.6.0
+  cert_manager_helm: v1.7.1

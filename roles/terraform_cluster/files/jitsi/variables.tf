@@ -14,6 +14,6 @@ variable "release_name" {
   type = string
 }
 
-variable "jitsi_version" {
-  type = string
+variable "versions" {
+  type = map
 }

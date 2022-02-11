@@ -21,7 +21,7 @@ resource "kubectl_manifest" "hcloud_token" {
 }
 
 data "http" "csi_manifest" {
-  url = "https://raw.githubusercontent.com/hetznercloud/csi-driver/${var.hcloud_csi_version}/deploy/kubernetes/hcloud-csi.yml"
+  url = "https://raw.githubusercontent.com/hetznercloud/csi-driver/${var.versions.hcloud_csi}/deploy/kubernetes/hcloud-csi.yml"
 }
 
 data "kubectl_file_documents" "csi_documents" {
