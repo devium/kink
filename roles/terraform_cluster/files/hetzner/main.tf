@@ -7,17 +7,15 @@ terraform {
 }
 
 resource "kubectl_manifest" "hcloud_token" {
-  yaml_body = yamlencode({
-    apiVersion = "v1"
-    kind = "Secret"
-    metadata = {
-      name = "hcloud-csi"
-      namespace = "kube-system"
-    }
-    stringData = {
-      token = var.hcloud_token
-    }
-  })
+  yaml_body = <<-YAML
+    apiVersion: v1
+    kind: Secret
+    metadata:
+      name: hcloud-csi
+      namespace: kube-system
+    stringData:
+      token: ${var.hcloud_token}
+    YAML
 }
 
 data "http" "csi_manifest" {
