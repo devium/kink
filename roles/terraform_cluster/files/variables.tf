@@ -34,3 +34,12 @@ variable "release_name" {
 variable "versions" {
   type = map
 }
+
+variable "db_root_password" {
+  type = string
+  sensitive = true
+}
+
+variable "postgres_volume_handle" {
+  type = string
+}

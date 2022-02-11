@@ -43,3 +43,11 @@ module "jitsi" {
   release_name = var.release_name
   versions = var.versions
 }
+
+module "postgres" {
+  source = "./postgres"
+  release_name = var.release_name
+  versions = var.versions
+  db_root_password = var.db_root_password
+  postgres_volume_handle = var.postgres_volume_handle
+}
