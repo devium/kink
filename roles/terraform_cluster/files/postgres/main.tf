@@ -58,7 +58,28 @@ resource "kubectl_manifest" "postgres_pvc" {
           storage: 10Gi
       storageClassName: ""
       volumeName: postgres-volume
-  YAML
+    YAML
+
+  depends_on = [
+    kubectl_manifest.postgres_namespace
+  ]
+}
+
+resource "kubectl_manifest" "postgres_init_secret" {
+  yaml_body = <<-YAML
+    apiVersion: v1
+    kind: Secret
+    metadata:
+      name: postgres-init
+      namespace: ${local.postgres_namespace}
+    data:
+      init.sql: |-
+        ${base64encode(<<-SQL
+          CREATE USER keycloak WITH PASSWORD '${var.db_passwords.keycloak}';
+          CREATE DATABASE keycloak WITH OWNER keycloak;
+          SQL
+        )}
+    YAML
 
   depends_on = [
     kubectl_manifest.postgres_namespace
@@ -79,10 +100,18 @@ resource "helm_release" "postgres" {
     global:
       postgresql:
         auth:
-          postgresPassword: ${var.db_root_password}
+          postgresPassword: ${var.db_passwords.root}
     primary:
       persistence:
         existingClaim: postgres-pvc
+      initdb:
+        scriptsSecret: postgres-init
+        user: postgres
+        password: ${var.db_passwords.root}
     YAML
+  ]
+
+  depends_on = [
+    kubectl_manifest.postgres_init_secret
   ]
 }

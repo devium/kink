@@ -35,8 +35,8 @@ terraform_cluster_domain: "{{ domain }}"
 terraform_cluster_subdomains: "{{ subdomains }}"
 terraform_cluster_use_production_cert: "{{ stage == 'prod' }}"
 terraform_cluster_cert_email: "{{ cert_email }}"
-terraform_cluster_db_root_password: "{{ db_root_password }}"
 terraform_cluster_postgres_volume_handle: "{{ postgres_volume_handle }}"
+terraform_cluster_db_passwords: "{{ db_passwords }}"
 
 terraform_cluster_versions:
   jitsi: stable-6865
@@ -44,3 +44,4 @@ terraform_cluster_versions:
   hcloud_csi: v1.6.0
   cert_manager_helm: v1.7.1
   postgres: 14.1.0-debian-10-r80
+  keycloak_helm: v17.0.2

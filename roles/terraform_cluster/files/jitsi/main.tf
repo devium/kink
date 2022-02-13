@@ -62,9 +62,9 @@ resource "helm_release" "jitsi" {
             paths:
               - /
         tls:
-          secretName: cert-secret
-          hosts:
-            - ${local.jitsi_domain}
+          - secretName: cert-secret
+            hosts:
+              - ${local.jitsi_domain}
 
     jvb:
       image:

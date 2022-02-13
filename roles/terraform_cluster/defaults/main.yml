@@ -9,8 +9,8 @@ terraform_cluster_subdomains:
   keycloak: keycloak
 terraform_cluster_use_production_cert: false
 terraform_cluster_cert_email:
-terraform_cluster_db_root_password:
-terraform_cluster_postgres_volume_handle:
+terraform_cluster_db_passwords:
+  keycloak:
 
 terraform_cluster_versions:
   jitsi: stable-6726
@@ -18,6 +18,7 @@ terraform_cluster_versions:
   hcloud_csi: v1.6.0
   cert_manager_helm: v1.7.1
   postgres: 14.1.0-debian-10-r80
+  keycloak_helm: v17.0.2
 
 terraform_cluster_plan_file: "{{ role_path }}/files/terraform.tfstate.d/{{ terraform_cluster_workspace }}/tfplan"
 
@@ -30,5 +31,5 @@ terraform_cluster_variables:
   use_production_cert: "{{ terraform_cluster_use_production_cert | to_json }}"
   cert_email: "{{ terraform_cluster_cert_email }}"
   versions: "{{ terraform_cluster_versions | to_json }}"
-  db_root_password: "{{ terraform_cluster_db_root_password }}"
+  db_passwords: "{{ terraform_cluster_db_passwords | to_json }}"
   postgres_volume_handle: "{{ terraform_cluster_postgres_volume_handle }}"

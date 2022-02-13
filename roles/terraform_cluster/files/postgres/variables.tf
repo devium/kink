@@ -6,8 +6,8 @@ variable "release_name" {
   type = string
 }
 
-variable "db_root_password" {
-  type = string
+variable "db_passwords" {
+  type = map
   sensitive = true
 }
 

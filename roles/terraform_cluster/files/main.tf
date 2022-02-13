@@ -48,6 +48,21 @@ module "postgres" {
   source = "./postgres"
   release_name = var.release_name
   versions = var.versions
-  db_root_password = var.db_root_password
+  db_passwords = var.db_passwords
   postgres_volume_handle = var.postgres_volume_handle
+}
+
+module "keycloak" {
+  # Note on module folder name:
+  # https://github.com/hashicorp/terraform-provider-helm/issues/735
+  source = "./keycloak_"
+  release_name = var.release_name
+  versions = var.versions
+  domain = var.domain
+  subdomains = var.subdomains
+  db_passwords = var.db_passwords
+
+  depends_on = [
+    module.postgres
+  ]
 }
