@@ -15,8 +15,8 @@ variable "domain" {
   type = string
 }
 
-variable "jitsi_subdomain" {
-  type = string
+variable "subdomains" {
+  type = map
 }
 
 variable "use_production_cert" {

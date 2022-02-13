@@ -32,7 +32,15 @@ resource "hetznerdns_record" "root_ipv6" {
 
 resource "hetznerdns_record" "jitsi" {
   zone_id = var.hdns_zone_id
-  name = local.root_subdomain == ""? var.jitsi_subdomain : "${var.jitsi_subdomain}.${local.root_subdomain}"
+  name = local.root_subdomain == ""? var.subdomains.jitsi : "${var.subdomains.jitsi}.${local.root_subdomain}"
+  value = "${var.domain}."
+  type = "CNAME"
+  ttl = 300
+}
+
+resource "hetznerdns_record" "keycloak" {
+  zone_id = var.hdns_zone_id
+  name = local.root_subdomain == ""? var.subdomains.keycloak : "${var.subdomains.keycloak}.${local.root_subdomain}"
   value = "${var.domain}."
   type = "CNAME"
   ttl = 300

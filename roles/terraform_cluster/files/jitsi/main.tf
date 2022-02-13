@@ -7,7 +7,7 @@ terraform {
 }
 
 locals {
-  jitsi_domain = "${var.jitsi_subdomain}.${var.domain}"
+  jitsi_domain = "${var.subdomains.jitsi}.${var.domain}"
   jitsi_namespace = "jitsi"
   jvb_port_udp = 10000
 }

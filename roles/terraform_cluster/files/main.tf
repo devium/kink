@@ -39,7 +39,7 @@ module "jitsi" {
   source = "./jitsi"
   floating_ipv4 = var.floating_ipv4
   domain = var.domain
-  jitsi_subdomain = var.jitsi_subdomain
+  subdomains = var.subdomains
   release_name = var.release_name
   versions = var.versions
 }

@@ -4,7 +4,9 @@ terraform_servers_hcloud_token:
 terraform_servers_hdns_token:
 terraform_servers_hdns_zone_id:
 terraform_servers_domain:
-terraform_servers_jitsi_subdomain: jitsi
+terraform_cluster_subdomains:
+  jitsi: jitsi
+  keycloak: keycloak
 terraform_servers_ssh_key:
 
 terraform_servers_inventory_file: "{{ ansible_inventory_sources[0] }}"
@@ -17,4 +19,4 @@ terraform_servers_variables:
   hdns_zone_id: "{{ terraform_servers_hdns_zone_id }}"
   ssh_keys: "{{ [terraform_servers_ssh_key] | to_json }}"
   domain: "{{ terraform_servers_domain }}"
-  jitsi_subdomain: "{{ terraform_servers_jitsi_subdomain }}"
+  subdomains: "{{ terraform_servers_subdomains | to_json }}"
