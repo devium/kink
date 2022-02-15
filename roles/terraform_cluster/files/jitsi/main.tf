@@ -103,9 +103,9 @@ resource "helm_release" "jitsi" {
             paths:
               - /rooms
         tls:
-          secretName: cert-secret
-          hosts:
-            - ${local.jitsi_domain}
+          - secretName: cert-secret
+            hosts:
+              - ${local.jitsi_domain}
     YAML
   ]
 

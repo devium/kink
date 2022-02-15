@@ -61,6 +61,7 @@ module "keycloak" {
   domain = var.domain
   subdomains = var.subdomains
   db_passwords = var.db_passwords
+  keycloak_admin_password = var.keycloak_admin_password
 
   depends_on = [
     module.postgres

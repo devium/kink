@@ -43,3 +43,8 @@ variable "db_passwords" {
 variable "postgres_volume_handle" {
   type = string
 }
+
+variable "keycloak_admin_password" {
+  type = string
+  sensitive = true
+}

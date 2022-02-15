@@ -18,3 +18,8 @@ variable "db_passwords" {
   type = map
   sensitive = true
 }
+
+variable "keycloak_admin_password" {
+  type = string
+  sensitive = true
+}

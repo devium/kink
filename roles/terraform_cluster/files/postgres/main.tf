@@ -72,13 +72,10 @@ resource "kubectl_manifest" "postgres_init_secret" {
     metadata:
       name: postgres-init
       namespace: ${local.postgres_namespace}
-    data:
-      init.sql: |-
-        ${base64encode(<<-SQL
-          CREATE USER keycloak WITH PASSWORD '${var.db_passwords.keycloak}';
-          CREATE DATABASE keycloak WITH OWNER keycloak;
-          SQL
-        )}
+    stringData:
+      init.sql: |
+        CREATE USER keycloak WITH PASSWORD '${var.db_passwords.keycloak}';
+        CREATE DATABASE keycloak WITH OWNER keycloak;
     YAML
 
   depends_on = [

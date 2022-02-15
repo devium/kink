@@ -35,15 +35,24 @@ resource "helm_release" "keycloak" {
         value: postgres
       - name: DB_ADDR
         value: ${var.release_name}-postgresql.postgres.svc.cluster.local
+      - name: KEYCLOAK_USER
+        value: admin
+      - name: PROXY_ADDRESS_FORWARDING
+        value: "true"
 
     extraEnvFrom: |
       - secretRef:
           name: '{{ include "keycloak.fullname" . }}-db'
+      - secretRef:
+          name: '{{ include "keycloak.fullname" . }}-admin-password'
 
     secrets:
       db:
         stringData:
           DB_PASSWORD: ${var.db_passwords.keycloak}
+      admin-password:
+        stringData:
+          KEYCLOAK_PASSWORD: ${var.keycloak_admin_password}
     YAML
   ]
 }
