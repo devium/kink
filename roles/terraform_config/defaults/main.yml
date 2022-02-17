@@ -1,0 +1,15 @@
+terraform_config_workspace: default
+
+terraform_config_domain:
+terraform_config_subdomains:
+  jitsi: jitsi
+  keycloak: keycloak
+terraform_config_keycloak_admin_password:
+terraform_config_keycloak_realm: primary
+terraform_config_plan_file: "{{ role_path }}/files/terraform.tfstate.d/{{ terraform_config_workspace }}/tfplan"
+
+terraform_config_variables:
+  domain: "{{ terraform_config_domain }}"
+  subdomains: "{{ terraform_config_subdomains | to_json }}"
+  keycloak_admin_password: "{{ terraform_config_keycloak_admin_password }}"
+  keycloak_realm: "{{ terraform_config_keycloak_realm }}"

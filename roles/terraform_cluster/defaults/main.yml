@@ -12,7 +12,6 @@ terraform_cluster_cert_email:
 terraform_cluster_db_passwords:
   keycloak:
 terraform_cluster_keycloak_admin_password:
-
 terraform_cluster_versions:
   jitsi: stable-6726
   jitsi_helm: v1.0.0

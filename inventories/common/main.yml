@@ -46,4 +46,10 @@ terraform_cluster_versions:
   postgres: 14.1.0-debian-10-r80
   keycloak_helm: v17.0.2
 
+terraform_config_workspace: "{{ stage }}"
+terraform_config_domain: "{{ domain }}"
+terraform_config_subdomains: "{{ subdomains }}"
+terraform_config_keycloak_admin_password: "{{ keycloak_admin_password }}"
+terraform_config_keycloak_realm: "{{ project_name }}"
+
 secrets_file: "{{ ansible_inventory_sources[0] | dirname }}/group_vars/all/secrets.yml"

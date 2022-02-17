@@ -1,0 +1,13 @@
+- import_tasks: "{{ role_path }}/tasks/terraform_destroy.yml"
+  tags:
+    - terraform-destroy
+    - never
+
+- import_tasks: "{{ role_path }}/tasks/terraform_plan.yml"
+  tags:
+    - terraform-plan
+    - terraform-apply
+
+- import_tasks: "{{ role_path }}/tasks/terraform_apply.yml"
+  tags:
+    - terraform-apply

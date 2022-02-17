@@ -53,6 +53,29 @@ resource "helm_release" "keycloak" {
       admin-password:
         stringData:
           KEYCLOAK_PASSWORD: ${var.keycloak_admin_password}
+
+    extraVolumeMounts: |
+      - name: theme
+        mountPath: /opt/jboss/keycloak/themes/custom
+
+    extraVolumes: |
+      - name: theme
+        emptyDir: {}
+
+    extraInitContainers: |
+      - name: keycloak-theme
+        image: ghcr.io/devium/kink-keycloak-theme
+        imagePullPolicy: Always
+        command:
+          - sh
+        args:
+          - -c
+          - |
+            echo "Copyting theme..."
+            cp -R /custom/* /theme
+        volumeMounts:
+          - name: theme
+            mountPath: /theme
     YAML
   ]
 }

@@ -13,6 +13,8 @@ ansible-galaxy install -r requirements.yml
 ### Create `secrets.yml`
 Create a `secrets.yml` in `inventories/{dev|prod}/group_vars/all/` and fill in the following values:
 ```yaml
+# Project name used in user-facing applications
+project_name: 
 # SSH key name as defined in Hetzner Cloud
 ssh_key: 
 # Fully qualified domain name of the desired root domain
@@ -23,16 +25,25 @@ hcloud_token:
 hdns_token: 
 # Hetzner DNS zone ID of the desired hosted zone (check URL in DNS console)
 hdns_zone_id: 
-# Random token used for communication between nodes on Kubernetes cluster setup
-rke2_token: 
-# Subdomain for the Jitsi server
-jitsi_subdomain: 
-# Email registered with the ACME SSL certificate server
-cert_email: 
-# Database root password
-db_root_password: 
 # ID of the database volume
 postgres_volume_handle: 
+# Subdomain for the servers/apps
+subdomains:
+  jitsi: 
+  keycloak: 
+# Email registered with the ACME SSL certificate server
+cert_email: 
+
+# Random tokens and passwords that may be generated
+
+# Token used for communication between nodes on Kubernetes cluster setup
+rke2_token: <generate>
+# Database user passwords
+db_passwords:
+  root: <generate>
+  keycloak: <generate>
+# Keycloak admin password
+keycloak_admin_password: <generate>
 ```
 
 ## Deployment
