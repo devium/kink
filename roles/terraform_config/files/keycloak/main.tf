@@ -25,15 +25,16 @@ resource "keycloak_realm" "realm" {
     supported_locales = ["ca","cs","da","de","en","es","fr","hu","it","ja","lt","nl","no","pl","pt-BR","ru","sk","sv","tr","zh-CN"]
     default_locale = "en"
   }
+}
 
-  default_default_client_scopes = [
-    "email",
-    "profile",
-    "role_list",
-    "roles",
-    "web-origins",
-    "groups"
-  ]
+# Get default client IDs
+data "keycloak_openid_client" "account" {
+  realm_id = keycloak_realm.realm.id
+  client_id = "account"
+}
+data "keycloak_openid_client" "account_console" {
+  realm_id = keycloak_realm.realm.id
+  client_id = "account-console"
 }
 
 resource "keycloak_openid_client" "jitsi" {
@@ -66,10 +67,6 @@ resource "keycloak_openid_client" "nextcloud" {
 
 
 # Allow users to delete their own account
-data "keycloak_openid_client" "account" {
-  realm_id = keycloak_realm.realm.id
-  client_id = "account"
-}
 data "keycloak_role" "delete_account" {
   realm_id = keycloak_realm.realm.id
   client_id = data.keycloak_openid_client.account.id
@@ -104,34 +101,115 @@ resource "keycloak_required_action" "delete_account" {
 }
 
 
-# Add groups to profile client scope
-resource "keycloak_openid_client_scope" "groups_scope" {
-  realm_id = keycloak_realm.realm.id
-  name = "groups"
-}
-
-resource "keycloak_openid_group_membership_protocol_mapper" "groups_mapper" {
-  realm_id = keycloak_realm.realm.id
-  name = "groups"
-  claim_name = "groups"
-  client_scope_id = keycloak_openid_client_scope.groups_scope.id
-  full_path = false
-}
-
-resource "keycloak_openid_client_default_scopes" "nextcloud_default_scopes" {
-  realm_id = keycloak_realm.realm.id
-  client_id = keycloak_openid_client.nextcloud.id
-
-  default_scopes = [
-    "profile",
-    "email",
-    "roles",
-    "web-origins",
-    keycloak_openid_client_scope.groups_scope.name,
-  ]
-}
-
 resource "keycloak_group" "admin" {
   realm_id = keycloak_realm.realm.id
   name = "admin"
+}
+
+
+# Google identity provider for SSO
+resource "keycloak_oidc_google_identity_provider" "google" {
+  realm = keycloak_realm.realm.id
+  client_id = var.google_identity_provider_client_id
+  client_secret = var.google_identity_provider_client_secret
+  trust_email = true
+}
+# Map first and last name to empty string so no hidden personal data is transferred
+resource "keycloak_custom_identity_provider_mapper" "firstname" {
+  realm = keycloak_realm.realm.id
+  name = "firstname"
+  identity_provider_alias = keycloak_oidc_google_identity_provider.google.alias
+  identity_provider_mapper = "hardcoded-attribute-idp-mapper"
+
+  extra_config = {
+    syncMode = "INHERIT"
+    attribute = "firstName"
+  }
+}
+resource "keycloak_custom_identity_provider_mapper" "lastname" {
+  realm = keycloak_realm.realm.id
+  name = "lastname"
+  identity_provider_alias = keycloak_oidc_google_identity_provider.google.alias
+  identity_provider_mapper = "hardcoded-attribute-idp-mapper"
+
+  extra_config = {
+    syncMode = "INHERIT"
+    attribute = "lastName"
+  }
+}
+# Use first name as default username
+resource "keycloak_custom_identity_provider_mapper" "username" {
+  realm = keycloak_realm.realm.id
+  name = "username"
+  identity_provider_alias = keycloak_oidc_google_identity_provider.google.alias
+  identity_provider_mapper = "google-user-attribute-mapper"
+
+  extra_config = {
+    syncMode = "INHERIT"
+    jsonField = "given_name"
+    userAttribute = "username"
+  }
+}
+
+
+# Create a custom profile scope
+resource "keycloak_openid_client_scope" "private_profile" {
+  realm_id = keycloak_realm.realm.id
+  name = "private_profile"
+}
+resource "keycloak_openid_group_membership_protocol_mapper" "groups" {
+  realm_id = keycloak_realm.realm.id
+  name = "groups"
+  claim_name = "groups"
+  client_scope_id = keycloak_openid_client_scope.private_profile.id
+  full_path = false
+}
+resource "keycloak_openid_user_property_protocol_mapper" "username" {
+  realm_id = keycloak_realm.realm.id
+  name = "username"
+  claim_name = "preferred_username"
+  user_property = "username"
+  client_scope_id = keycloak_openid_client_scope.private_profile.id
+}
+resource "keycloak_openid_user_property_protocol_mapper" "firstname" {
+  realm_id = keycloak_realm.realm.id
+  name = "firstname"
+  claim_name = "given_name"
+  user_property = "username"
+  client_scope_id = keycloak_openid_client_scope.private_profile.id
+}
+resource "keycloak_openid_hardcoded_claim_protocol_mapper" "lastname" {
+  realm_id = keycloak_realm.realm.id
+  name = "lastname"
+  claim_name = "family_name"
+  claim_value = " "
+  client_scope_id = keycloak_openid_client_scope.private_profile.id
+}
+resource "keycloak_openid_user_attribute_protocol_mapper" "locale" {
+  realm_id = keycloak_realm.realm.id
+  name = "locale"
+  claim_name = "locale"
+  user_attribute = "locale"
+  client_scope_id = keycloak_openid_client_scope.private_profile.id
+}
+
+# Replace profile from all non-admin client default scopes
+# TODO: The Terraform module might one day support realm-wide default scopes or "default default scopes"
+resource "keycloak_openid_client_default_scopes" "default_scopes" {
+  for_each = toset([
+    data.keycloak_openid_client.account.id,
+    data.keycloak_openid_client.account_console.id,
+    keycloak_openid_client.jitsi.id,
+    keycloak_openid_client.nextcloud.id
+  ])
+
+  realm_id = keycloak_realm.realm.id
+  client_id = each.value
+
+  default_scopes = [
+    "email",
+    "roles",
+    "web-origins",
+    keycloak_openid_client_scope.private_profile.name,
+  ]
 }

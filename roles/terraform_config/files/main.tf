@@ -23,4 +23,6 @@ module "keycloak" {
   keycloak_secrets = var.keycloak_secrets
   domain = var.domain
   subdomains = var.subdomains
+  google_identity_provider_client_id = var.google_identity_provider_client_id
+  google_identity_provider_client_secret = var.google_identity_provider_client_secret
 }

@@ -12,6 +12,8 @@ terraform_config_plan_file: "{{ role_path }}/files/terraform.tfstate.d/{{ terraf
 terraform_config_keycloak_secrets:
   jitsi:
   nextcloud:
+terraform_config_google_identity_provider_client_id:
+terraform_config_google_identity_provider_client_secret:
 
 terraform_config_variables:
   domain: "{{ terraform_config_domain }}"
@@ -19,3 +21,5 @@ terraform_config_variables:
   keycloak_admin_password: "{{ terraform_config_keycloak_admin_password }}"
   keycloak_realm: "{{ terraform_config_keycloak_realm }}"
   keycloak_secrets: "{{ terraform_config_keycloak_secrets | to_json }}"
+  google_identity_provider_client_id: "{{ terraform_config_google_identity_provider_client_id }}"
+  google_identity_provider_client_secret: "{{ terraform_config_google_identity_provider_client_secret }}"
