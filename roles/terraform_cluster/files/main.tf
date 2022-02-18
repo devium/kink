@@ -37,11 +37,12 @@ module "cert_manager" {
 
 module "jitsi" {
   source = "./jitsi"
-  floating_ipv4 = var.floating_ipv4
   domain = var.domain
   subdomains = var.subdomains
   release_name = var.release_name
   versions = var.versions
+  jitsi_jwt_secret = var.jitsi_jwt_secret
+  keycloak_realm = var.keycloak_realm
 }
 
 module "postgres" {

@@ -14,3 +14,7 @@ variable "keycloak_admin_password" {
 variable "keycloak_realm" {
   type = string
 }
+
+variable "keycloak_secrets" {
+  type = map
+}

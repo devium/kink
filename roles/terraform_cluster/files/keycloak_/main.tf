@@ -17,6 +17,7 @@ resource "helm_release" "keycloak" {
       enabled: true
       annotations:
         cert-manager.io/cluster-issuer: letsencrypt
+        nginx.ingress.kubernetes.io/proxy-buffer-size: "128k"
       rules:
         - host: ${local.keycloak_domain}
           paths:

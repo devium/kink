@@ -20,4 +20,7 @@ provider "keycloak" {
 module "keycloak" {
   source = "./keycloak"
   keycloak_realm = var.keycloak_realm
+  keycloak_secrets = var.keycloak_secrets
+  domain = var.domain
+  subdomains = var.subdomains
 }

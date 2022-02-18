@@ -33,11 +33,13 @@ terraform_cluster_hcloud_token: "{{ hcloud_token }}"
 terraform_cluster_floating_ipv4: "{{ floating_ip.ipv4_address }}"
 terraform_cluster_domain: "{{ domain }}"
 terraform_cluster_subdomains: "{{ subdomains }}"
-terraform_cluster_use_production_cert: "{{ stage == 'prod' }}"
+terraform_cluster_use_production_cert: true # "{{ stage == 'prod' }}"
 terraform_cluster_cert_email: "{{ cert_email }}"
 terraform_cluster_postgres_volume_handle: "{{ postgres_volume_handle }}"
 terraform_cluster_db_passwords: "{{ db_passwords }}"
 terraform_cluster_keycloak_admin_password: "{{ keycloak_admin_password }}"
+terraform_cluster_jitsi_jwt_secret: "{{ jitsi_jwt_secret }}"
+terraform_cluster_keycloak_realm: "{{ project_name }}"
 terraform_cluster_versions:
   jitsi: stable-6865
   jitsi_helm: v1.0.0
@@ -51,5 +53,6 @@ terraform_config_domain: "{{ domain }}"
 terraform_config_subdomains: "{{ subdomains }}"
 terraform_config_keycloak_admin_password: "{{ keycloak_admin_password }}"
 terraform_config_keycloak_realm: "{{ project_name }}"
+terraform_config_keycloak_secrets: "{{ keycloak_secrets }}"
 
 secrets_file: "{{ ansible_inventory_sources[0] | dirname }}/group_vars/all/secrets.yml"

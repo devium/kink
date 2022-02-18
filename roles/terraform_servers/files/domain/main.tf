@@ -45,3 +45,11 @@ resource "hetznerdns_record" "keycloak" {
   type = "CNAME"
   ttl = 300
 }
+
+resource "hetznerdns_record" "jitsi_keycloak" {
+  zone_id = var.hdns_zone_id
+  name = local.root_subdomain == ""? "${var.subdomains.jitsi_keycloak}.${var.subdomains.jitsi}" : "${var.subdomains.jitsi_keycloak}.${var.subdomains.jitsi}.${local.root_subdomain}"
+  value = "${var.domain}."
+  type = "CNAME"
+  ttl = 300
+}

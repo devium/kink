@@ -1,7 +1,3 @@
-variable "floating_ipv4" {
-  type = string
-}
-
 variable "domain" {
   type = string
 }
@@ -16,4 +12,13 @@ variable "release_name" {
 
 variable "versions" {
   type = map
+}
+
+variable "jitsi_jwt_secret" {
+  type = string
+  sensitive = true
+}
+
+variable "keycloak_realm" {
+  type = string
 }

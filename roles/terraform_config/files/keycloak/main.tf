@@ -26,3 +26,24 @@ resource "keycloak_realm" "realm" {
     default_locale = "en"
   }
 }
+
+locals {
+  urls = {
+    jitsi_keycloak = "https://${var.subdomains.jitsi_keycloak}.${var.subdomains.jitsi}.${var.domain}"
+  }
+}
+
+
+resource "keycloak_openid_client" "jitsi" {
+  realm_id = keycloak_realm.realm.id
+  client_id = "jitsi"
+
+  access_type = "PUBLIC"
+  client_secret = var.keycloak_secrets.jitsi
+
+  standard_flow_enabled = true
+  root_url = local.urls.jitsi_keycloak
+  web_origins = ["+"]
+  valid_redirect_uris = ["/*"]
+  admin_url = "/"
+}

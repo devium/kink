@@ -6,12 +6,15 @@ terraform_cluster_floating_ipv4:
 terraform_cluster_domain:
 terraform_cluster_subdomains:
   jitsi: jitsi
+  jitsi_keycloak: auth
   keycloak: keycloak
 terraform_cluster_use_production_cert: false
 terraform_cluster_cert_email:
 terraform_cluster_db_passwords:
   keycloak:
 terraform_cluster_keycloak_admin_password:
+terraform_cluster_jitsi_jwt_secret:
+terraform_cluster_keycloak_realm: primary
 terraform_cluster_versions:
   jitsi: stable-6726
   jitsi_helm: v1.0.0
@@ -34,3 +37,5 @@ terraform_cluster_variables:
   db_passwords: "{{ terraform_cluster_db_passwords | to_json }}"
   postgres_volume_handle: "{{ terraform_cluster_postgres_volume_handle }}"
   keycloak_admin_password: "{{ terraform_cluster_keycloak_admin_password }}"
+  jitsi_jwt_secret: "{{ terraform_cluster_jitsi_jwt_secret }}"
+  keycloak_realm: "{{ terraform_cluster_keycloak_realm }}"
