@@ -5,11 +5,13 @@ terraform_config_subdomains:
   jitsi: jitsi
   jitsi_keycloak: auth
   keycloak: keycloak
+  nextcloud: next
 terraform_config_keycloak_admin_password:
 terraform_config_keycloak_realm: primary
 terraform_config_plan_file: "{{ role_path }}/files/terraform.tfstate.d/{{ terraform_config_workspace }}/tfplan"
 terraform_config_keycloak_secrets:
   jitsi:
+  nextcloud:
 
 terraform_config_variables:
   domain: "{{ terraform_config_domain }}"

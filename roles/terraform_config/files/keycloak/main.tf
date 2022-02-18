@@ -25,14 +25,16 @@ resource "keycloak_realm" "realm" {
     supported_locales = ["ca","cs","da","de","en","es","fr","hu","it","ja","lt","nl","no","pl","pt-BR","ru","sk","sv","tr","zh-CN"]
     default_locale = "en"
   }
-}
 
-locals {
-  urls = {
-    jitsi_keycloak = "https://${var.subdomains.jitsi_keycloak}.${var.subdomains.jitsi}.${var.domain}"
-  }
+  default_default_client_scopes = [
+    "email",
+    "profile",
+    "role_list",
+    "roles",
+    "web-origins",
+    "groups"
+  ]
 }
-
 
 resource "keycloak_openid_client" "jitsi" {
   realm_id = keycloak_realm.realm.id
@@ -42,13 +44,28 @@ resource "keycloak_openid_client" "jitsi" {
   # client_secret = var.keycloak_secrets.jitsi
 
   standard_flow_enabled = true
-  root_url = local.urls.jitsi_keycloak
+  root_url = "https://${var.subdomains.jitsi_keycloak}.${var.subdomains.jitsi}.${var.domain}"
+  web_origins = ["+"]
+  valid_redirect_uris = ["/*"]
+  admin_url = "/"
+}
+
+resource "keycloak_openid_client" "nextcloud" {
+  realm_id = keycloak_realm.realm.id
+  client_id = "nextcloud"
+
+  access_type = "CONFIDENTIAL"
+  client_secret = var.keycloak_secrets.nextcloud
+
+  standard_flow_enabled = true
+  root_url = "https://${var.subdomains.nextcloud}.${var.domain}"
   web_origins = ["+"]
   valid_redirect_uris = ["/*"]
   admin_url = "/"
 }
 
 
+# Allow users to delete their own account
 data "keycloak_openid_client" "account" {
   realm_id = keycloak_realm.realm.id
   client_id = "account"
@@ -78,11 +95,43 @@ resource "keycloak_default_roles" "default_roles" {
     keycloak_role.client_default_roles
   ]
 }
-
 resource "keycloak_required_action" "delete_account" {
   realm_id = keycloak_realm.realm.id
   alias = "delete_account"
   name = "Delete Account"
   priority = 60
   enabled = true
+}
+
+
+# Add groups to profile client scope
+resource "keycloak_openid_client_scope" "groups_scope" {
+  realm_id = keycloak_realm.realm.id
+  name = "groups"
+}
+
+resource "keycloak_openid_group_membership_protocol_mapper" "groups_mapper" {
+  realm_id = keycloak_realm.realm.id
+  name = "groups"
+  claim_name = "groups"
+  client_scope_id = keycloak_openid_client_scope.groups_scope.id
+  full_path = false
+}
+
+resource "keycloak_openid_client_default_scopes" "nextcloud_default_scopes" {
+  realm_id = keycloak_realm.realm.id
+  client_id = keycloak_openid_client.nextcloud.id
+
+  default_scopes = [
+    "profile",
+    "email",
+    "roles",
+    "web-origins",
+    keycloak_openid_client_scope.groups_scope.name,
+  ]
+}
+
+resource "keycloak_group" "admin" {
+  realm_id = keycloak_realm.realm.id
+  name = "admin"
 }

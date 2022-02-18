@@ -6,7 +6,9 @@ terraform_servers_hdns_zone_id:
 terraform_servers_domain:
 terraform_cluster_subdomains:
   jitsi: jitsi
+  jitsi_keycloak: auth
   keycloak: keycloak
+  nextcloud: next
 terraform_servers_ssh_key:
 
 terraform_servers_inventory_file: "{{ ansible_inventory_sources[0] }}"
