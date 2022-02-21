@@ -1,5 +1,5 @@
 variable "versions" {
-  type = map
+  type = map(any)
 }
 
 variable "release_name" {
@@ -7,7 +7,7 @@ variable "release_name" {
 }
 
 variable "db_passwords" {
-  type = map
+  type      = map(any)
   sensitive = true
 }
 

@@ -4,7 +4,7 @@ terraform {
 
   required_providers {
     kubectl = {
-      source  = "gavinbunney/kubectl"
+      source = "gavinbunney/kubectl"
     }
   }
 }
@@ -21,47 +21,47 @@ provider "helm" {
 
 
 module "hetzner" {
-  source = "./hetzner"
+  source       = "./hetzner"
   hcloud_token = var.hcloud_token
-  versions = var.versions
+  versions     = var.versions
 }
 
 module "cert_manager" {
-  source = "./cert_manager"
+  source              = "./cert_manager"
   use_production_cert = var.use_production_cert
-  cert_email = var.cert_email
-  release_name = var.release_name
-  domain = var.domain
-  versions = var.versions
+  cert_email          = var.cert_email
+  release_name        = var.release_name
+  domain              = var.domain
+  versions            = var.versions
 }
 
 module "jitsi" {
-  source = "./jitsi"
-  domain = var.domain
-  subdomains = var.subdomains
-  release_name = var.release_name
-  versions = var.versions
+  source           = "./jitsi"
+  domain           = var.domain
+  subdomains       = var.subdomains
+  release_name     = var.release_name
+  versions         = var.versions
   jitsi_jwt_secret = var.jitsi_jwt_secret
-  keycloak_realm = var.keycloak_realm
+  keycloak_realm   = var.keycloak_realm
 }
 
 module "postgres" {
-  source = "./postgres"
-  release_name = var.release_name
-  versions = var.versions
-  db_passwords = var.db_passwords
+  source                 = "./postgres"
+  release_name           = var.release_name
+  versions               = var.versions
+  db_passwords           = var.db_passwords
   postgres_volume_handle = var.postgres_volume_handle
 }
 
 module "keycloak" {
   # Note on module folder name:
   # https://github.com/hashicorp/terraform-provider-helm/issues/735
-  source = "./keycloak_"
-  release_name = var.release_name
-  versions = var.versions
-  domain = var.domain
-  subdomains = var.subdomains
-  db_passwords = var.db_passwords
+  source                  = "./keycloak_"
+  release_name            = var.release_name
+  versions                = var.versions
+  domain                  = var.domain
+  subdomains              = var.subdomains
+  db_passwords            = var.db_passwords
   keycloak_admin_password = var.keycloak_admin_password
 
   depends_on = [
@@ -70,11 +70,11 @@ module "keycloak" {
 }
 
 module "homer" {
-  source = "./homer"
-  domain = var.domain
-  subdomains = var.subdomains
-  versions = var.versions
+  source             = "./homer"
+  domain             = var.domain
+  subdomains         = var.subdomains
+  versions           = var.versions
   homer_assets_image = var.homer_assets_image
-  project_name = var.project_name
-  keycloak_realm = var.keycloak_realm
+  project_name       = var.project_name
+  keycloak_realm     = var.keycloak_realm
 }

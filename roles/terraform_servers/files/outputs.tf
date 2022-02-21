@@ -6,14 +6,14 @@ resource "local_file" "AnsibleInventory" {
           (module.master.name) = {
             ansible_host = module.master.ipv4_address
             ipv6_address = module.master.ipv6_address
-            rke2_type = "server"
+            rke2_type    = "server"
           }
         },
         {
-          for k, worker in concat(module.worker): worker.name => {
+          for k, worker in concat(module.worker) : worker.name => {
             ansible_host = worker.ipv4_address
             ipv6_address = worker.ipv6_address
-            rke2_type = "agent"
+            rke2_type    = "agent"
           }
         }
       )
@@ -32,7 +32,7 @@ resource "local_file" "AnsibleInventory" {
         }
         workers = {
           hosts = {
-            for k, worker in module.worker: worker.name => null
+            for k, worker in module.worker : worker.name => null
           }
         }
         k8s_cluster = {

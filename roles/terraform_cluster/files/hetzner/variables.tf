@@ -1,8 +1,8 @@
 variable "hcloud_token" {
-  type = string
+  type      = string
   sensitive = true
 }
 
 variable "versions" {
-  type = map
+  type = map(any)
 }

@@ -3,7 +3,7 @@ variable "domain" {
 }
 
 variable "subdomains" {
-  type = map
+  type = map(any)
 }
 
 variable "release_name" {
@@ -11,11 +11,11 @@ variable "release_name" {
 }
 
 variable "versions" {
-  type = map
+  type = map(any)
 }
 
 variable "jitsi_jwt_secret" {
-  type = string
+  type      = string
   sensitive = true
 }
 

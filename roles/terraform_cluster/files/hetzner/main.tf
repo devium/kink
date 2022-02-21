@@ -1,7 +1,7 @@
 terraform {
   required_providers {
     kubectl = {
-      source  = "gavinbunney/kubectl"
+      source = "gavinbunney/kubectl"
     }
   }
 }
@@ -27,6 +27,6 @@ data "kubectl_file_documents" "csi_documents" {
 }
 
 resource "kubectl_manifest" "hcloud_csi" {
-  for_each = data.kubectl_file_documents.csi_documents.manifests
+  for_each  = data.kubectl_file_documents.csi_documents.manifests
   yaml_body = each.value
 }

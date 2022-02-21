@@ -7,11 +7,11 @@ terraform {
 }
 
 resource "hcloud_server" "node" {
-  name = var.name
-  image = var.image
+  name        = var.name
+  image       = var.image
   server_type = var.server_type
-  ssh_keys = var.ssh_keys
-  location = var.location
+  ssh_keys    = var.ssh_keys
+  location    = var.location
 
   network {
     network_id = var.network_id

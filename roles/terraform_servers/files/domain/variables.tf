@@ -3,7 +3,7 @@ variable "domain" {
 }
 
 variable "subdomains" {
-  type = map
+  type = map(any)
 }
 
 variable "floating_ipv4" {
@@ -15,7 +15,7 @@ variable "floating_ipv6" {
 }
 
 variable "hdns_token" {
-  type = string
+  type      = string
   sensitive = true
 }
 

@@ -1,10 +1,10 @@
 variable "hcloud_token" {
-  type = string
+  type      = string
   sensitive = true
 }
 
 variable "hdns_token" {
-  type = string
+  type      = string
   sensitive = true
 }
 
@@ -21,7 +21,7 @@ variable "domain" {
 }
 
 variable "subdomains" {
-  type = map
+  type = map(any)
 }
 
 variable "image" {

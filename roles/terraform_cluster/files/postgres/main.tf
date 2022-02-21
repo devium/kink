@@ -1,7 +1,7 @@
 terraform {
   required_providers {
     kubectl = {
-      source  = "gavinbunney/kubectl"
+      source = "gavinbunney/kubectl"
     }
   }
 }
@@ -84,14 +84,14 @@ resource "kubectl_manifest" "postgres_init_secret" {
 }
 
 resource "helm_release" "postgres" {
-  name = var.release_name
-  namespace = local.postgres_namespace
+  name             = var.release_name
+  namespace        = local.postgres_namespace
   create_namespace = true
 
   repository = "https://charts.bitnami.com/bitnami"
-  chart = "postgresql"
+  chart      = "postgresql"
 
-  values = [ <<-YAML
+  values = [<<-YAML
     image:
       tag: ${var.versions.postgres}
     global:

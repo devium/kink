@@ -1,7 +1,7 @@
 terraform {
   required_providers {
     kubectl = {
-      source  = "gavinbunney/kubectl"
+      source = "gavinbunney/kubectl"
     }
   }
 }
@@ -118,15 +118,15 @@ data "kubectl_file_documents" "homer_documents" {
     data:
       config.yml: |
         ${replace(templatefile("${path.module}/config.yml.tftpl", {
-          title = title(var.project_name),
-          subdomains = var.subdomains,
-          domain = var.domain,
-          keycloak_realm = var.keycloak_realm
-        }), "\n", "\n    ")}
+  title          = title(var.project_name),
+  subdomains     = var.subdomains,
+  domain         = var.domain,
+  keycloak_realm = var.keycloak_realm
+  }), "\n", "\n    ")}
       rooms.html: |
         ${replace(templatefile("${path.module}/rooms.html.tftpl", {
-          jitsi_domain = "${var.subdomains.jitsi}.${var.domain}"
-        }), "\n", "\n    ")}
+  jitsi_domain = "${var.subdomains.jitsi}.${var.domain}"
+}), "\n", "\n    ")}
 
     YAML
 }
@@ -141,7 +141,7 @@ resource "kubectl_manifest" "namespace" {
 }
 
 resource "kubectl_manifest" "homer" {
-  for_each = data.kubectl_file_documents.homer_documents.manifests
+  for_each  = data.kubectl_file_documents.homer_documents.manifests
   yaml_body = each.value
   depends_on = [
     kubectl_manifest.namespace

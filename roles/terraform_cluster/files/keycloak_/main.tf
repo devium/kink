@@ -1,18 +1,18 @@
 locals {
   keycloak_namespace = "keycloak"
-  keycloak_domain = "${var.subdomains.keycloak}.${var.domain}"
+  keycloak_domain    = "${var.subdomains.keycloak}.${var.domain}"
 }
 
 resource "helm_release" "keycloak" {
-  name = var.release_name
-  namespace = local.keycloak_namespace
+  name             = var.release_name
+  namespace        = local.keycloak_namespace
   create_namespace = true
 
   repository = "https://codecentric.github.io/helm-charts"
-  chart = "keycloak"
-  version = var.versions.keycloak_helm
+  chart      = "keycloak"
+  version    = var.versions.keycloak_helm
 
-  values = [ <<-YAML
+  values = [<<-YAML
     ingress:
       enabled: true
       annotations:

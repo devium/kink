@@ -3,7 +3,7 @@ variable "kubeconf_file" {
 }
 
 variable "hcloud_token" {
-  type = string
+  type      = string
   sensitive = true
 }
 
@@ -16,7 +16,7 @@ variable "domain" {
 }
 
 variable "subdomains" {
-  type = map
+  type = map(any)
 }
 
 variable "use_production_cert" {
@@ -32,11 +32,11 @@ variable "release_name" {
 }
 
 variable "versions" {
-  type = map
+  type = map(any)
 }
 
 variable "db_passwords" {
-  type = map
+  type      = map(any)
   sensitive = true
 }
 
@@ -45,12 +45,12 @@ variable "postgres_volume_handle" {
 }
 
 variable "keycloak_admin_password" {
-  type = string
+  type      = string
   sensitive = true
 }
 
 variable "jitsi_jwt_secret" {
-  type = string
+  type      = string
   sensitive = true
 }
 

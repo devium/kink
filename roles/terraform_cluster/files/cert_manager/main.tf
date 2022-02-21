@@ -1,7 +1,7 @@
 terraform {
   required_providers {
     kubectl = {
-      source  = "gavinbunney/kubectl"
+      source = "gavinbunney/kubectl"
     }
   }
 }
@@ -11,13 +11,13 @@ locals {
 }
 
 resource "helm_release" "cert_manager" {
-  name = var.release_name
-  namespace = "cert-manager"
+  name             = var.release_name
+  namespace        = "cert-manager"
   create_namespace = true
 
   repository = "https://charts.jetstack.io"
-  chart = "cert-manager"
-  version = var.versions.cert_manager_helm
+  chart      = "cert-manager"
+  version    = var.versions.cert_manager_helm
 
   values = [
     "installCRDs: true"

@@ -15,5 +15,5 @@ variable "domain" {
 }
 
 variable "versions" {
-  type = map
+  type = map(any)
 }

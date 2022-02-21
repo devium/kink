@@ -1,15 +1,15 @@
 terraform {
   required_providers {
     kubectl = {
-      source  = "gavinbunney/kubectl"
+      source = "gavinbunney/kubectl"
     }
   }
 }
 
 locals {
-  jitsi_domain = "${var.subdomains.jitsi}.${var.domain}"
+  jitsi_domain    = "${var.subdomains.jitsi}.${var.domain}"
   jitsi_namespace = "jitsi"
-  jvb_port_udp = 10000
+  jvb_port_udp    = 10000
 }
 
 resource "kubectl_manifest" "jitsi_namespace" {
@@ -39,15 +39,15 @@ resource "kubectl_manifest" "prosody_plugins" {
 }
 
 resource "helm_release" "jitsi" {
-  name = var.release_name
-  namespace = local.jitsi_namespace
+  name             = var.release_name
+  namespace        = local.jitsi_namespace
   create_namespace = true
 
   repository = "https://jitsi-contrib.github.io/jitsi-helm/"
-  chart = "jitsi-meet"
-  version = var.versions.jitsi_helm
+  chart      = "jitsi-meet"
+  version    = var.versions.jitsi_helm
 
-  values = [ <<-YAML
+  values = [<<-YAML
     publicURL: https://${local.jitsi_domain}
     enableAuth: true
 
@@ -244,6 +244,6 @@ data "kubectl_file_documents" "jitsi_keycloak_documents" {
 }
 
 resource "kubectl_manifest" "jitsi_keycloak" {
-  for_each = data.kubectl_file_documents.jitsi_keycloak_documents.manifests
+  for_each  = data.kubectl_file_documents.jitsi_keycloak_documents.manifests
   yaml_body = each.value
 }
