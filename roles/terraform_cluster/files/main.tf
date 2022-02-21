@@ -68,3 +68,13 @@ module "keycloak" {
     module.postgres
   ]
 }
+
+module "homer" {
+  source = "./homer"
+  domain = var.domain
+  subdomains = var.subdomains
+  versions = var.versions
+  homer_assets_image = var.homer_assets_image
+  project_name = var.project_name
+  keycloak_realm = var.keycloak_realm
+}

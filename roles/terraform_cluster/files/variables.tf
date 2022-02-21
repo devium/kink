@@ -57,3 +57,11 @@ variable "jitsi_jwt_secret" {
 variable "keycloak_realm" {
   type = string
 }
+
+variable "homer_assets_image" {
+  type = string
+}
+
+variable "project_name" {
+  type = string
+}

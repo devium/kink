@@ -65,14 +65,14 @@ resource "helm_release" "keycloak" {
 
     extraInitContainers: |
       - name: keycloak-theme
-        image: ghcr.io/devium/kink-keycloak-theme
+        image: ghcr.io/devium/kink-keycloak-theme:${var.versions.keycloak_theme}
         imagePullPolicy: Always
         command:
           - sh
         args:
           - -c
           - |
-            echo "Copyting theme..."
+            echo "Copying theme..."
             cp -R /custom/* /theme
         volumeMounts:
           - name: theme

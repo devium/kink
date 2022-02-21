@@ -9,6 +9,9 @@ terraform_cluster_subdomains:
   jitsi_keycloak: auth
   keycloak: keycloak
   nextcloud: next
+  homer: www
+  hedgedoc: doc
+  element: element
 terraform_cluster_use_production_cert: false
 terraform_cluster_cert_email:
 terraform_cluster_db_passwords:
@@ -16,13 +19,21 @@ terraform_cluster_db_passwords:
 terraform_cluster_keycloak_admin_password:
 terraform_cluster_jitsi_jwt_secret:
 terraform_cluster_keycloak_realm: primary
+terraform_cluster_homer_assets_image:
+terraform_cluster_project_name:
 terraform_cluster_versions:
   jitsi: stable-6726
   jitsi_helm: v1.0.0
+  jitsi_keycloak: v0.2.0
   hcloud_csi: v1.6.0
   cert_manager_helm: v1.7.1
   postgres: 14.1.0-debian-10-r80
   keycloak_helm: v17.0.2
+  keycloak_theme: v0.3.2
+  hedgedoc: 1.9.2
+  element: v1.10.4
+  nextcloud: v23.0.2
+  homer: 22.02.1
 
 terraform_cluster_plan_file: "{{ role_path }}/files/terraform.tfstate.d/{{ terraform_cluster_workspace }}/tfplan"
 
@@ -40,3 +51,5 @@ terraform_cluster_variables:
   keycloak_admin_password: "{{ terraform_cluster_keycloak_admin_password }}"
   jitsi_jwt_secret: "{{ terraform_cluster_jitsi_jwt_secret }}"
   keycloak_realm: "{{ terraform_cluster_keycloak_realm }}"
+  homer_assets_image: "{{ terraform_cluster_homer_assets_image }}"
+  project_name: "{{ terraform_cluster_project_name }}"

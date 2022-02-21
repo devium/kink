@@ -6,6 +6,9 @@ terraform_config_subdomains:
   jitsi_keycloak: auth
   keycloak: keycloak
   nextcloud: next
+  homer: www
+  hedgedoc: doc
+  element: element
 terraform_config_keycloak_admin_password:
 terraform_config_keycloak_realm: primary
 terraform_config_plan_file: "{{ role_path }}/files/terraform.tfstate.d/{{ terraform_config_workspace }}/tfplan"

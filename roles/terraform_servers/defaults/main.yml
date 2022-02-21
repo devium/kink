@@ -9,6 +9,9 @@ terraform_cluster_subdomains:
   jitsi_keycloak: auth
   keycloak: keycloak
   nextcloud: next
+  homer: www
+  hedgedoc: doc
+  element: element
 terraform_servers_ssh_key:
 
 terraform_servers_inventory_file: "{{ ansible_inventory_sources[0] }}"

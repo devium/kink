@@ -53,3 +53,11 @@ resource "hetznerdns_record" "jitsi_keycloak" {
   type = "CNAME"
   ttl = 300
 }
+
+resource "hetznerdns_record" "homer" {
+  zone_id = var.hdns_zone_id
+  name = local.root_subdomain == ""? var.subdomains.homer : "${var.subdomains.homer}.${local.root_subdomain}"
+  value = "${var.domain}."
+  type = "CNAME"
+  ttl = 300
+}

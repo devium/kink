@@ -132,7 +132,7 @@ resource "kubectl_manifest" "ingress_jitsi_jvb_patch" {
       name: rke2-ingress-nginx
       namespace: kube-system
     spec:
-      valuesContent: |-
+      valuesContent: |
         udp:
           ${local.jvb_port_udp}: "${local.jitsi_namespace}/${var.release_name}-jitsi-meet-jvb:${local.jvb_port_udp}"
     YAML
@@ -146,7 +146,7 @@ data "kubectl_file_documents" "jitsi_keycloak_documents" {
       name: jitsi-keycloak-config
       namespace: ${local.jitsi_namespace}
     stringData:
-      keycloak.json: |-
+      keycloak.json: |
         {
           "realm": "${var.keycloak_realm}",
           "auth-server-url": "https://${var.subdomains.keycloak}.${var.domain}/auth/",
@@ -179,7 +179,7 @@ data "kubectl_file_documents" "jitsi_keycloak_documents" {
         spec:
           containers:
             - name: jitsi-keycloak
-              image: ghcr.io/devium/jitsi-keycloak
+              image: ghcr.io/devium/jitsi-keycloak:${var.versions.jitsi_keycloak}
               ports:
                 - containerPort: 3000
               env:

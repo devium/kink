@@ -1,0 +1,147 @@
+<!doctype html>
+<html>
+<head>
+
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript">
+  function inheritStyle() {
+    if (parent) {
+      $("style", window.parent.document).clone().appendTo("head");
+      $("link[rel='stylesheet']", window.parent.document).clone().appendTo("head");
+    }
+  }
+
+  function requestNotificationPermission() {
+    if (!Notification) {
+      console.warn('Notifications not available.');
+      return;
+    }
+
+    if (Notification.permission !== 'granted') {
+      Notification.requestPermission();
+    }
+  }
+
+  function sortRoomsByName(a, b) {
+    return ((a.name < b.name) ? -1 : (a.name > b.name) ? 1 : 0);
+  }
+
+  var rooms = [];
+
+  function refresh(notifications_enabled) {
+    $.getJSON('https://${jitsi_domain}/rooms', function(data) {
+      data.rooms.sort(sortRoomsByName);
+
+      $("#rooms").empty();
+
+      if (data.num_rooms == 0) {
+        $("<p>Keine R&auml;ume offen.</p>").appendTo("#rooms");
+      } else if (data.num_rooms == 1) {
+        $("<p>1 offener Raum.</p>").appendTo("#rooms");
+      } else if (data.num_rooms > 1) {
+        $("<p>" + data.num_rooms +  " offene R&auml;ume.</p>").appendTo("#rooms");
+      }
+
+      var rooms_new = [];
+      
+      $.each(data.rooms, function(_, room) {
+        rooms_new.push(room.name);
+        renderRoom(room);
+        $.each(room.breakoutRooms, function(_, breakout_room) {
+          renderRoom(breakout_room, true);
+        })
+      });
+
+      if (notifications_enabled) {
+        var room_diff = $(rooms_new).not(rooms);
+        if (room_diff.length > 0) {
+          notify(room_diff[0]);
+        }
+      } 
+      rooms = rooms_new;
+
+      $("<p>R&auml;ume, die mit <i>_</i> beginnen, werden nicht gelistet.</p>").appendTo("#rooms");
+    });
+  };
+
+  function renderRoom(room, breakout=false) {
+    var row = $('<p>', { class: breakout ? "breakout-room" : "" });
+    if (!breakout) {
+      $('<a>', {
+        target: 'blank',
+        rel: 'noopener noreferrer',
+        href: 'https://${jitsi_domain}/' + room.name,
+        text: room.name,
+      })
+      .appendTo(row);
+    }    
+    $(document.createTextNode((breakout ? room.name : '') + ' (' + room.occupants.length + '): ' + $.map(room.occupants, function(occupant, _) {
+      return occupant.name;
+    }).join(', ')))
+    .appendTo(row);
+    
+    row.appendTo("#rooms");
+  }
+
+  function notify(room_name) {
+    if (Notification.permission !== 'granted') {
+      return;
+    }
+    else {
+      var notification = new Notification('Neuer Jitsi-Raum', {
+       icon: 'https://${jitsi_domain}/assets/icons/icon-any.png',
+       body: 'Ein neuer Jitsi-Raum wurde geöffnet: ' + room_name,
+      });
+      notification.onclick = function() {
+        window.open('https://${jitsi_domain}/' + room_name);
+      };
+    }
+  }
+
+  $(function() {
+    inheritStyle();
+    requestNotificationPermission();
+    refresh(false);
+    setInterval(function() {
+      refresh(true);
+    }, 10000);
+  });
+</script>
+
+<style>
+  body {
+    background-color: var(--card-background) !important;
+  }
+
+  div {
+    background-color: var(--card-background);
+    color: var(--text-subtitle);
+  }
+
+  .outer {
+    padding: 8px;
+  }
+
+  a {
+    color:  var(--highlight-secondary) !important;
+  }
+
+  a:hover {
+    color:  var(--highlight-hover) !important;
+  }
+
+  .breakout-room {
+    margin-left: 16px;
+  }
+</style>
+
+</head>
+
+<body>
+<div class="outer">
+  <div id = "rooms">
+  </div>
+</div>
+</body>
+
+</html>
