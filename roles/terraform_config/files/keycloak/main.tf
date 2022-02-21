@@ -25,6 +25,14 @@ resource "keycloak_realm" "realm" {
     supported_locales = ["ca","cs","da","de","en","es","fr","hu","it","ja","lt","nl","no","pl","pt-BR","ru","sk","sv","tr","zh-CN"]
     default_locale = "en"
   }
+
+  lifecycle {
+    ignore_changes = [
+      # Set by Ansible task
+      browser_flow,
+      default_default_client_scopes
+    ]
+  }
 }
 
 # Get default client IDs
@@ -37,6 +45,7 @@ data "keycloak_openid_client" "account_console" {
   client_id = "account-console"
 }
 
+# Create app clients
 resource "keycloak_openid_client" "jitsi" {
   realm_id = keycloak_realm.realm.id
   client_id = "jitsi"
@@ -50,7 +59,6 @@ resource "keycloak_openid_client" "jitsi" {
   valid_redirect_uris = ["/*"]
   admin_url = "/"
 }
-
 resource "keycloak_openid_client" "nextcloud" {
   realm_id = keycloak_realm.realm.id
   client_id = "nextcloud"
@@ -65,14 +73,12 @@ resource "keycloak_openid_client" "nextcloud" {
   admin_url = "/"
 }
 
-
 # Allow users to delete their own account
 data "keycloak_role" "delete_account" {
   realm_id = keycloak_realm.realm.id
   client_id = data.keycloak_openid_client.account.id
   name = "delete-account"
 }
-
 resource "keycloak_role" "client_default_roles" {
   realm_id = keycloak_realm.realm.id
   name = "client_default_roles"
@@ -101,6 +107,7 @@ resource "keycloak_required_action" "delete_account" {
 }
 
 
+# Add default groups
 resource "keycloak_group" "admin" {
   realm_id = keycloak_realm.realm.id
   name = "admin"
@@ -114,7 +121,7 @@ resource "keycloak_oidc_google_identity_provider" "google" {
   client_secret = var.google_identity_provider_client_secret
   trust_email = true
 }
-# Map first and last name to empty string so no hidden personal data is transferred
+# Map Google first and last name to empty string so no hidden personal data is transferred
 resource "keycloak_custom_identity_provider_mapper" "firstname" {
   realm = keycloak_realm.realm.id
   name = "firstname"
@@ -193,23 +200,121 @@ resource "keycloak_openid_user_attribute_protocol_mapper" "locale" {
   client_scope_id = keycloak_openid_client_scope.private_profile.id
 }
 
-# Replace profile from all non-admin client default scopes
-# TODO: The Terraform module might one day support realm-wide default scopes or "default default scopes"
-resource "keycloak_openid_client_default_scopes" "default_scopes" {
-  for_each = toset([
-    data.keycloak_openid_client.account.id,
-    data.keycloak_openid_client.account_console.id,
-    keycloak_openid_client.jitsi.id,
-    keycloak_openid_client.nextcloud.id
-  ])
 
+# Setup authentication flow including optional OTP, U2F, and WebAuthn Passwordless
+resource "keycloak_required_action" "webauthn_register" {
   realm_id = keycloak_realm.realm.id
-  client_id = each.value
-
-  default_scopes = [
-    "email",
-    "roles",
-    "web-origins",
-    keycloak_openid_client_scope.private_profile.name,
+  alias = "webauthn-register"
+  name = "Webauthn Register"
+  priority = 1001
+  enabled = true
+}
+resource "keycloak_required_action" "webauthn_register_passwordless" {
+  realm_id = keycloak_realm.realm.id
+  alias = "webauthn-register-passwordless"
+  name = "Webauthn Register Passwordless"
+  priority = 1002
+  enabled = true
+}
+# Top-level flow
+resource "keycloak_authentication_flow" "browser_custom" {
+  realm_id = keycloak_realm.realm.id
+  alias = "browser-custom"
+}
+resource "keycloak_authentication_execution" "cookie" {
+  realm_id = keycloak_realm.realm.id
+  parent_flow_alias = keycloak_authentication_flow.browser_custom.alias
+  authenticator = "auth-cookie"
+  requirement = "ALTERNATIVE"
+}
+resource "keycloak_authentication_execution" "identity_provider" {
+  realm_id = keycloak_realm.realm.id
+  parent_flow_alias = keycloak_authentication_flow.browser_custom.alias
+  authenticator = "identity-provider-redirector"
+  requirement = "ALTERNATIVE"
+  depends_on = [
+    keycloak_authentication_execution.cookie
+  ]
+}
+# Login subflow
+resource "keycloak_authentication_subflow" "login" {
+  realm_id = keycloak_realm.realm.id
+  parent_flow_alias = keycloak_authentication_flow.browser_custom.alias
+  alias = "login"
+  requirement = "ALTERNATIVE"
+  depends_on = [
+    keycloak_authentication_execution.identity_provider
+  ]
+}
+resource "keycloak_authentication_execution" "username" {
+  realm_id = keycloak_realm.realm.id
+  parent_flow_alias = keycloak_authentication_subflow.login.alias
+  authenticator = "auth-username-form"
+  requirement = "REQUIRED"
+}
+# Secrets subflow (password or passwordless)
+resource "keycloak_authentication_subflow" "secrets" {
+  realm_id = keycloak_realm.realm.id
+  parent_flow_alias = keycloak_authentication_subflow.login.alias
+  alias = "secrets"
+  requirement = "REQUIRED"
+  depends_on = [
+    keycloak_authentication_execution.username
+  ]
+}
+resource "keycloak_authentication_execution" "webauthn_passwordless" {
+  realm_id = keycloak_realm.realm.id
+  parent_flow_alias = keycloak_authentication_subflow.secrets.alias
+  authenticator = "webauthn-authenticator-passwordless"
+  requirement = "ALTERNATIVE"
+}
+# Regular password subflow
+resource "keycloak_authentication_subflow" "password" {
+  realm_id = keycloak_realm.realm.id
+  parent_flow_alias = keycloak_authentication_subflow.secrets.alias
+  alias = "password"
+  requirement = "ALTERNATIVE"
+  depends_on = [
+    keycloak_authentication_execution.webauthn_passwordless
+  ]
+}
+resource "keycloak_authentication_execution" "password" {
+  realm_id = keycloak_realm.realm.id
+  parent_flow_alias = keycloak_authentication_subflow.password.alias
+  authenticator = "auth-password-form"
+  requirement = "REQUIRED"
+}
+# Subflow for conditional secondary factors
+resource "keycloak_authentication_subflow" "second_factor" {
+  realm_id = keycloak_realm.realm.id
+  parent_flow_alias = keycloak_authentication_subflow.password.alias
+  alias = "second-factor"
+  requirement = "CONDITIONAL"
+  depends_on = [
+    keycloak_authentication_execution.password
+  ]
+}
+resource "keycloak_authentication_execution" "second_factor_condition" {
+  realm_id = keycloak_realm.realm.id
+  parent_flow_alias = keycloak_authentication_subflow.second_factor.alias
+  authenticator = "conditional-user-configured"
+  requirement = "REQUIRED"
+}
+resource "keycloak_authentication_execution" "webauthn" {
+  realm_id = keycloak_realm.realm.id
+  parent_flow_alias = keycloak_authentication_subflow.second_factor.alias
+  authenticator = "webauthn-authenticator"
+  requirement = "ALTERNATIVE"
+  depends_on = [
+    keycloak_authentication_execution.second_factor_condition
+  ]
+}
+resource "keycloak_authentication_execution" "otp" {
+  realm_id = keycloak_realm.realm.id
+  parent_flow_alias = keycloak_authentication_subflow.second_factor.alias
+  authenticator = "auth-otp-form"
+  requirement = "ALTERNATIVE"
+  depends_on = [
+    keycloak_authentication_execution.webauthn
   ]
 }

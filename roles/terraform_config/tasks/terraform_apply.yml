@@ -10,3 +10,26 @@
 - name: Print Terraform output
   debug:
     msg: "{{ terraform_result.stdout }}"
+
+# TODO: Include this in the terraform project once possible
+- name: Set realm's browser flow and default client scopes
+  community.general.keycloak_realm:
+    auth_keycloak_url: "https://{{ terraform_config_subdomains.keycloak }}.{{ terraform_config_domain }}/auth"
+    auth_realm: master
+    auth_username: admin
+    auth_password: "{{ terraform_config_keycloak_admin_password }}"
+    realm: "{{ terraform_config_keycloak_realm }}"
+    # https://github.com/mrparkers/terraform-provider-keycloak/issues/298
+    browser_flow: browser-custom
+    # TODO: Wait for a fix of https://github.com/ansible-collections/community.general/issues/4241
+    # default_default_client_scopes:
+    #   - email
+    #   - roles
+    #   - web-origins
+    #   - private-profile
+
+# TODO: See above
+- name: NOTE
+  debug:
+    msg: Please set realm's default client scopes manually to include "private_profile" instead of "profile"
+  changed_when: true
