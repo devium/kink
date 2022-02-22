@@ -1,5 +1,4 @@
 terraform_config_workspace: default
-
 terraform_config_domain:
 terraform_config_subdomains:
   jitsi: jitsi
@@ -9,6 +8,7 @@ terraform_config_subdomains:
   homer: www
   hedgedoc: doc
   element: element
+  matrix: matrix
 terraform_config_keycloak_admin_password:
 terraform_config_keycloak_realm: primary
 terraform_config_plan_file: "{{ role_path }}/files/terraform.tfstate.d/{{ terraform_config_workspace }}/tfplan"
@@ -17,7 +17,6 @@ terraform_config_keycloak_secrets:
   nextcloud:
 terraform_config_google_identity_provider_client_id:
 terraform_config_google_identity_provider_client_secret:
-
 terraform_config_variables:
   domain: "{{ terraform_config_domain }}"
   subdomains: "{{ terraform_config_subdomains | to_json }}"

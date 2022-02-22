@@ -61,3 +61,35 @@ resource "hetznerdns_record" "homer" {
   type    = "CNAME"
   ttl     = 300
 }
+
+resource "hetznerdns_record" "hedgedoc" {
+  zone_id = var.hdns_zone_id
+  name    = local.root_subdomain == "" ? var.subdomains.hedgedoc : "${var.subdomains.hedgedoc}.${local.root_subdomain}"
+  value   = "${var.domain}."
+  type    = "CNAME"
+  ttl     = 300
+}
+
+resource "hetznerdns_record" "nextcloud" {
+  zone_id = var.hdns_zone_id
+  name    = local.root_subdomain == "" ? var.subdomains.nextcloud : "${var.subdomains.nextcloud}.${local.root_subdomain}"
+  value   = "${var.domain}."
+  type    = "CNAME"
+  ttl     = 300
+}
+
+resource "hetznerdns_record" "matrix" {
+  zone_id = var.hdns_zone_id
+  name    = local.root_subdomain == "" ? var.subdomains.matrix : "${var.subdomains.matrix}.${local.root_subdomain}"
+  value   = "${var.domain}."
+  type    = "CNAME"
+  ttl     = 300
+}
+
+resource "hetznerdns_record" "element" {
+  zone_id = var.hdns_zone_id
+  name    = local.root_subdomain == "" ? var.subdomains.element : "${var.subdomains.element}.${local.root_subdomain}"
+  value   = "${var.domain}."
+  type    = "CNAME"
+  ttl     = 300
+}
