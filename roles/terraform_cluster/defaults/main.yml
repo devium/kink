@@ -21,6 +21,11 @@ terraform_cluster_jitsi_jwt_secret:
 terraform_cluster_keycloak_realm: primary
 terraform_cluster_homer_assets_image:
 terraform_cluster_project_name:
+terraform_cluster_hedgedoc_secret:
+terraform_cluster_keycloak_secrets:
+  jitsi:
+  nextcloud:
+  hedgedoc:
 terraform_cluster_versions:
   jitsi: stable-6726
   jitsi_helm: v1.0.0
@@ -53,3 +58,5 @@ terraform_cluster_variables:
   keycloak_realm: "{{ terraform_cluster_keycloak_realm }}"
   homer_assets_image: "{{ terraform_cluster_homer_assets_image }}"
   project_name: "{{ terraform_cluster_project_name }}"
+  hedgedoc_secret: "{{ terraform_cluster_hedgedoc_secret }}"
+  keycloak_secrets: "{{ terraform_cluster_keycloak_secrets | to_json }}"

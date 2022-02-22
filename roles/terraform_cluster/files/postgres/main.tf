@@ -76,6 +76,8 @@ resource "kubectl_manifest" "postgres_init_secret" {
       init.sql: |
         CREATE USER keycloak WITH PASSWORD '${var.db_passwords.keycloak}';
         CREATE DATABASE keycloak WITH OWNER keycloak;
+        CREATE USER hedgedoc WITH PASSWORD '${var.db_passwords.hedgedoc}';
+        CREATE DATABASE hedgedoc WITH OWNER hedgedoc;
     YAML
 
   depends_on = [

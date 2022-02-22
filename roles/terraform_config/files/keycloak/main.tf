@@ -72,6 +72,19 @@ resource "keycloak_openid_client" "nextcloud" {
   valid_redirect_uris   = ["/*"]
   admin_url             = "/"
 }
+resource "keycloak_openid_client" "hedgedoc" {
+  realm_id  = keycloak_realm.realm.id
+  client_id = "hedgedoc"
+
+  access_type   = "CONFIDENTIAL"
+  client_secret = var.keycloak_secrets.hedgedoc
+
+  standard_flow_enabled = true
+  root_url              = "https://${var.subdomains.hedgedoc}.${var.domain}"
+  web_origins           = ["+"]
+  valid_redirect_uris   = ["/*"]
+  admin_url             = "/"
+}
 
 # Allow users to delete their own account
 data "keycloak_role" "delete_account" {
@@ -197,6 +210,14 @@ resource "keycloak_openid_user_attribute_protocol_mapper" "locale" {
   name            = "locale"
   claim_name      = "locale"
   user_attribute  = "locale"
+  client_scope_id = keycloak_openid_client_scope.private_profile.id
+}
+# https://github.com/hedgedoc/hedgedoc/issues/56
+resource "keycloak_openid_user_property_protocol_mapper" "locale" {
+  realm_id        = keycloak_realm.realm.id
+  name            = "id"
+  claim_name      = "id"
+  user_property   = "id"
   client_scope_id = keycloak_openid_client_scope.private_profile.id
 }
 

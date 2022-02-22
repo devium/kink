@@ -3,7 +3,7 @@ variable "domain" {
 }
 
 variable "subdomains" {
-  type = map(any)
+  type = map(string)
 }
 
 variable "keycloak_admin_password" {
@@ -16,7 +16,7 @@ variable "keycloak_realm" {
 }
 
 variable "keycloak_secrets" {
-  type = map(any)
+  type = map(string)
 }
 
 variable "google_identity_provider_client_id" {

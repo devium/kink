@@ -21,7 +21,7 @@ variable "domain" {
 }
 
 variable "subdomains" {
-  type = map(any)
+  type = map(string)
 }
 
 variable "image" {

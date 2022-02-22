@@ -19,7 +19,16 @@ variable "db_passwords" {
   sensitive = true
 }
 
-variable "keycloak_admin_password" {
+variable "keycloak_realm" {
+  type = string
+}
+
+variable "hedgedoc_secret" {
   type      = string
+  sensitive = true
+}
+
+variable "keycloak_secrets" {
+  type      = map(string)
   sensitive = true
 }

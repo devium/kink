@@ -78,3 +78,15 @@ module "homer" {
   project_name       = var.project_name
   keycloak_realm     = var.keycloak_realm
 }
+
+module "hedgedoc" {
+  source           = "./hedgedoc_"
+  release_name     = var.release_name
+  versions         = var.versions
+  domain           = var.domain
+  subdomains       = var.subdomains
+  db_passwords     = var.db_passwords
+  hedgedoc_secret  = var.hedgedoc_secret
+  keycloak_realm   = var.keycloak_realm
+  keycloak_secrets = var.keycloak_secrets
+}

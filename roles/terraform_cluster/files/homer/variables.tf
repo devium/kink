@@ -1,5 +1,5 @@
 variable "versions" {
-  type = map(any)
+  type = map(string)
 }
 
 variable "domain" {
@@ -7,7 +7,7 @@ variable "domain" {
 }
 
 variable "subdomains" {
-  type = map(any)
+  type = map(string)
 }
 
 variable "homer_assets_image" {

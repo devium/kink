@@ -4,5 +4,5 @@ variable "hcloud_token" {
 }
 
 variable "versions" {
-  type = map(any)
+  type = map(string)
 }
