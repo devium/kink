@@ -1,10 +1,10 @@
 locals {
-  hedgedoc_namespace = "hedgedoc"
+  namespace = "hedgedoc"
 }
 
 resource "helm_release" "hedgedoc" {
   name             = var.release_name
-  namespace        = local.hedgedoc_namespace
+  namespace        = local.namespace
   create_namespace = true
 
   repository = "https://nicholaswilde.github.io/helm-charts/"

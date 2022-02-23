@@ -7,12 +7,13 @@ terraform {
 }
 
 locals {
+  namespace   = "cert-manager"
   acme_server = "https://acme${var.use_production_cert ? "" : "-staging"}-v02.api.letsencrypt.org/directory"
 }
 
 resource "helm_release" "cert_manager" {
   name             = var.release_name
-  namespace        = "cert-manager"
+  namespace        = local.namespace
   create_namespace = true
 
   repository = "https://charts.jetstack.io"
@@ -30,7 +31,7 @@ resource "kubectl_manifest" "cert_issuer" {
     kind: ClusterIssuer
     metadata:
       name: letsencrypt
-      namespace: cert-manager
+      namespace: ${local.namespace}
     spec:
       acme:
         server: ${local.acme_server}

@@ -7,7 +7,7 @@ terraform {
 }
 
 locals {
-  homer_namespace = "homer"
+  namespace = "homer"
 }
 
 data "kubectl_file_documents" "homer_documents" {
@@ -16,7 +16,7 @@ data "kubectl_file_documents" "homer_documents" {
     kind: Deployment
     metadata:
       name: homer
-      namespace: ${local.homer_namespace}
+      namespace: ${local.namespace}
       labels:
         app: homer
     spec:
@@ -72,7 +72,7 @@ data "kubectl_file_documents" "homer_documents" {
     kind: Service
     metadata:
       name: homer
-      namespace: ${local.homer_namespace}
+      namespace: ${local.namespace}
     spec:
       selector:
         app: homer
@@ -86,7 +86,7 @@ data "kubectl_file_documents" "homer_documents" {
     kind: Ingress
     metadata:
       name: homer
-      namespace: ${local.homer_namespace}
+      namespace: ${local.namespace}
       annotations:
         cert-manager.io/cluster-issuer: letsencrypt
         nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
@@ -114,7 +114,7 @@ data "kubectl_file_documents" "homer_documents" {
     kind: ConfigMap
     metadata:
       name: config
-      namespace: ${local.homer_namespace}
+      namespace: ${local.namespace}
     data:
       config.yml: |
         ${replace(templatefile("${path.module}/config.yml.tftpl", {
@@ -136,7 +136,7 @@ resource "kubectl_manifest" "namespace" {
     apiVersion: v1
     kind: Namespace
     metadata:
-      name: ${local.homer_namespace}
+      name: ${local.namespace}
     YAML
 }
 

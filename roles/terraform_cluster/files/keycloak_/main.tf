@@ -1,11 +1,11 @@
 locals {
-  keycloak_namespace = "keycloak"
-  keycloak_domain    = "${var.subdomains.keycloak}.${var.domain}"
+  namespace       = "keycloak"
+  keycloak_domain = "${var.subdomains.keycloak}.${var.domain}"
 }
 
 resource "helm_release" "keycloak" {
   name             = var.release_name
-  namespace        = local.keycloak_namespace
+  namespace        = local.namespace
   create_namespace = true
 
   repository = "https://codecentric.github.io/helm-charts"

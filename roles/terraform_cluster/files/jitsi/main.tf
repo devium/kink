@@ -7,17 +7,17 @@ terraform {
 }
 
 locals {
-  jitsi_domain    = "${var.subdomains.jitsi}.${var.domain}"
-  jitsi_namespace = "jitsi"
-  jvb_port_udp    = 10000
+  jitsi_domain = "${var.subdomains.jitsi}.${var.domain}"
+  namespace    = "jitsi"
+  jvb_port_udp = 10000
 }
 
-resource "kubectl_manifest" "jitsi_namespace" {
+resource "kubectl_manifest" "namespace" {
   yaml_body = <<-YAML
     apiVersion: v1
     kind: Namespace
     metadata:
-      name: ${local.jitsi_namespace}
+      name: ${local.namespace}
   YAML
 }
 
@@ -27,20 +27,20 @@ resource "kubectl_manifest" "prosody_plugins" {
     kind: ConfigMap
     metadata:
       name: prosody-plugins
-      namespace: ${local.jitsi_namespace}
+      namespace: ${local.namespace}
     data:
-      mod_muc_rooms.lua: |-
+      mod_muc_rooms.lua: |
         ${replace(file("${path.module}/mod_muc_rooms.lua"), "\n", "\n    ")}
     YAML
 
   depends_on = [
-    kubectl_manifest.jitsi_namespace
+    kubectl_manifest.namespace
   ]
 }
 
 resource "helm_release" "jitsi" {
   name             = var.release_name
-  namespace        = local.jitsi_namespace
+  namespace        = local.namespace
   create_namespace = true
 
   repository = "https://jitsi-contrib.github.io/jitsi-helm/"
@@ -134,7 +134,7 @@ resource "kubectl_manifest" "ingress_jitsi_jvb_patch" {
     spec:
       valuesContent: |
         udp:
-          ${local.jvb_port_udp}: "${local.jitsi_namespace}/${var.release_name}-jitsi-meet-jvb:${local.jvb_port_udp}"
+          ${local.jvb_port_udp}: "${local.namespace}/${var.release_name}-jitsi-meet-jvb:${local.jvb_port_udp}"
     YAML
 }
 
@@ -144,7 +144,7 @@ data "kubectl_file_documents" "jitsi_keycloak_documents" {
     kind: Secret
     metadata:
       name: jitsi-keycloak-config
-      namespace: ${local.jitsi_namespace}
+      namespace: ${local.namespace}
     stringData:
       keycloak.json: |
         {
@@ -163,7 +163,7 @@ data "kubectl_file_documents" "jitsi_keycloak_documents" {
     kind: Deployment
     metadata:
       name: jitsi-keycloak
-      namespace: ${local.jitsi_namespace}
+      namespace: ${local.namespace}
       labels:
         app: jitsi-keycloak
     spec:
@@ -205,7 +205,7 @@ data "kubectl_file_documents" "jitsi_keycloak_documents" {
     kind: Service
     metadata:
       name: jitsi-keycloak
-      namespace: ${local.jitsi_namespace}
+      namespace: ${local.namespace}
     spec:
       selector:
         app: jitsi-keycloak
@@ -219,7 +219,7 @@ data "kubectl_file_documents" "jitsi_keycloak_documents" {
     kind: Ingress
     metadata:
       name: jitsi-keycloak
-      namespace: ${local.jitsi_namespace}
+      namespace: ${local.namespace}
       annotations:
         cert-manager.io/cluster-issuer: letsencrypt
 

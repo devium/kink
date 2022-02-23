@@ -90,3 +90,14 @@ module "hedgedoc" {
   keycloak_realm   = var.keycloak_realm
   keycloak_secrets = var.keycloak_secrets
 }
+
+module "nextcloud" {
+  source                   = "./nextcloud_"
+  release_name             = var.release_name
+  versions                 = var.versions
+  domain                   = var.domain
+  subdomains               = var.subdomains
+  db_passwords             = var.db_passwords
+  nextcloud_volume_handle  = var.nextcloud_volume_handle
+  nextcloud_admin_password = var.nextcloud_admin_password
+}

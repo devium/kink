@@ -75,3 +75,12 @@ variable "keycloak_secrets" {
   type      = map(string)
   sensitive = true
 }
+
+variable "nextcloud_volume_handle" {
+  type = string
+}
+
+variable "nextcloud_admin_password" {
+  type      = string
+  sensitive = true
+}

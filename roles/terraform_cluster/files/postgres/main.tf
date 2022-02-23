@@ -7,25 +7,25 @@ terraform {
 }
 
 locals {
-  postgres_namespace = "postgres"
+  namespace = "postgres"
 }
 
-resource "kubectl_manifest" "postgres_namespace" {
+resource "kubectl_manifest" "namespace" {
   yaml_body = <<-YAML
     apiVersion: v1
     kind: Namespace
     metadata:
-      name: ${local.postgres_namespace}
+      name: ${local.namespace}
   YAML
 }
 
-resource "kubectl_manifest" "postgres_volume" {
+resource "kubectl_manifest" "volume" {
   yaml_body = <<-YAML
     apiVersion: v1
     kind: PersistentVolume
     metadata:
       name: postgres-volume
-      namespace: ${local.postgres_namespace}
+      namespace: ${local.namespace}
     spec:
       accessModes:
         - ReadWriteOnce
@@ -39,17 +39,17 @@ resource "kubectl_manifest" "postgres_volume" {
     YAML
 
   depends_on = [
-    kubectl_manifest.postgres_namespace
+    kubectl_manifest.namespace
   ]
 }
 
-resource "kubectl_manifest" "postgres_pvc" {
+resource "kubectl_manifest" "pvc" {
   yaml_body = <<-YAML
     apiVersion: v1
     kind: PersistentVolumeClaim
     metadata:
       name: postgres-pvc
-      namespace: ${local.postgres_namespace}
+      namespace: ${local.namespace}
     spec:
       accessModes:
         - ReadWriteOnce
@@ -61,33 +61,35 @@ resource "kubectl_manifest" "postgres_pvc" {
     YAML
 
   depends_on = [
-    kubectl_manifest.postgres_namespace
+    kubectl_manifest.namespace
   ]
 }
 
-resource "kubectl_manifest" "postgres_init_secret" {
+resource "kubectl_manifest" "init_secret" {
   yaml_body = <<-YAML
     apiVersion: v1
     kind: Secret
     metadata:
       name: postgres-init
-      namespace: ${local.postgres_namespace}
+      namespace: ${local.namespace}
     stringData:
       init.sql: |
         CREATE USER keycloak WITH PASSWORD '${var.db_passwords.keycloak}';
         CREATE DATABASE keycloak WITH OWNER keycloak;
         CREATE USER hedgedoc WITH PASSWORD '${var.db_passwords.hedgedoc}';
         CREATE DATABASE hedgedoc WITH OWNER hedgedoc;
+        CREATE USER nextcloud WITH PASSWORD '${var.db_passwords.nextcloud}';
+        CREATE DATABASE nextcloud WITH OWNER nextcloud;
     YAML
 
   depends_on = [
-    kubectl_manifest.postgres_namespace
+    kubectl_manifest.namespace
   ]
 }
 
 resource "helm_release" "postgres" {
   name             = var.release_name
-  namespace        = local.postgres_namespace
+  namespace        = local.namespace
   create_namespace = true
 
   repository = "https://charts.bitnami.com/bitnami"
@@ -111,6 +113,6 @@ resource "helm_release" "postgres" {
   ]
 
   depends_on = [
-    kubectl_manifest.postgres_init_secret
+    kubectl_manifest.init_secret
   ]
 }
