@@ -15,5 +15,7 @@
     pod: "{{ pods_result.resources[0].metadata.name }}"
     command: su -s /bin/bash -c '/var/www/html/occ config:{{ category }}:set {{ app }} {{ item.key }} --value "{{ value_sanitized }}"' www-data
   vars:
-    value_sanitized: "{{ item.value if item.value is string else item.value | to_json | replace('\"', '\\\"') }}"
-  when: get_result.stdout | length == 0 or get_result.stdout[:-1] != (item.value if item.value is string else item.value | to_json)
+    # Note: We need doubly escaped quotes so the command passes unaltered through `bash -c`, and all spaces removed
+    # so we end up with an identical value as the UI would produce.
+    value_sanitized: "{{ item.value if item.value is string else item.value | to_json | replace('\"', '\\\"') | replace(' ', '') }}"
+  when: get_result.stdout | length == 0 or (get_result.stdout[:-1] != item.value and get_result.stdout | from_json != item.value)

@@ -35,6 +35,9 @@ config_nextcloud_config:
   - app: system
     key: skeletondirectory
     value: ""
+  - app: files
+    key: default_quota
+    value: "250 MB"
   - app: sociallogin
     key: disable_registration
     value: ""
@@ -86,7 +89,7 @@ config_nextcloud_config:
             "scope": "openid",
             "groupsClaim": "groups",
             "style": "keycloak",
-            "defaultGroup": "default",
+            "defaultGroup": "",
             "groupMapping": {
               "admin": "admin"
             }
