@@ -1,0 +1,95 @@
+config_kubeconf_file: 
+config_nextcloud_namespace: nextcloud
+config_release_name: primary
+config_domain:
+config_subdomains:
+  jitsi: jitsi
+  jitsi_keycloak: auth
+  keycloak: keycloak
+  nextcloud: next
+  homer: www
+  hedgedoc: doc
+  element: element
+  matrix: matrix
+config_keycloak_realm:
+config_keycloak_secrets:
+  jitsi:
+  nextcloud:
+  hedgedoc:
+config_nextcloud_install_apps:
+  - calendar
+  - deck
+  - sociallogin
+config_nextcloud_disable_apps:
+  - circles
+  - dashboard
+  - federation
+  - firstrunwizard
+config_nextcloud_config:
+  - app: system
+    key: allow_user_to_change_display_name
+    value: "false"
+  - app: system
+    key: hide_login_form
+    value: "true"
+  - app: system
+    key: skeletondirectory
+    value: ""
+  - app: sociallogin
+    key: disable_registration
+    value: ""
+  - app: sociallogin
+    key: create_disabled_users
+    value: ""
+  - app: sociallogin
+    key: allow_login_connect
+    value: "1"
+  - app: sociallogin
+    key: prevent_create_email_exists
+    value: ""
+  - app: sociallogin
+    key: update_profile_on_login
+    value: "1"
+  - app: sociallogin
+    key: no_prune_user_groups
+    value: ""
+  - app: sociallogin
+    key: auto_create_groups
+    value: ""
+  - app: sociallogin
+    key: restrict_users_wo_mapped_groups
+    value: ""
+  - app: sociallogin
+    key: restrict_users_wo_assigned_groups
+    value: ""
+  - app: sociallogin
+    key: disable_notify_admins
+    value: ""
+  - app: sociallogin
+    key: hide_default_login
+    value: "1"
+  - app: sociallogin
+    key: custom_providers
+    value:
+      {
+        "custom_oidc": [
+          {
+            "name": "keycloak",
+            "title": "Keycloak",
+            "authorizeUrl": "https://{{ config_subdomains.keycloak }}.{{ config_domain }}/auth/realms/{{ config_keycloak_realm }}/protocol/openid-connect/auth",
+            "tokenUrl": "https://{{ config_subdomains.keycloak }}.{{ config_domain }}/auth/realms/{{ config_keycloak_realm }}/protocol/openid-connect/token",
+            "displayNameClaim": "",
+            "userInfoUrl": "https://{{ config_subdomains.keycloak }}.{{ config_domain }}/auth/realms/{{ config_keycloak_realm }}/protocol/openid-connect/userinfo",
+            "logoutUrl": "",
+            "clientId": "nextcloud",
+            "clientSecret": "{{ config_keycloak_secrets.nextcloud }}",
+            "scope": "openid",
+            "groupsClaim": "groups",
+            "style": "keycloak",
+            "defaultGroup": "default",
+            "groupMapping": {
+              "admin": "admin"
+            }
+          }
+        ]
+      }

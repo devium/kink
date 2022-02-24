@@ -1,0 +1,16 @@
+- name: Find Nextcloud pod
+  kubernetes.core.k8s_info:
+    kubeconfig: "{{ config_kubeconf_file }}"
+    kind: pods
+    namespace: "{{ config_nextcloud_namespace }}"
+    label_selectors:
+      - app.kubernetes.io/name = nextcloud
+  register: pods_result
+
+- import_tasks: config_nextcloud_apps.yml
+
+- include_tasks: config_nextcloud_set_property.yml
+  with_items: "{{ config_nextcloud_config }}"
+  vars:
+    category: "{{ 'system' if item.app == 'system' else 'app' }}"
+    app: "{{ '' if item.app == 'system' else item.app }}"

@@ -72,3 +72,9 @@ terraform_config_google_identity_provider_client_id: "{{ google_identity_provide
 terraform_config_google_identity_provider_client_secret: "{{ google_identity_provider_client_secret }}"
 
 secrets_file: "{{ ansible_inventory_sources[0] | dirname }}/group_vars/all/secrets.yml"
+
+config_cluster_kubeconf_file: "{{ rke2_download_kubeconf_path }}/{{ rke2_download_kubeconf_file_name }}"
+config_domain: "{{ domain }}"
+config_subdomains: "{{ subdomains }}"
+config_keycloak_realm: "{{ project_name }}"
+config_keycloak_secrets: "{{ keycloak_secrets }}"

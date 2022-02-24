@@ -8,6 +8,7 @@
 ### Install Ansible modules
 ```bash
 ansible-galaxy install -r requirements.yml
+pip install kubernetes
 ```
 
 ### Create `secrets.yml`
@@ -27,12 +28,24 @@ hdns_token:
 hdns_zone_id: 
 # ID of the database volume
 postgres_volume_handle: 
-# Subdomain for the servers/apps
+nextcloud_volume_handle: 
+# Subdomain for servers/apps
 subdomains:
   jitsi: 
+  jitsi_keycloak: 
   keycloak: 
+  nextcloud: 
+  homer: 
+  hedgedoc: 
+  element: 
+  matrix: 
 # Email registered with the ACME SSL certificate server
 cert_email: 
+# Google SSO client ID and secret
+google_identity_provider_client_id: 
+google_identity_provider_client_secret: 
+# Container image used for Homer dashboard assets and configuration
+homer_assets_image: 
 
 # Random tokens and passwords that may be generated
 
@@ -42,8 +55,17 @@ rke2_token: <generate>
 db_passwords:
   root: <generate>
   keycloak: <generate>
-# Keycloak admin password
+  hedgedoc: <generate>
+  nextcloud: <generate>
 keycloak_admin_password: <generate>
+# Keycloak confidential client secrets
+keycloak_secrets:
+  jitsi: <generate>
+  nextcloud: <generate>
+  hedgedoc: <generate>
+jitsi_jwt_secret: <generate>
+hedgedoc_secret: <generate>
+nextcloud_admin_password: <generate>
 ```
 
 ## Deployment

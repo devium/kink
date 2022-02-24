@@ -21,15 +21,3 @@
     realm: "{{ terraform_config_keycloak_realm }}"
     # https://github.com/mrparkers/terraform-provider-keycloak/issues/298
     browser_flow: browser-custom
-    # TODO: Wait for a fix of https://github.com/ansible-collections/community.general/issues/4241
-    # default_default_client_scopes:
-    #   - email
-    #   - roles
-    #   - web-origins
-    #   - private-profile
-
-# TODO: See above
-- name: NOTE
-  debug:
-    msg: Please set realm's default client scopes manually to include "private_profile" instead of "profile"
-  changed_when: true

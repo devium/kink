@@ -222,6 +222,30 @@ resource "keycloak_openid_user_property_protocol_mapper" "locale" {
 }
 
 
+# Add new profile to client default scopes
+locals {
+  client_ids = [
+    data.keycloak_openid_client.account.id,
+    data.keycloak_openid_client.account_console.id,
+    keycloak_openid_client.jitsi.id,
+    keycloak_openid_client.nextcloud.id,
+    keycloak_openid_client.hedgedoc.id
+  ]
+}
+resource "keycloak_openid_client_default_scopes" "defaults" {
+  for_each = toset(local.client_ids)
+  realm_id = keycloak_realm.realm.id
+  client_id = each.key
+
+  default_scopes = [
+    keycloak_openid_client_scope.private_profile.name,
+    "email",
+    "roles",
+    "web-origins"
+  ]
+}
+
+
 # Setup authentication flow including optional OTP, U2F, and WebAuthn Passwordless
 resource "keycloak_required_action" "webauthn_register" {
   realm_id = keycloak_realm.realm.id

@@ -1,0 +1,19 @@
+- name: "Get Nextcloud {{ item.app }} property {{ item.key }}"
+  kubernetes.core.k8s_exec:
+    kubeconfig: "{{ config_kubeconf_file }}"
+    namespace: "{{ config_nextcloud_namespace }}"
+    pod: "{{ pods_result.resources[0].metadata.name }}"
+    command: "su -s /bin/bash -c '/var/www/html/occ config:{{ category }}:get {{ app }} {{ item.key }}' www-data"
+  register: get_result
+  failed_when: get_result.rc != 0 and get_result.stderr | length > 0
+  changed_when: false
+
+- name: "Set Nextcloud {{ item.app }} property {{ item.key }}"
+  kubernetes.core.k8s_exec:
+    kubeconfig: "{{ config_kubeconf_file }}"
+    namespace: "{{ config_nextcloud_namespace }}"
+    pod: "{{ pods_result.resources[0].metadata.name }}"
+    command: su -s /bin/bash -c '/var/www/html/occ config:{{ category }}:set {{ app }} {{ item.key }} --value "{{ value_sanitized }}"' www-data
+  vars:
+    value_sanitized: "{{ item.value if item.value is string else item.value | to_json | replace('\"', '\\\"') }}"
+  when: get_result.stdout | length == 0 or get_result.stdout[:-1] != (item.value if item.value is string else item.value | to_json)
