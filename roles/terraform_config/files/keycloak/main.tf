@@ -85,6 +85,19 @@ resource "keycloak_openid_client" "hedgedoc" {
   valid_redirect_uris   = ["/*"]
   admin_url             = "/"
 }
+resource "keycloak_openid_client" "synapse" {
+  realm_id  = keycloak_realm.realm.id
+  client_id = "synapse"
+
+  access_type   = "CONFIDENTIAL"
+  client_secret = var.keycloak_secrets.synapse
+
+  standard_flow_enabled = true
+  root_url              = "https://${var.subdomains.synapse}.${var.domain}"
+  web_origins           = ["+"]
+  valid_redirect_uris   = ["/*"]
+  admin_url             = "/"
+}
 
 # Allow users to delete their own account
 data "keycloak_role" "delete_account" {
@@ -229,13 +242,14 @@ locals {
     data.keycloak_openid_client.account_console.id,
     keycloak_openid_client.jitsi.id,
     keycloak_openid_client.nextcloud.id,
-    keycloak_openid_client.hedgedoc.id
+    keycloak_openid_client.hedgedoc.id,
+    keycloak_openid_client.synapse.id
   ]
 }
 resource "keycloak_openid_client_default_scopes" "defaults" {
-  for_each  = toset(local.client_ids)
+  count     = length(local.client_ids)
   realm_id  = keycloak_realm.realm.id
-  client_id = each.key
+  client_id = local.client_ids[count.index]
 
   default_scopes = [
     keycloak_openid_client_scope.private_profile.name,

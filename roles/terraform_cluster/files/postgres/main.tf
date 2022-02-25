@@ -80,6 +80,8 @@ resource "kubectl_manifest" "init_secret" {
         CREATE DATABASE hedgedoc WITH OWNER hedgedoc;
         CREATE USER nextcloud WITH PASSWORD '${var.db_passwords.nextcloud}';
         CREATE DATABASE nextcloud WITH OWNER nextcloud;
+        CREATE USER synapse WITH PASSWORD '${var.db_passwords.synapse}';
+        CREATE DATABASE synapse WITH OWNER synapse LC_COLLATE 'C' LC_CTYPE 'C' TEMPLATE template0;
     YAML
 
   depends_on = [

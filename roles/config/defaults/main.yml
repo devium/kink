@@ -10,7 +10,7 @@ config_subdomains:
   homer: www
   hedgedoc: doc
   element: element
-  matrix: matrix
+  synapse: matrix
 config_keycloak_realm:
 config_keycloak_secrets:
   jitsi:

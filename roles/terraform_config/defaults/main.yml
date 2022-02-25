@@ -8,7 +8,7 @@ terraform_config_subdomains:
   homer: www
   hedgedoc: doc
   element: element
-  matrix: matrix
+  synapse: matrix
 terraform_config_admin_passwords:
   keycloak:
   nextcloud:

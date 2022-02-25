@@ -11,7 +11,7 @@ terraform_cluster_subdomains:
   homer: www
   hedgedoc: doc
   element: element
-  matrix: matrix
+  synapse: matrix
 terraform_servers_ssh_key:
 terraform_servers_inventory_file: "{{ ansible_inventory_sources[0] }}"
 terraform_servers_plan_file: "{{ role_path }}/files/terraform.tfstate.d/{{ terraform_servers_workspace }}/tfplan"

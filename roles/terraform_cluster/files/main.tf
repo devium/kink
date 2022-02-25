@@ -110,3 +110,14 @@ module "collabora" {
   subdomains      = var.subdomains
   admin_passwords = var.admin_passwords
 }
+
+module "synapse" {
+  source           = "./synapse_"
+  release_name     = var.release_name
+  versions         = var.versions
+  domain           = var.domain
+  subdomains       = var.subdomains
+  db_passwords     = var.db_passwords
+  keycloak_realm   = var.keycloak_realm
+  keycloak_secrets = var.keycloak_secrets
+}
