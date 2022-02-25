@@ -233,8 +233,8 @@ locals {
   ]
 }
 resource "keycloak_openid_client_default_scopes" "defaults" {
-  for_each = toset(local.client_ids)
-  realm_id = keycloak_realm.realm.id
+  for_each  = toset(local.client_ids)
+  realm_id  = keycloak_realm.realm.id
   client_id = each.key
 
   default_scopes = [

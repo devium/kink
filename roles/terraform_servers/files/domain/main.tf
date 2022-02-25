@@ -34,8 +34,8 @@ resource "hetznerdns_record" "subdomain" {
   for_each = var.subdomains
 
   zone_id = var.hdns_zone_id
-  name = local.root_subdomain == "" ? each.value : "${each.value}.${local.root_subdomain}"
-  value = "${var.domain}."
-  type = "CNAME"
-  ttl = 300
+  name    = local.root_subdomain == "" ? each.value : "${each.value}.${local.root_subdomain}"
+  value   = "${var.domain}."
+  type    = "CNAME"
+  ttl     = 300
 }

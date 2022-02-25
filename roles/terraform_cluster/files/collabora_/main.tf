@@ -3,13 +3,13 @@ locals {
 }
 
 resource "helm_release" "collabora" {
-  name = var.release_name
-  namespace = local.namespace
+  name             = var.release_name
+  namespace        = local.namespace
   create_namespace = true
 
   repository = "https://chrisingenhaag.github.io/helm/"
-  chart = "collabora-code"
-  version = var.versions.collabora_helm
+  chart      = "collabora-code"
+  version    = var.versions.collabora_helm
 
   values = [<<-YAML
     image:

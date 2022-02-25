@@ -56,12 +56,12 @@ module "postgres" {
 module "keycloak" {
   # Note on module folder name:
   # https://github.com/hashicorp/terraform-provider-helm/issues/735
-  source                  = "./keycloak_"
-  release_name            = var.release_name
-  versions                = var.versions
-  domain                  = var.domain
-  subdomains              = var.subdomains
-  db_passwords            = var.db_passwords
+  source          = "./keycloak_"
+  release_name    = var.release_name
+  versions        = var.versions
+  domain          = var.domain
+  subdomains      = var.subdomains
+  db_passwords    = var.db_passwords
   admin_passwords = var.admin_passwords
 
   depends_on = [
@@ -92,21 +92,21 @@ module "hedgedoc" {
 }
 
 module "nextcloud" {
-  source                   = "./nextcloud_"
-  release_name             = var.release_name
-  versions                 = var.versions
-  domain                   = var.domain
-  subdomains               = var.subdomains
-  db_passwords             = var.db_passwords
-  nextcloud_volume_handle  = var.nextcloud_volume_handle
-  admin_passwords = var.admin_passwords
+  source                  = "./nextcloud_"
+  release_name            = var.release_name
+  versions                = var.versions
+  domain                  = var.domain
+  subdomains              = var.subdomains
+  db_passwords            = var.db_passwords
+  nextcloud_volume_handle = var.nextcloud_volume_handle
+  admin_passwords         = var.admin_passwords
 }
 
 module "collabora" {
-  source                   = "./collabora_"
-  release_name             = var.release_name
-  versions                 = var.versions
-  domain                   = var.domain
-  subdomains               = var.subdomains
+  source          = "./collabora_"
+  release_name    = var.release_name
+  versions        = var.versions
+  domain          = var.domain
+  subdomains      = var.subdomains
   admin_passwords = var.admin_passwords
 }
