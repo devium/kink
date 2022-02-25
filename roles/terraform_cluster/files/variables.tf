@@ -44,8 +44,8 @@ variable "postgres_volume_handle" {
   type = string
 }
 
-variable "keycloak_admin_password" {
-  type      = string
+variable "admin_passwords" {
+  type      = map(string)
   sensitive = true
 }
 
@@ -78,9 +78,4 @@ variable "keycloak_secrets" {
 
 variable "nextcloud_volume_handle" {
   type = string
-}
-
-variable "nextcloud_admin_password" {
-  type      = string
-  sensitive = true
 }

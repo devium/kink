@@ -14,15 +14,6 @@ variable "subdomains" {
   type = map(string)
 }
 
-variable "db_passwords" {
-  type      = map(string)
-  sensitive = true
-}
-
-variable "nextcloud_volume_handle" {
-  type = string
-}
-
 variable "admin_passwords" {
   type      = map(string)
   sensitive = true

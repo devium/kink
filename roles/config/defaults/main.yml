@@ -4,7 +4,7 @@ config_release_name: primary
 config_domain:
 config_subdomains:
   jitsi: jitsi
-  jitsi_keycloak: auth
+  jitsi_keycloak: auth.jitsi
   keycloak: keycloak
   nextcloud: next
   homer: www
@@ -20,6 +20,7 @@ config_nextcloud_install_apps:
   - calendar
   - deck
   - sociallogin
+  - richdocuments
 config_nextcloud_disable_apps:
   - circles
   - dashboard
@@ -35,6 +36,10 @@ config_nextcloud_config:
   - app: system
     key: skeletondirectory
     value: ""
+  - app: system
+    key: trusted_domains
+    index: 2
+    value: "{{ config_subdomains.collabora }}.{{ config_domain }}"
   - app: files
     key: default_quota
     value: "250 MB"
@@ -96,3 +101,12 @@ config_nextcloud_config:
           }
         ]
       }
+  - app: richdocuments
+    key: wopi_url
+    value: "https://{{ config_subdomains.collabora }}.{{ config_domain }}"
+  - app: richdocuments
+    key: public_wopi_url
+    value: "https://{{ config_subdomains.collabora }}.{{ config_domain }}"
+  - app: richdocuments
+    key: disable_certificate_verification
+    value: ""

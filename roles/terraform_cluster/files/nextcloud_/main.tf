@@ -96,7 +96,7 @@ resource "helm_release" "nextcloud" {
     nextcloud:
       host: ${var.subdomains.nextcloud}.${var.domain}
       username: admin
-      password: ${var.nextcloud_admin_password}
+      password: ${var.admin_passwords.nextcloud}
       extraEnv:
         - name: OVERWRITEPROTOCOL
           value: https

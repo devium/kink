@@ -17,7 +17,7 @@
     auth_keycloak_url: "https://{{ terraform_config_subdomains.keycloak }}.{{ terraform_config_domain }}/auth"
     auth_realm: master
     auth_username: admin
-    auth_password: "{{ terraform_config_keycloak_admin_password }}"
+    auth_password: "{{ terraform_config_admin_passwords.keycloak }}"
     realm: "{{ terraform_config_keycloak_realm }}"
     # https://github.com/mrparkers/terraform-provider-keycloak/issues/298
     browser_flow: browser-custom

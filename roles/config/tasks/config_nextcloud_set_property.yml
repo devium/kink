@@ -3,7 +3,7 @@
     kubeconfig: "{{ config_kubeconf_file }}"
     namespace: "{{ config_nextcloud_namespace }}"
     pod: "{{ pods_result.resources[0].metadata.name }}"
-    command: "su -s /bin/bash -c '/var/www/html/occ config:{{ category }}:get {{ app }} {{ item.key }}' www-data"
+    command: "su -s /bin/bash -c '/var/www/html/occ config:{{ category }}:get {{ identifier }}' www-data"
   register: get_result
   failed_when: get_result.rc != 0 and get_result.stderr | length > 0
   changed_when: false
@@ -13,9 +13,9 @@
     kubeconfig: "{{ config_kubeconf_file }}"
     namespace: "{{ config_nextcloud_namespace }}"
     pod: "{{ pods_result.resources[0].metadata.name }}"
-    command: su -s /bin/bash -c '/var/www/html/occ config:{{ category }}:set {{ app }} {{ item.key }} --value "{{ value_sanitized }}"' www-data
+    command: su -s /bin/bash -c '/var/www/html/occ config:{{ category }}:set {{ identifier }} --value "{{ value_sanitized }}"' www-data
   vars:
     # Note: We need doubly escaped quotes so the command passes unaltered through `bash -c`, and all spaces removed
     # so we end up with an identical value as the UI would produce.
     value_sanitized: "{{ item.value if item.value is string else item.value | to_json | replace('\"', '\\\"') | replace(' ', '') }}"
-  when: get_result.stdout | length == 0 or (get_result.stdout[:-1] != item.value and get_result.stdout | from_json != item.value)
+  when: get_result.stdout | length == 0 or ((get_result.stdout[:-1] != item.value) if item.value is string else (get_result.stdout | from_json != item.value))

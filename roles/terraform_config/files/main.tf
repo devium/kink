@@ -12,7 +12,7 @@ terraform {
 provider "keycloak" {
   client_id                = "admin-cli"
   username                 = "admin"
-  password                 = var.keycloak_admin_password
+  password                 = var.admin_passwords.keycloak
   url                      = "https://${var.subdomains.keycloak}.${var.domain}"
   tls_insecure_skip_verify = true
 }

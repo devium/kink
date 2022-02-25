@@ -68,7 +68,7 @@ resource "helm_release" "jitsi" {
             hosts:
               - ${local.jitsi_domain}
       extraEnvs:
-        TOKEN_AUTH_URL: https://${var.subdomains.jitsi_keycloak}.${local.jitsi_domain}/{room}
+        TOKEN_AUTH_URL: https://${var.subdomains.jitsi_keycloak}.${var.domain}/{room}
 
     jvb:
       image:
@@ -226,7 +226,7 @@ data "kubectl_file_documents" "jitsi_keycloak_documents" {
     spec:
       ingressClassName: nginx
       rules:
-        - host: ${var.subdomains.jitsi_keycloak}.${local.jitsi_domain}
+        - host: ${var.subdomains.jitsi_keycloak}.${var.domain}
           http:
             paths:
               - backend:
@@ -238,7 +238,7 @@ data "kubectl_file_documents" "jitsi_keycloak_documents" {
                 pathType: Prefix
       tls:
         - hosts:
-          - ${var.subdomains.jitsi_keycloak}.${local.jitsi_domain}
+          - ${var.subdomains.jitsi_keycloak}.${var.domain}
           secretName: cert-secret-jitsi-keycloak
     YAML
 }

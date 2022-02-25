@@ -38,14 +38,13 @@ terraform_cluster_cert_email: "{{ cert_email }}"
 terraform_cluster_postgres_volume_handle: "{{ postgres_volume_handle }}"
 terraform_cluster_nextcloud_volume_handle: "{{ nextcloud_volume_handle }}"
 terraform_cluster_db_passwords: "{{ db_passwords }}"
-terraform_cluster_keycloak_admin_password: "{{ keycloak_admin_password }}"
+terraform_cluster_admin_passwords: "{{ admin_passwords }}"
 terraform_cluster_jitsi_jwt_secret: "{{ jitsi_jwt_secret }}"
 terraform_cluster_keycloak_realm: "{{ project_name }}"
 terraform_cluster_homer_assets_image: "{{ homer_assets_image }}"
 terraform_cluster_project_name: "{{ project_name }}"
 terraform_cluster_hedgedoc_secret: "{{ hedgedoc_secret }}"
 terraform_cluster_keycloak_secrets: "{{ keycloak_secrets }}"
-terraform_cluster_nextcloud_admin_password: "{{ nextcloud_admin_password }}"
 terraform_cluster_versions:
   jitsi: stable-6865
   jitsi_helm: v1.0.0
@@ -60,12 +59,14 @@ terraform_cluster_versions:
   element: v1.10.4
   nextcloud: 23.0.2-apache
   nextcloud_helm: 2.12.1
+  collabora: 22.05.0.1
+  collabora_helm: 2.2.1
   homer: 22.02.1
 
 terraform_config_workspace: "{{ stage }}"
 terraform_config_domain: "{{ domain }}"
 terraform_config_subdomains: "{{ subdomains }}"
-terraform_config_keycloak_admin_password: "{{ keycloak_admin_password }}"
+terraform_config_admin_passwords: "{{ admin_passwords }}"
 terraform_config_keycloak_realm: "{{ project_name }}"
 terraform_config_keycloak_secrets: "{{ keycloak_secrets }}"
 terraform_config_google_identity_provider_client_id: "{{ google_identity_provider_client_id }}"

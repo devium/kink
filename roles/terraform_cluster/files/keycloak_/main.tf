@@ -53,7 +53,7 @@ resource "helm_release" "keycloak" {
           DB_PASSWORD: ${var.db_passwords.keycloak}
       admin-password:
         stringData:
-          KEYCLOAK_PASSWORD: ${var.keycloak_admin_password}
+          KEYCLOAK_PASSWORD: ${var.admin_passwords.keycloak}
 
     extraVolumeMounts: |
       - name: theme

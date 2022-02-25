@@ -62,7 +62,7 @@ module "keycloak" {
   domain                  = var.domain
   subdomains              = var.subdomains
   db_passwords            = var.db_passwords
-  keycloak_admin_password = var.keycloak_admin_password
+  admin_passwords = var.admin_passwords
 
   depends_on = [
     module.postgres
@@ -99,5 +99,14 @@ module "nextcloud" {
   subdomains               = var.subdomains
   db_passwords             = var.db_passwords
   nextcloud_volume_handle  = var.nextcloud_volume_handle
-  nextcloud_admin_password = var.nextcloud_admin_password
+  admin_passwords = var.admin_passwords
+}
+
+module "collabora" {
+  source                   = "./collabora_"
+  release_name             = var.release_name
+  versions                 = var.versions
+  domain                   = var.domain
+  subdomains               = var.subdomains
+  admin_passwords = var.admin_passwords
 }

@@ -5,7 +5,7 @@ terraform_servers_hdns_zone_id:
 terraform_servers_domain:
 terraform_cluster_subdomains:
   jitsi: jitsi
-  jitsi_keycloak: auth
+  jitsi_keycloak: auth.jitsi
   keycloak: keycloak
   nextcloud: next
   homer: www

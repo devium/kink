@@ -54,7 +54,7 @@ resource "keycloak_openid_client" "jitsi" {
   # client_secret = var.keycloak_secrets.jitsi
 
   standard_flow_enabled = true
-  root_url              = "https://${var.subdomains.jitsi_keycloak}.${var.subdomains.jitsi}.${var.domain}"
+  root_url              = "https://${var.subdomains.jitsi_keycloak}.${var.domain}"
   web_origins           = ["+"]
   valid_redirect_uris   = ["/*"]
   admin_url             = "/"

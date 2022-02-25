@@ -19,7 +19,7 @@ variable "db_passwords" {
   sensitive = true
 }
 
-variable "keycloak_admin_password" {
-  type      = string
+variable "admin_passwords" {
+  type      = map(string)
   sensitive = true
 }

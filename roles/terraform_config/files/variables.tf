@@ -6,8 +6,8 @@ variable "subdomains" {
   type = map(string)
 }
 
-variable "keycloak_admin_password" {
-  type      = string
+variable "admin_passwords" {
+  type      = map(string)
   sensitive = true
 }
 
