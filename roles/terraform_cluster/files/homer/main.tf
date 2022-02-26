@@ -85,14 +85,38 @@ data "kubectl_file_documents" "homer_documents" {
     apiVersion: networking.k8s.io/v1
     kind: Ingress
     metadata:
+      name: homer-redirect
+      namespace: ${local.namespace}
+      annotations:
+        cert-manager.io/cluster-issuer: letsencrypt
+        nginx.ingress.kubernetes.io/permanent-redirect: "https://${var.subdomains.homer}.${var.domain}$uri"
+
+    spec:
+      rules:
+        - host: ${var.domain}
+          http:
+            paths:
+              - backend:
+                  service:
+                    name: homer
+                    port:
+                      number: 80
+                path: /
+                pathType: Prefix
+      tls:
+        - hosts:
+          - ${var.domain}
+          secretName: cert-secret-homer-redirect
+    ---
+    apiVersion: networking.k8s.io/v1
+    kind: Ingress
+    metadata:
       name: homer
       namespace: ${local.namespace}
       annotations:
         cert-manager.io/cluster-issuer: letsencrypt
-        nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
 
     spec:
-      ingressClassName: nginx
       rules:
         - host: ${var.subdomains.homer}.${var.domain}
           http:
@@ -107,7 +131,6 @@ data "kubectl_file_documents" "homer_documents" {
       tls:
         - hosts:
           - ${var.subdomains.homer}.${var.domain}
-          - ${var.domain}
           secretName: cert-secret-homer
     ---
     apiVersion: v1

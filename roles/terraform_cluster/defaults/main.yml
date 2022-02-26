@@ -45,7 +45,6 @@ terraform_cluster_versions:
   keycloak_theme: v0.3.2
   hedgedoc: 1.9.2
   hedgedoc_helm: 1.1.0
-  element: v1.10.4
   nextcloud: v23.0.2
   nextcloud_helm: 2.12.1
   collabora: 22.05.0.1
@@ -53,6 +52,10 @@ terraform_cluster_versions:
   homer: 22.02.1
   synapse: v1.51.0
   synapse_helm: 0.8.7
+  element: v1.10.4
+  element_helm: 1.0.34
+  nginx: 1.21.6
+  nginx_helm: 9.9.0
 
 terraform_cluster_plan_file: "{{ role_path }}/files/terraform.tfstate.d/{{ terraform_cluster_workspace }}/tfplan"
 

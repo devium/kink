@@ -121,3 +121,11 @@ module "synapse" {
   keycloak_realm   = var.keycloak_realm
   keycloak_secrets = var.keycloak_secrets
 }
+
+module "element" {
+  source       = "./element"
+  release_name = var.release_name
+  versions     = var.versions
+  domain       = var.domain
+  subdomains   = var.subdomains
+}
