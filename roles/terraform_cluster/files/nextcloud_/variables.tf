@@ -19,8 +19,8 @@ variable "db_passwords" {
   sensitive = true
 }
 
-variable "nextcloud_volume_handle" {
-  type = string
+variable "volume_handles" {
+  type = map(string)
 }
 
 variable "admin_passwords" {

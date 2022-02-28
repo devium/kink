@@ -35,7 +35,7 @@ resource "kubectl_manifest" "volume" {
       csi:
         driver: csi.hetzner.cloud
         fsType: ext4
-        volumeHandle: "${var.nextcloud_volume_handle}"
+        volumeHandle: "${var.volume_handles.nextcloud}"
     YAML
 
   depends_on = [

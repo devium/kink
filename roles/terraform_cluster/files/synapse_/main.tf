@@ -85,6 +85,62 @@ resource "helm_release" "nginx" {
   ]
 }
 
+
+resource "kubectl_manifest" "namespace" {
+  yaml_body = <<-YAML
+    apiVersion: v1
+    kind: Namespace
+    metadata:
+      name: ${local.namespace}
+  YAML
+}
+
+resource "kubectl_manifest" "volume" {
+  yaml_body = <<-YAML
+    apiVersion: v1
+    kind: PersistentVolume
+    metadata:
+      name: synapse-volume
+      namespace: ${local.namespace}
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      capacity:
+        storage: 10Gi
+      persistentVolumeReclaimPolicy: Retain
+      csi:
+        driver: csi.hetzner.cloud
+        fsType: ext4
+        volumeHandle: "${var.volume_handles.synapse}"
+    YAML
+
+  depends_on = [
+    kubectl_manifest.namespace
+  ]
+}
+
+resource "kubectl_manifest" "pvc" {
+  yaml_body = <<-YAML
+    apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      name: synapse-pvc
+      namespace: ${local.namespace}
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 10Gi
+      storageClassName: ""
+      volumeName: synapse-volume
+    YAML
+
+  depends_on = [
+    kubectl_manifest.namespace
+  ]
+}
+
 resource "helm_release" "synapse" {
   name             = var.release_name
   namespace        = local.namespace
@@ -111,6 +167,10 @@ resource "helm_release" "synapse" {
       port: 5432
       username: synapse
 
+    existingMediaClaim: ${kubectl_manifest.pvc.name}
+    podSecurityContext:
+      fsGroup: 991
+
     homeserver:
       server_name: ${var.domain}
       public_baseurl: https://${var.subdomains.synapse}.${var.domain}
@@ -119,6 +179,7 @@ resource "helm_release" "synapse" {
       web_client_location: https://${var.subdomains.element}.${var.domain}
 
       signing_key_path: "/data/${var.domain}.signing.key"
+      media_store_path: /media
       database:
         name: psycopg2
         args:
@@ -159,5 +220,9 @@ resource "helm_release" "synapse" {
             - ${var.subdomains.synapse}.${var.domain}
 
     YAML
+  ]
+
+  depends_on = [
+    kubectl_manifest.pvc
   ]
 }

@@ -11,6 +11,6 @@ variable "db_passwords" {
   sensitive = true
 }
 
-variable "postgres_volume_handle" {
-  type = string
+variable "volume_handles" {
+  type = map(string)
 }

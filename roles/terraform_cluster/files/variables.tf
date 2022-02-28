@@ -40,8 +40,8 @@ variable "db_passwords" {
   sensitive = true
 }
 
-variable "postgres_volume_handle" {
-  type = string
+variable "volume_handles" {
+  type = map(string)
 }
 
 variable "admin_passwords" {
@@ -74,8 +74,4 @@ variable "hedgedoc_secret" {
 variable "keycloak_secrets" {
   type      = map(string)
   sensitive = true
-}
-
-variable "nextcloud_volume_handle" {
-  type = string
 }

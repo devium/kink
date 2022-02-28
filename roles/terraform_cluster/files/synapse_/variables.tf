@@ -27,3 +27,7 @@ variable "keycloak_secrets" {
   type      = map(string)
   sensitive = true
 }
+
+variable "volume_handles" {
+  type = map(string)
+}

@@ -50,7 +50,7 @@ module "postgres" {
   release_name           = var.release_name
   versions               = var.versions
   db_passwords           = var.db_passwords
-  postgres_volume_handle = var.postgres_volume_handle
+  volume_handles = var.volume_handles
 }
 
 module "keycloak" {
@@ -98,7 +98,7 @@ module "nextcloud" {
   domain                  = var.domain
   subdomains              = var.subdomains
   db_passwords            = var.db_passwords
-  nextcloud_volume_handle = var.nextcloud_volume_handle
+  volume_handles = var.volume_handles
   admin_passwords         = var.admin_passwords
 }
 
@@ -120,6 +120,7 @@ module "synapse" {
   db_passwords     = var.db_passwords
   keycloak_realm   = var.keycloak_realm
   keycloak_secrets = var.keycloak_secrets
+  volume_handles = var.volume_handles
 }
 
 module "element" {
