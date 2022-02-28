@@ -46,10 +46,10 @@ module "jitsi" {
 }
 
 module "postgres" {
-  source                 = "./postgres"
-  release_name           = var.release_name
-  versions               = var.versions
-  db_passwords           = var.db_passwords
+  source         = "./postgres"
+  release_name   = var.release_name
+  versions       = var.versions
+  db_passwords   = var.db_passwords
   volume_handles = var.volume_handles
 }
 
@@ -92,14 +92,14 @@ module "hedgedoc" {
 }
 
 module "nextcloud" {
-  source                  = "./nextcloud_"
-  release_name            = var.release_name
-  versions                = var.versions
-  domain                  = var.domain
-  subdomains              = var.subdomains
-  db_passwords            = var.db_passwords
-  volume_handles = var.volume_handles
-  admin_passwords         = var.admin_passwords
+  source          = "./nextcloud_"
+  release_name    = var.release_name
+  versions        = var.versions
+  domain          = var.domain
+  subdomains      = var.subdomains
+  db_passwords    = var.db_passwords
+  volume_handles  = var.volume_handles
+  admin_passwords = var.admin_passwords
 }
 
 module "collabora" {
@@ -120,7 +120,7 @@ module "synapse" {
   db_passwords     = var.db_passwords
   keycloak_realm   = var.keycloak_realm
   keycloak_secrets = var.keycloak_secrets
-  volume_handles = var.volume_handles
+  volume_handles   = var.volume_handles
 }
 
 module "element" {

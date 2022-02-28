@@ -22,3 +22,11 @@ variable "hdns_token" {
 variable "hdns_zone_id" {
   type = string
 }
+
+variable "nodes" {
+  type = list(object({
+    name         = string
+    ipv4_address = string
+    ipv6_address = string
+  }))
+}

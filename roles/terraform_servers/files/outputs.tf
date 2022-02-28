@@ -10,7 +10,7 @@ resource "local_file" "AnsibleInventory" {
           }
         },
         {
-          for k, worker in concat(module.worker) : worker.name => {
+          for k, worker in module.worker : worker.name => {
             ansible_host = worker.ipv4_address
             ipv6_address = worker.ipv6_address
             rke2_type    = "agent"
