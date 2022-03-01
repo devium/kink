@@ -95,7 +95,7 @@ resource "helm_release" "nextcloud" {
 
     nextcloud:
       host: ${var.subdomains.nextcloud}.${var.domain}
-      username: admin
+      username: admin_temp
       password: ${var.admin_passwords.nextcloud}
       extraEnv:
         - name: OVERWRITEPROTOCOL

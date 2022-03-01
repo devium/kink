@@ -10,3 +10,14 @@
 - name: Print Terraform output
   debug:
     msg: "{{ terraform_result.stdout }}"
+
+# TODO: Include this in the terraform project once possible
+- name: Set realm's browser flow and default client scopes
+  community.general.keycloak_realm:
+    auth_keycloak_url: "https://{{ terraform_cluster_subdomains.keycloak }}.{{ terraform_cluster_domain }}/auth"
+    auth_realm: master
+    auth_username: admin
+    auth_password: "{{ terraform_cluster_admin_passwords.keycloak }}"
+    realm: "{{ terraform_cluster_keycloak_realm }}"
+    # https://github.com/mrparkers/terraform-provider-keycloak/issues/298
+    browser_flow: browser-custom

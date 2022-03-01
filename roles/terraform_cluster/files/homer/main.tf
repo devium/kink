@@ -10,8 +10,17 @@ locals {
   namespace = "homer"
 }
 
-data "kubectl_file_documents" "homer_documents" {
-  content = <<-YAML
+resource "kubectl_manifest" "namespace" {
+  yaml_body = <<-YAML
+    apiVersion: v1
+    kind: Namespace
+    metadata:
+      name: ${local.namespace}
+    YAML
+}
+
+resource "kubectl_manifest" "homer_deployment" {
+  yaml_body = <<-YAML
     apiVersion: apps/v1
     kind: Deployment
     metadata:
@@ -66,8 +75,15 @@ data "kubectl_file_documents" "homer_documents" {
             - name: config
               configMap:
                 name: config
+    YAML
 
-    ---
+  depends_on = [
+    kubectl_manifest.namespace
+  ]
+}
+
+resource "kubectl_manifest" "homer_service" {
+  yaml_body = <<-YAML
     apiVersion: v1
     kind: Service
     metadata:
@@ -80,8 +96,15 @@ data "kubectl_file_documents" "homer_documents" {
         - protocol: TCP
           port: 80
           targetPort: 8080
+    YAML
 
-    ---
+  depends_on = [
+    kubectl_manifest.namespace
+  ]
+}
+
+resource "kubectl_manifest" "homer_ingress_redirect" {
+  yaml_body = <<-YAML
     apiVersion: networking.k8s.io/v1
     kind: Ingress
     metadata:
@@ -107,6 +130,15 @@ data "kubectl_file_documents" "homer_documents" {
         - hosts:
           - ${var.domain}
           secretName: cert-secret-homer-redirect
+    YAML
+
+  depends_on = [
+    kubectl_manifest.namespace
+  ]
+}
+
+resource "kubectl_manifest" "homer_ingress" {
+  yaml_body = <<-YAML
     ---
     apiVersion: networking.k8s.io/v1
     kind: Ingress
@@ -132,7 +164,37 @@ data "kubectl_file_documents" "homer_documents" {
         - hosts:
           - ${var.subdomains.homer}.${var.domain}
           secretName: cert-secret-homer
-    ---
+    YAML
+
+  depends_on = [
+    kubectl_manifest.namespace
+  ]
+}
+
+data "template_file" "config" {
+  template = file("${path.module}/config.yml.tftpl")
+  vars = {
+    title               = title(var.project_name)
+    subdomain_homer     = var.subdomains.homer
+    subdomain_keycloak  = var.subdomains.keycloak
+    subdomain_hedgedoc  = var.subdomains.hedgedoc
+    subdomain_element   = var.subdomains.element
+    subdomain_jitsi     = var.subdomains.jitsi
+    subdomain_nextcloud = var.subdomains.nextcloud
+    domain              = var.domain
+    keycloak_realm      = var.keycloak_realm
+  }
+}
+
+data "template_file" "rooms" {
+  template = file("${path.module}/rooms.html.tftpl")
+  vars = {
+    jitsi_domain = "${var.subdomains.jitsi}.${var.domain}"
+  }
+}
+
+resource "kubectl_manifest" "config" {
+  yaml_body = <<-YAML
     apiVersion: v1
     kind: ConfigMap
     metadata:
@@ -140,32 +202,11 @@ data "kubectl_file_documents" "homer_documents" {
       namespace: ${local.namespace}
     data:
       config.yml: |
-        ${replace(templatefile("${path.module}/config.yml.tftpl", {
-  title          = title(var.project_name),
-  subdomains     = var.subdomains,
-  domain         = var.domain,
-  keycloak_realm = var.keycloak_realm
-  }), "\n", "\n    ")}
+        ${replace(data.template_file.config.rendered, "\n", "\n    ")}
       rooms.html: |
-        ${replace(templatefile("${path.module}/rooms.html.tftpl", {
-  jitsi_domain = "${var.subdomains.jitsi}.${var.domain}"
-}), "\n", "\n    ")}
-
+        ${replace(data.template_file.rooms.rendered, "\n", "\n    ")}
     YAML
-}
 
-resource "kubectl_manifest" "namespace" {
-  yaml_body = <<-YAML
-    apiVersion: v1
-    kind: Namespace
-    metadata:
-      name: ${local.namespace}
-    YAML
-}
-
-resource "kubectl_manifest" "homer" {
-  for_each  = data.kubectl_file_documents.homer_documents.manifests
-  yaml_body = each.value
   depends_on = [
     kubectl_manifest.namespace
   ]

@@ -138,8 +138,8 @@ resource "kubectl_manifest" "ingress_jitsi_jvb_patch" {
     YAML
 }
 
-data "kubectl_file_documents" "jitsi_keycloak_documents" {
-  content = <<-YAML
+resource "kubectl_manifest" "jitsi_keycloak_config" {
+  yaml_body = <<-YAML
     apiVersion: v1
     kind: Secret
     metadata:
@@ -158,7 +158,15 @@ data "kubectl_file_documents" "jitsi_keycloak_documents" {
           },
           "confidential-port": 0
         }
-    ---
+    YAML
+
+  depends_on = [
+    kubectl_manifest.namespace
+  ]
+}
+
+resource "kubectl_manifest" "jitsi_keycloak_deployment" {
+  yaml_body = <<-YAML
     apiVersion: apps/v1
     kind: Deployment
     metadata:
@@ -199,8 +207,15 @@ data "kubectl_file_documents" "jitsi_keycloak_documents" {
             - name: keycloak-config
               secret:
                 secretName: jitsi-keycloak-config
+    YAML
 
-    ---
+  depends_on = [
+    kubectl_manifest.namespace
+  ]
+}
+
+resource "kubectl_manifest" "jitsi_keycloak_service" {
+  yaml_body = <<-YAML
     apiVersion: v1
     kind: Service
     metadata:
@@ -213,8 +228,15 @@ data "kubectl_file_documents" "jitsi_keycloak_documents" {
         - protocol: TCP
           port: 80
           targetPort: 3000
+    YAML
 
-    ---
+  depends_on = [
+    kubectl_manifest.namespace
+  ]
+}
+
+resource "kubectl_manifest" "jitsi_keycloak_ingress" {
+  yaml_body = <<-YAML
     apiVersion: networking.k8s.io/v1
     kind: Ingress
     metadata:
@@ -241,9 +263,8 @@ data "kubectl_file_documents" "jitsi_keycloak_documents" {
           - ${var.subdomains.jitsi_keycloak}.${var.domain}
           secretName: cert-secret-jitsi-keycloak
     YAML
-}
 
-resource "kubectl_manifest" "jitsi_keycloak" {
-  for_each  = data.kubectl_file_documents.jitsi_keycloak_documents.manifests
-  yaml_body = each.value
+  depends_on = [
+    kubectl_manifest.namespace
+  ]
 }

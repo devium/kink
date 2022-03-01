@@ -30,3 +30,22 @@ resource "kubectl_manifest" "hcloud_csi" {
   for_each  = data.kubectl_file_documents.csi_documents.manifests
   yaml_body = each.value
 }
+
+# Make flannel use the private subnet interface
+# Using args instead of the iface value enforces a new pod rollout
+resource "kubectl_manifest" "flannel_iface_patch" {
+  yaml_body = <<-YAML
+    apiVersion: helm.cattle.io/v1
+    kind: HelmChartConfig
+    metadata:
+      name: rke2-canal
+      namespace: kube-system
+    spec:
+      valuesContent: |
+        flannel:
+          args:
+            - --ip-masq
+            - --kube-subnet-mgr
+            - --iface=ens10
+    YAML
+}

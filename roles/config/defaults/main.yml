@@ -16,6 +16,10 @@ config_keycloak_secrets:
   jitsi:
   nextcloud:
   hedgedoc:
+config_admin_passwords:
+  keycloak:
+  nextcloud:
+  collabora:
 config_nextcloud_install_apps:
   - calendar
   - deck

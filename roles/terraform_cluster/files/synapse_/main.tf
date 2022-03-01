@@ -159,6 +159,11 @@ resource "helm_release" "synapse" {
       federation_reader: 0
       federation_sender: 0
 
+    settings:
+      uid: 1000
+      gid: 1000
+      report_stats: "no"
+
     database:
       host: ${var.release_name}-postgresql.postgres.svc.cluster.local
       mode: postgresql
@@ -168,8 +173,6 @@ resource "helm_release" "synapse" {
       username: synapse
 
     existingMediaClaim: ${kubectl_manifest.pvc.name}
-    podSecurityContext:
-      fsGroup: 991
 
     homeserver:
       server_name: ${var.domain}

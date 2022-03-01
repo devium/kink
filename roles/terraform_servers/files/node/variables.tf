@@ -21,3 +21,7 @@ variable "location" {
 variable "network_id" {
   type = number
 }
+
+variable "firewall_id" {
+  type = number
+}

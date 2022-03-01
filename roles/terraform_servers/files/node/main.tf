@@ -17,6 +17,10 @@ resource "hcloud_server" "node" {
     network_id = var.network_id
   }
 
+  firewall_ids = [
+    var.firewall_id
+  ]
+
   lifecycle {
     ignore_changes = [
       network

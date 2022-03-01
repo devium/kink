@@ -39,7 +39,7 @@ colors:
 message:
   title: "Jitsi Raumübersicht"
   icon: "fa fa-video"
-  content: '<iframe style="border-radius: 4px" width=100% height=120px src="https://${subdomains.homer}.${domain}/rooms.html"/>'
+  content: '<iframe style="border-radius: 4px" width=100% height=120px src="https://${subdomain_homer}.${domain}/rooms.html"/>'
 
 links: []
 
@@ -48,29 +48,29 @@ services:
     - name: "HedgeDoc"
       subtitle: "Kollaborativer Markdown-Editor"
       logo: "assets/icon_hedgedoc.png"
-      url: "https://${subdomains.hedgedoc}.${domain}"
+      url: "https://${subdomain_hedgedoc}.${domain}"
       target: "_blank"
 
     - name: "Element"
       subtitle: "Matrix-basierte Chat-App"
       logo: "assets/icon_element.png"
-      url: "https://${subdomains.element}.${domain}"
+      url: "https://${subdomain_element}.${domain}"
       target: "_blank"
 
     - name: "Jitsi"
       subtitle: "Videokonferenz-Tool"
       logo: "assets/icon_jitsi.png"
-      url: "https://${subdomains.jitsi}.${domain}"
+      url: "https://${subdomain_jitsi}.${domain}"
       target: "_blank"
 
     - name: "Account"
       subtitle: "Keycloak Account-Verwaltung"
       logo: "assets/icon_keycloak.png"
-      url: "https://${subdomains.keycloak}.${domain}/auth/realms/${keycloak_realm}/account"
+      url: "https://${subdomain_keycloak}.${domain}/auth/realms/${keycloak_realm}/account"
       target: "_blank"
 
     - name: "Nextcloud"
       subtitle: "Gruppen-Software für gemeinsame Organisation"
       logo: "assets/icon_nextcloud.png"
-      url: "https://${subdomains.nextcloud}.${domain}"
+      url: "https://${subdomain_nextcloud}.${domain}"
       target: "_blank"

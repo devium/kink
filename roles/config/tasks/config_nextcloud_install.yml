@@ -1,0 +1,36 @@
+- name: Check if installed
+  kubernetes.core.k8s_exec:
+    kubeconfig: "{{ config_kubeconf_file }}"
+    namespace: "{{ config_nextcloud_namespace }}"
+    pod: "{{ pods_result.resources[0].metadata.name }}"
+    command: "su -s /bin/bash -c '/var/www/html/occ check' www-data"
+  register: check_result
+  changed_when: false
+
+# Note: Nextcloud should be installed by the container deployment but just to be safe
+- name: Install Nextcloud
+  kubernetes.core.k8s_exec:
+    kubeconfig: "{{ config_kubeconf_file }}"
+    namespace: "{{ config_nextcloud_namespace }}"
+    pod: "{{ pods_result.resources[0].metadata.name }}"
+    command: "su -s /bin/bash -c '/var/www/html/occ maintenance:install --no-interaction --admin-user admin_temp --admin-pass {{ config_admin_passwords.nextcloud }}' www-data"
+  when: "'Nextcloud is not installed' in check_result.stderr"
+
+- name: Check if temporary admin user exists
+  kubernetes.core.k8s_exec:
+    kubeconfig: "{{ config_kubeconf_file }}"
+    namespace: "{{ config_nextcloud_namespace }}"
+    pod: "{{ pods_result.resources[0].metadata.name }}"
+    command: "su -s /bin/bash -c '/var/www/html/occ user:info admin_temp' www-data"
+  register: user_result
+  failed_when: user_result.rc != 0 and "user not found" not in user_result.stdout
+  changed_when: false
+
+- name: Delete temporary admin user
+  kubernetes.core.k8s_exec:
+    kubeconfig: "{{ config_kubeconf_file }}"
+    namespace: "{{ config_nextcloud_namespace }}"
+    pod: "{{ pods_result.resources[0].metadata.name }}"
+    command: "su -s /bin/bash -c '/var/www/html/occ user:delete admin_temp' www-data"
+  register: check_result
+  when: "'user not found' not in user_result.stdout"

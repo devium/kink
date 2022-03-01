@@ -18,3 +18,4 @@
     host: "{{ item.value.ansible_host }}"
     port: 22
   with_dict: "{{ hostvars }}"
+  no_log: true

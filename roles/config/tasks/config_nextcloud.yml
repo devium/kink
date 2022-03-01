@@ -7,6 +7,8 @@
       - app.kubernetes.io/name = nextcloud
   register: pods_result
 
+- import_tasks: config_nextcloud_install.yml
+
 - import_tasks: config_nextcloud_apps.yml
 
 - include_tasks: config_nextcloud_set_property.yml

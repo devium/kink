@@ -20,6 +20,11 @@ module "network" {
   location = var.location
 }
 
+module "firewall" {
+  source   = "./firewall"
+  ip_range = var.ip_range
+}
+
 module "master" {
   source      = "./node"
   name        = "master"
@@ -28,6 +33,7 @@ module "master" {
   ssh_keys    = var.ssh_keys
   location    = var.location
   network_id  = module.network.network_id
+  firewall_id = module.firewall.firewall_id
   depends_on = [
     module.network
   ]
@@ -42,6 +48,7 @@ module "worker" {
   ssh_keys    = var.ssh_keys
   location    = var.location
   network_id  = module.network.network_id
+  firewall_id = module.firewall.firewall_id
   depends_on = [
     module.network
   ]

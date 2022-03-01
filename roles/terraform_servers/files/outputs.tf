@@ -7,6 +7,9 @@ resource "local_file" "AnsibleInventory" {
             ansible_host = module.master.ipv4_address
             ipv6_address = module.master.ipv6_address
             rke2_type    = "server"
+            rke2_server_options = [
+              "node-ip: ${module.master.internal_ip}"
+            ]
           }
         },
         {
@@ -14,6 +17,9 @@ resource "local_file" "AnsibleInventory" {
             ansible_host = worker.ipv4_address
             ipv6_address = worker.ipv6_address
             rke2_type    = "agent"
+            rke2_agent_options = [
+              "node-ip: ${worker.internal_ip}"
+            ]
           }
         }
       )

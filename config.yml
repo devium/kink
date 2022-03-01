@@ -4,8 +4,4 @@
 
 - hosts: localhost
   roles:
-    - role: terraform_config
-
-- hosts: localhost
-  roles:
     - role: config

@@ -36,6 +36,8 @@ terraform_cluster_keycloak_secrets:
   jitsi:
   nextcloud:
   hedgedoc:
+terraform_cluster_google_identity_provider_client_id:
+terraform_cluster_google_identity_provider_client_secret:
 terraform_cluster_versions:
   jitsi: stable-6726
   jitsi_helm: v1.0.0
@@ -79,3 +81,5 @@ terraform_cluster_variables:
   project_name: "{{ terraform_cluster_project_name }}"
   hedgedoc_secret: "{{ terraform_cluster_hedgedoc_secret }}"
   keycloak_secrets: "{{ terraform_cluster_keycloak_secrets | to_json }}"
+  google_identity_provider_client_id: "{{ terraform_cluster_google_identity_provider_client_id }}"
+  google_identity_provider_client_secret: "{{ terraform_cluster_google_identity_provider_client_secret }}"
