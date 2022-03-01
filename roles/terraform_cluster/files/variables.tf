@@ -84,3 +84,7 @@ variable "google_identity_provider_client_secret" {
   type      = string
   sensitive = true
 }
+
+variable "backup_schedule" {
+  type = string
+}

@@ -38,6 +38,7 @@ terraform_cluster_keycloak_secrets:
   hedgedoc:
 terraform_cluster_google_identity_provider_client_id:
 terraform_cluster_google_identity_provider_client_secret:
+terraform_cluster_backup_schedule: "0 0 * * *"
 terraform_cluster_versions:
   jitsi: stable-6726
   jitsi_helm: v1.0.0
@@ -83,3 +84,4 @@ terraform_cluster_variables:
   keycloak_secrets: "{{ terraform_cluster_keycloak_secrets | to_json }}"
   google_identity_provider_client_id: "{{ terraform_cluster_google_identity_provider_client_id }}"
   google_identity_provider_client_secret: "{{ terraform_cluster_google_identity_provider_client_secret }}"
+  backup_schedule: "{{ terraform_cluster_backup_schedule }}"

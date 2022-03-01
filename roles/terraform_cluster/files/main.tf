@@ -195,3 +195,16 @@ module "element" {
     module.cert_manager
   ]
 }
+
+module "backup" {
+  source          = "./backup"
+  release_name    = var.release_name
+  versions        = var.versions
+  db_passwords    = var.db_passwords
+  volume_handles  = var.volume_handles
+  backup_schedule = var.backup_schedule
+
+  depends_on = [
+    module.postgres
+  ]
+}
