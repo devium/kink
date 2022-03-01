@@ -30,7 +30,7 @@ resource "kubectl_manifest" "prosody_plugins" {
       namespace: ${local.namespace}
     data:
       mod_muc_rooms.lua: |
-        ${replace(file("${path.module}/mod_muc_rooms.lua"), "\n", "\n    ")}
+        ${indent(4, file("${path.module}/mod_muc_rooms.lua"))}
     YAML
 
   depends_on = [

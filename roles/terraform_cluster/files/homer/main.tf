@@ -202,9 +202,9 @@ resource "kubectl_manifest" "config" {
       namespace: ${local.namespace}
     data:
       config.yml: |
-        ${replace(data.template_file.config.rendered, "\n", "\n    ")}
+        ${indent(4, data.template_file.config.rendered)}
       rooms.html: |
-        ${replace(data.template_file.rooms.rendered, "\n", "\n    ")}
+        ${indent(4, data.template_file.rooms.rendered)}
     YAML
 
   depends_on = [
