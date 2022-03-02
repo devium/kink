@@ -160,8 +160,6 @@ resource "helm_release" "synapse" {
       federation_sender: 0
 
     settings:
-      uid: 1000
-      gid: 1000
       report_stats: "no"
 
     database:
@@ -173,6 +171,9 @@ resource "helm_release" "synapse" {
       username: synapse
 
     existingMediaClaim: ${kubectl_manifest.pvc.name}
+    podSecurityContext:
+      fsGroup: 991
+      fsGroupChangePolicy: "OnRootMismatch"
 
     homeserver:
       server_name: ${var.domain}
