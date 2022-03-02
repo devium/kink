@@ -1,0 +1,7 @@
+- hosts: localhost
+  roles:
+    - role: secrets
+
+- hosts: localhost
+  roles:
+    - role: terraform_cluster

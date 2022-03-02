@@ -1,156 +1,104 @@
 # Project Setup
-
 ## Requirements
-### Install & configure Terraform (Ubuntu)
-https://learn.hashicorp.com/tutorials/terraform/install-cli?in=terraform/aws-get-started#install-terraform
+
+### Install tooling:
+* Ansible: https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html
+* Terraform: https://learn.hashicorp.com/tutorials/terraform/install-cli
+
+### Install Ansible modules
 ```bash
-sudo apt-get update && sudo apt-get install -y gnupg software-properties-common curl
-curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
-sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
-sudo apt-get update && sudo apt-get install terraform
+ansible-galaxy install -r requirements.yml
+pip install kubernetes
 ```
-Login to Terraform Cloud:
+
+### Create `secrets.yml`
+Create a `secrets.yml` in `inventories/{dev|prod}/group_vars/all/` and fill in the following values:
+```yaml
+# Project name used in user-facing applications
+project_name: 
+# SSH key name as defined in Hetzner Cloud
+ssh_key: 
+# Fully qualified domain name of the desired root domain
+domain: 
+# Hetzner Cloud project API token
+hcloud_token: 
+# Hetzner DNS API token
+hdns_token: 
+# Hetzner DNS zone ID of the desired hosted zone (check URL in DNS console)
+hdns_zone_id: 
+# ID of the database volume
+postgres_volume_handle: 
+nextcloud_volume_handle: 
+# Subdomain for servers/apps
+subdomains:
+  jitsi: 
+  jitsi_keycloak: 
+  keycloak: 
+  nextcloud: 
+  homer: 
+  hedgedoc: 
+  element: 
+  matrix: 
+# Email registered with the ACME SSL certificate server
+cert_email: 
+# Google SSO client ID and secret
+google_identity_provider_client_id: 
+google_identity_provider_client_secret: 
+# Container image used for Homer dashboard assets and configuration
+homer_assets_image: 
+
+# Random tokens and passwords that may be generated
+
+# Token used for communication between nodes on Kubernetes cluster setup
+rke2_token: <generate>
+# Database user passwords
+db_passwords:
+  root: <generate>
+  keycloak: <generate>
+  hedgedoc: <generate>
+  nextcloud: <generate>
+keycloak_admin_password: <generate>
+# Keycloak confidential client secrets
+keycloak_secrets:
+  jitsi: <generate>
+  nextcloud: <generate>
+  hedgedoc: <generate>
+jitsi_jwt_secret: <generate>
+hedgedoc_secret: <generate>
+nextcloud_admin_password: <generate>
+```
+
+## Deployment
+Set the Ansible stage:
 ```bash
-terraform login
+export ANSIBLE_STAGE={dev|prod}
 ```
-Prepare variable file:
+Run the Ansible playbook:
 ```bash
-cd terraform
-touch {dev|prod}.tfvars
-```
-Fill in the following variables:
-```ini
-project_name = "PROJECT_NAME"
-domain = "{dev|prod|?}.DOMAIN"
-suffix = "{dev|prod}"
-db_password = "DB_ROOT_PASSWORD"
+ansible-playbook main.yml
 ```
 
-### Install & configure Ansible
-https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#installing-and-upgrading-ansible-with-pip
+## Teardown
+Run the Ansible playbook with the `terraform-destroy` tag:
 ```bash
-pip install ansible
-cd ansible
-ansible-galaxy collection install -r requirements.yml
-```
-Create vault password file.
-```bash
-touch {dev|prod}.password
-```
-On a single line in the file enter the vault password.
-
-### Install & configure AWS-CLI
-https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2-linux.html#cliv2-linux-install
-
-```bash
-curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-unzip awscliv2.zip
-sudo ./aws/install
-```
-Get AWS key/secret from https://console.aws.amazon.com/iamv2/home#/users and configure the AWS CLI:
-```bash
-aws configure
+ansible-playbook main.yml --tags terraform-destroy
 ```
 
-### Init submodules
-```bash
-git submodule init
-git submodule update
-```
+## Additional information
+### Volume management
+Hetzner volume management with Kubernetes is a little fickle. In order to properly unmount a manually created volume do the following:
+1. Check which node the volume is attached to in Hetzner Cloud.
+2. Stop pods or uninstall Helm charts that access this volume.
+3. Delete PVCs, volumeattachments, and PVs.
+4. Check on node if the volume has been properly unmounted: `findmnt | grep csi` or `findmnt | grep HC_Volume`.
+5. If not, unmount on the node using `umount MOUNTPATH`.
+The volume mount can get screwed up. You will notice that the volume handle in `findmnt` is different from the one specified in the PV description.
 
-### Other requirements
-Boto is used for AWS interaction using Ansible:
-```bash
-pip install boto3
-```
+### Resetting/reinitializing the database
+Any changes to the Postgres volume will be lost while the pod is still running. At the same time, the volume is only attached while the pod is running. So in order to make persistent changes, you will have to mount the volume manually while the pod is inactive.
 
-### Add SSH keys
-Configure your `~/.ssh/config` or manually add the SSH key each session. `ssh-add` is required for agent forwarding on the bastion host anyway.
-```bash
-ssh-add ~/.ssh/SOME_KEY.pem
-```
+Uninstall the Postgres Helm chart using "helm uninstall -n postgres primary" and mount the volume using the Hetzner Cloud console. Use `findmnt | grep HC_Volume` to find the mount point and make any changes to the volume through that mount point.
 
-## Terraform
-```
-terraform workspace select {dev|prod}
-terraform apply -var-file {dev|prod}.tfvars
-```
-A sanity check will be performed at the beginning to ensure you're using the correct `.tfvars` file for the current workspace.
+If you want to reset the database, make sure to delete the `data` folder as well as the `.user_scripts_initialized` file on the same level. Don't do this in prod. Duh.
 
-### Domain name servers
-If your specified domain is not an SLD, make sure to create an NS record for you domain in your SLD's hosted zone, redirecting requests to your domain's nameservers.
-
-Note: Domain record changes may take a few minutes to propagate.
-
-### Tear down
-```
-terraform destroy
-```
-This destroys all EC2 and RDS instances, VPCs, S3 buckets, and domain records and hosted zones. This takes about 10 minutes to perform. A final snapshot is performed on the database.
-
-Note: S3 buckets will only be destroyed if empty.
-
-## Ansible
-
-### Set environment
-```bash
-export ANSIBLE_ENV={dev|prod}
-```
-
-### Set S3 credentials
-After running `terraform apply` copy the contents of `terraform/s3.{dev|prod}.yml` to the ansible vault:
-```bash
-ansible-vault edit ansible/environments/{dev|prod}/group_vars/all/vault
-```
-
-### Run entire Ansible playbook
-Make sure you run `terraform apply` before this at least once to update your environment's `hosts.yml` and S3 credentials. This playbook uses EC2 instance IDs to query their private IP addresses.
-```bash
-ansible-playbook main.yml [--diff] --tags setup-all,start,wait-for-startup,init-all
-```
-
-### Limitations
-- Private server IP addresses are queried from AWS from `localhost`, so be sure to always include `localhost` in `--limit`.
-- Running `ansible-playbook` with both `start` and `init-all` tasks will most likely fail as Keycloak takes a few minutes to start and won't be ready in time for the `init-keycloak` tasks. To avoid this, include the `wait-for-startup` tag.
-
-### Update EC2 packages
-```bash
-ansible-playbook main.yml [--diff] --tags update
-```
-
-### Stop/start AWS EC2 and RDS instances
-```bash
-ansible-playbook main.yml [--diff] --limit localhost --tags stop-aws
-ansible-playbook main.yml [--diff] --limit localhost --tags start-aws
-```
-Make sure to rerun `terraform apply` after since IP addresses have likely changed and domains need to be updated.
-
-## Manual SSH via bastion jump server
-```bash
-ssh -A ec2-user@BASTION_DOMAIN
-```
-The Ansible playbook contains an `~/.ssh/config` file for hostnames in the private subnets:
-```bash
-ssh collab
-ssh auth
-ssh matrix
-ssh www
-ssh draw
-```
-
-## Database access
-Connect to the bastion server and use the PostgreSQL client to connect to the database. A `.pg_service` file with the database address is provided:
-```bash
-psql service=db
-```
-
-## Log files
-Depending on the service, log files can be accessed via `docker logs` or `journalctl`.
-Docker logs (most services):
-```bash
-sudo docker logs [-f] CONTAINER_NAME
-```
-Systemd (Matrix-associated services):
-```bash
-sudo journalctl -u SERVICE_NAME.service
-```
+Unmount using `umount` or the Hetzer Cloud console, then reinstall the Helm chart using Ansible/Terraform.

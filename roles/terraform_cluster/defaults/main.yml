@@ -1,0 +1,87 @@
+terraform_cluster_workspace: default
+terraform_cluster_kubeconf_file:
+terraform_cluster_hcloud_token:
+terraform_cluster_floating_ipv4:
+terraform_cluster_domain:
+terraform_cluster_subdomains:
+  jitsi: jitsi
+  jitsi_keycloak: auth.jitsi
+  keycloak: keycloak
+  nextcloud: next
+  homer: www
+  hedgedoc: doc
+  element: element
+  matrix: matrix
+terraform_cluster_use_production_cert: false
+terraform_cluster_cert_email:
+terraform_cluster_volume_handles:
+  postgres:
+  nextcloud:
+  synapse:
+terraform_cluster_db_passwords:
+  keycloak:
+  hedgedoc:
+  nextcloud:
+  synapse:
+terraform_cluster_admin_passwords:
+  keycloak:
+  nextcloud:
+  collabora:
+terraform_cluster_jitsi_jwt_secret:
+terraform_cluster_keycloak_realm: primary
+terraform_cluster_homer_assets_image:
+terraform_cluster_project_name:
+terraform_cluster_hedgedoc_secret:
+terraform_cluster_keycloak_secrets:
+  jitsi:
+  nextcloud:
+  hedgedoc:
+terraform_cluster_google_identity_provider_client_id:
+terraform_cluster_google_identity_provider_client_secret:
+terraform_cluster_backup_schedule: "0 0 * * *"
+terraform_cluster_versions:
+  jitsi: stable-6726
+  jitsi_helm: v1.0.0
+  jitsi_keycloak: v0.2.0
+  hcloud_csi: v1.6.0
+  cert_manager_helm: v1.7.1
+  postgres: 14.1.0-debian-10-r80
+  keycloak_helm: v17.0.2
+  keycloak_theme: v0.3.2
+  hedgedoc: 1.9.2
+  hedgedoc_helm: 1.1.0
+  nextcloud: v23.0.2
+  nextcloud_helm: 2.12.1
+  collabora: 22.05.0.1
+  collabora_helm: 2.2.1
+  homer: 22.02.1
+  synapse: v1.51.0
+  synapse_helm: 0.8.7
+  element: v1.10.4
+  element_helm: 1.0.34
+  nginx: 1.21.6
+  nginx_helm: 9.9.0
+
+terraform_cluster_plan_file: "{{ role_path }}/files/terraform.tfstate.d/{{ terraform_cluster_workspace }}/tfplan"
+
+terraform_cluster_variables:
+  kubeconf_file: "{{ terraform_cluster_kubeconf_file }}"
+  hcloud_token: "{{ terraform_cluster_hcloud_token }}"
+  floating_ipv4: "{{ terraform_cluster_floating_ipv4 }}"
+  domain: "{{ terraform_cluster_domain }}"
+  subdomains: "{{ terraform_cluster_subdomains | to_json }}"
+  use_production_cert: "{{ terraform_cluster_use_production_cert | to_json }}"
+  cert_email: "{{ terraform_cluster_cert_email }}"
+  versions: "{{ terraform_cluster_versions | to_json }}"
+  db_passwords: "{{ terraform_cluster_db_passwords | to_json }}"
+  volume_handles: "{{ terraform_cluster_volume_handles | to_json }}"
+  admin_passwords: "{{ terraform_cluster_admin_passwords | to_json }}"
+  jitsi_jwt_secret: "{{ terraform_cluster_jitsi_jwt_secret }}"
+  keycloak_realm: "{{ terraform_cluster_keycloak_realm }}"
+  homer_assets_image: "{{ terraform_cluster_homer_assets_image }}"
+  project_name: "{{ terraform_cluster_project_name }}"
+  hedgedoc_secret: "{{ terraform_cluster_hedgedoc_secret }}"
+  keycloak_secrets: "{{ terraform_cluster_keycloak_secrets | to_json }}"
+  google_identity_provider_client_id: "{{ terraform_cluster_google_identity_provider_client_id }}"
+  google_identity_provider_client_secret: "{{ terraform_cluster_google_identity_provider_client_secret }}"
+  backup_schedule: "{{ terraform_cluster_backup_schedule }}"

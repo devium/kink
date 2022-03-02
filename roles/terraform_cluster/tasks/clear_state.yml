@@ -1,0 +1,5 @@
+- name: Remove state files
+  local_action:
+    module: file
+    path: "{{ role_path }}/files/terraform.tfstate.d/{{ terraform_cluster_workspace }}"
+    state: absent

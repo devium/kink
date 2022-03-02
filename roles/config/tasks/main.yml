@@ -1,0 +1,3 @@
+- import_tasks: "{{ role_path }}/tasks/config_nextcloud.yml"
+  tags:
+    - config-nextcloud

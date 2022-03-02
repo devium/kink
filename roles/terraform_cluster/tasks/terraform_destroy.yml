@@ -1,0 +1,12 @@
+- name: Destroy terraform project
+  community.general.terraform:
+    project_path: "{{ role_path }}/files"
+    workspace: "{{ terraform_cluster_workspace }}"
+    variables: "{{ terraform_cluster_variables }}"
+    state: absent
+  register: terraform_result
+  when: terraform_cluster_kubeconf_file is file
+
+- name: Print Terraform output
+  debug:
+    msg: "{{ terraform_result.stdout }}"

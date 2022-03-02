@@ -1,0 +1,17 @@
+- name: Update packages
+  apt:
+    name: "*"
+    state: latest
+    update_cache: yes
+    only_upgrade: yes
+
+- name: Check if reboot-required file exists
+  stat:
+    path: /var/run/reboot-required
+  register: stat_result
+  changed_when: false
+
+- name: Reboot if required
+  reboot:
+  when: stat_result.stat.exists
+

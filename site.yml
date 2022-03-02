@@ -1,0 +1,26 @@
+- hosts: localhost
+  roles:
+    - role: secrets
+
+- import_playbook: webservers.yml
+
+- hosts: all
+  roles:
+    - role: update
+      tags: 
+        - update
+
+- hosts: all
+  roles:
+    - role: mrlesmithjr.netplan
+      tags:
+        - setup-netplan
+
+- hosts: all
+  roles:
+    - role: lablabs.rke2
+      tags:
+        - setup-kubernetes
+
+- import_playbook: cluster.yml
+- import_playbook: config.yml
