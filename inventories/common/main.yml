@@ -22,7 +22,7 @@ netplan_configuration:
        - "{{ floating_ip.ipv4_address }}/32"
        - "{{ floating_ip.ipv6_address }}/64"
 
-rke2_version: v1.22.6+rke2r1
+rke2_version: v1.23.4+rke2r1
 rke2_download_kubeconf: true
 rke2_download_kubeconf_path: "{{ ansible_inventory_sources[0] | dirname }}"
 rke2_download_kubeconf_file_name: rke2.yaml
@@ -70,10 +70,12 @@ terraform_cluster_versions:
   element_helm: 1.0.34
   nginx: 1.21.6
   nginx_helm: 9.9.0
+  workadventure_helm: 0.1.0
+  workadventure: v1.8.4
 
 secrets_file: "{{ ansible_inventory_sources[0] | dirname }}/group_vars/all/secrets.yml"
 
-config_cluster_kubeconf_file: "{{ rke2_download_kubeconf_path }}/{{ rke2_download_kubeconf_file_name }}"
+config_kubeconf_file: "{{ rke2_download_kubeconf_path }}/{{ rke2_download_kubeconf_file_name }}"
 config_domain: "{{ domain }}"
 config_subdomains: "{{ subdomains }}"
 config_keycloak_realm: "{{ project_name }}"
