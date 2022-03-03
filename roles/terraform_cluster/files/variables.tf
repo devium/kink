@@ -28,7 +28,7 @@ variable "cert_email" {
 }
 
 variable "release_name" {
-  default = "primary"
+  type = string
 }
 
 variable "versions" {

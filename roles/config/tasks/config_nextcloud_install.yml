@@ -8,12 +8,14 @@
   changed_when: false
 
 # Note: Nextcloud should be installed by the container deployment but just to be safe
+# Also useful to fix botched installations
 - name: Install Nextcloud
   kubernetes.core.k8s_exec:
     kubeconfig: "{{ config_kubeconf_file }}"
     namespace: "{{ config_nextcloud_namespace }}"
     pod: "{{ pods_result.resources[0].metadata.name }}"
-    command: "su -s /bin/bash -c '/var/www/html/occ maintenance:install --no-interaction --admin-user admin_temp --admin-pass {{ config_admin_passwords.nextcloud }}' www-data"
+    command: "su -s /bin/bash -c '/var/www/html/occ maintenance:install --no-interaction --admin-user admin_temp --admin-pass {{ config_admin_passwords.nextcloud }} --database pgsql --database-name nextcloud --database-host {{ config_helm_release_name }}-postgresql.postgres.svc.cluster.local:5432 --database-user nextcloud --database-pass {{ config_db_passwords.nextcloud }}' www-data"
+  no_log: true
   when: "'Nextcloud is not installed' in check_result.stderr"
 
 - name: Check if temporary admin user exists

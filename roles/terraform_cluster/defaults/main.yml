@@ -1,17 +1,24 @@
 terraform_cluster_workspace: default
 terraform_cluster_kubeconf_file:
+terraform_cluster_helm_release_name: primary
 terraform_cluster_hcloud_token:
 terraform_cluster_floating_ipv4:
 terraform_cluster_domain:
 terraform_cluster_subdomains:
   jitsi: jitsi
   jitsi_keycloak: auth.jitsi
-  keycloak: keycloak
+  keycloak: auth
   nextcloud: next
+  collabora: office.next
   homer: www
   hedgedoc: doc
   element: element
-  matrix: matrix
+  synapse: matrix
+  workadventure_front: play
+  workadventure_back: api.play
+  workadventure_maps: maps.play
+  workadventure_pusher: pusher.play
+  workadventure_uploader: uploader.play
 terraform_cluster_use_production_cert: false
 terraform_cluster_cert_email:
 terraform_cluster_volume_handles:
@@ -61,11 +68,14 @@ terraform_cluster_versions:
   element_helm: 1.0.34
   nginx: 1.21.6
   nginx_helm: 9.9.0
+  workadventure_helm: 0.1.0
+  workadventure: v1.8.4
 
 terraform_cluster_plan_file: "{{ role_path }}/files/terraform.tfstate.d/{{ terraform_cluster_workspace }}/tfplan"
 
 terraform_cluster_variables:
   kubeconf_file: "{{ terraform_cluster_kubeconf_file }}"
+  release_name: "{{ terraform_cluster_helm_release_name }}"
   hcloud_token: "{{ terraform_cluster_hcloud_token }}"
   floating_ipv4: "{{ terraform_cluster_floating_ipv4 }}"
   domain: "{{ terraform_cluster_domain }}"

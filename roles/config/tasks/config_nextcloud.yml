@@ -17,3 +17,5 @@
     category: "{{ 'system' if item.app == 'system' else 'app' }}"
     app: "{{ '' if item.app == 'system' else item.app }}"
     identifier: "{{ app }} {{ item.key }} {{ item.index | default('') }}"
+
+- import_tasks: config_nextcloud_keycloak.yml

@@ -1,16 +1,22 @@
-config_kubeconf_file: 
+config_kubeconf_file:
 config_nextcloud_namespace: nextcloud
 config_release_name: primary
 config_domain:
 config_subdomains:
   jitsi: jitsi
   jitsi_keycloak: auth.jitsi
-  keycloak: keycloak
+  keycloak: auth
   nextcloud: next
+  collabora: office.next
   homer: www
   hedgedoc: doc
   element: element
   synapse: matrix
+  workadventure_front: play
+  workadventure_back: api.play
+  workadventure_maps: maps.play
+  workadventure_pusher: pusher.play
+  workadventure_uploader: uploader.play
 config_keycloak_realm:
 config_keycloak_secrets:
   jitsi:
@@ -20,6 +26,12 @@ config_admin_passwords:
   keycloak:
   nextcloud:
   collabora:
+config_db_passwords:
+  keycloak:
+  hedgedoc:
+  nextcloud:
+  synapse:
+config_helm_release_name: primary
 config_nextcloud_install_apps:
   - calendar
   - deck
@@ -31,6 +43,9 @@ config_nextcloud_disable_apps:
   - federation
   - firstrunwizard
 config_nextcloud_config:
+  - app: system
+    key: overwriteprotocol
+    value: https
   - app: system
     key: allow_user_to_change_display_name
     value: "false"
@@ -80,9 +95,17 @@ config_nextcloud_config:
   - app: sociallogin
     key: hide_default_login
     value: "1"
-  - app: sociallogin
-    key: custom_providers
-    value:
+  - app: richdocuments
+    key: wopi_url
+    value: "https://{{ config_subdomains.collabora }}.{{ config_domain }}"
+  - app: richdocuments
+    key: public_wopi_url
+    value: "https://{{ config_subdomains.collabora }}.{{ config_domain }}"
+  - app: richdocuments
+    key: disable_certificate_verification
+    value: ""
+
+config_nextcloud_keycloak_config:
       {
         "custom_oidc": [
           {
@@ -105,12 +128,3 @@ config_nextcloud_config:
           }
         ]
       }
-  - app: richdocuments
-    key: wopi_url
-    value: "https://{{ config_subdomains.collabora }}.{{ config_domain }}"
-  - app: richdocuments
-    key: public_wopi_url
-    value: "https://{{ config_subdomains.collabora }}.{{ config_domain }}"
-  - app: richdocuments
-    key: disable_certificate_verification
-    value: ""

@@ -1,4 +1,5 @@
 stage: "{{ lookup('env', 'ANSIBLE_STAGE') }}"
+helm_release_name: "primary{{ '' if stage == 'prod' else '-dev' }}"
 
 terraform_servers_workspace: "{{ stage }}"
 terraform_servers_hcloud_token: "{{ hcloud_token }}"
@@ -29,6 +30,7 @@ rke2_download_kubeconf_file_name: rke2.yaml
 
 terraform_cluster_workspace: "{{ stage }}"
 terraform_cluster_kubeconf_file: "{{ rke2_download_kubeconf_path }}/{{ rke2_download_kubeconf_file_name }}"
+terraform_cluster_helm_release_name: "{{ helm_release_name }}"
 terraform_cluster_hcloud_token: "{{ hcloud_token }}"
 terraform_cluster_floating_ipv4: "{{ floating_ip.ipv4_address }}"
 terraform_cluster_domain: "{{ domain }}"
@@ -81,3 +83,5 @@ config_subdomains: "{{ subdomains }}"
 config_keycloak_realm: "{{ project_name }}"
 config_keycloak_secrets: "{{ keycloak_secrets }}"
 config_admin_passwords: "{{ admin_passwords }}"
+config_db_passwords: "{{ db_passwords }}"
+config_helm_release_name: "{{ helm_release_name }}"
