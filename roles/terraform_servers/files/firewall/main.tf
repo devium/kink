@@ -84,4 +84,15 @@ resource "hcloud_firewall" "firewall" {
     ]
     description = "RKE2 metrics server"
   }
+
+  rule {
+    direction = "in"
+    protocol  = "udp"
+    port      = "30000"
+    source_ips = [
+      "0.0.0.0/0",
+      "::/0"
+    ]
+    description = "Jitsi JVB"
+  }
 }

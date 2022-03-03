@@ -9,7 +9,6 @@ terraform {
 locals {
   jitsi_domain = "${var.subdomains.jitsi}.${var.domain}"
   namespace    = "jitsi"
-  jvb_port_udp = 10000
 }
 
 resource "kubectl_manifest" "namespace" {
@@ -75,8 +74,8 @@ resource "helm_release" "jitsi" {
         tag: ${var.versions.jitsi}
       service:
         enabled: true
-      useNodeIP: true
-      UDPPort: ${local.jvb_port_udp}
+        type: NodePort
+      UDPPort: 30000
 
     jicofo:
       image:
@@ -122,20 +121,6 @@ resource "helm_release" "jitsi" {
   depends_on = [
     kubectl_manifest.prosody_plugins
   ]
-}
-
-resource "kubectl_manifest" "ingress_jitsi_jvb_patch" {
-  yaml_body = <<-YAML
-    apiVersion: helm.cattle.io/v1
-    kind: HelmChartConfig
-    metadata:
-      name: rke2-ingress-nginx
-      namespace: kube-system
-    spec:
-      valuesContent: |
-        udp:
-          ${local.jvb_port_udp}: "${local.namespace}/${var.release_name}-jitsi-meet-jvb:${local.jvb_port_udp}"
-    YAML
 }
 
 resource "kubectl_manifest" "jitsi_keycloak_config" {
