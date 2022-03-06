@@ -61,9 +61,15 @@ resource "helm_release" "jitsi" {
 
       UDPPort: 30000
 
+      xmpp:
+        password: ${var.jitsi_secrets.jvb}
+
     jicofo:
       image:
         tag: ${var.versions.jitsi}
+
+      xmpp:
+        password: ${var.jitsi_secrets.jicofo}
 
     prosody:
       image:
@@ -80,7 +86,7 @@ resource "helm_release" "jitsi" {
         - name: JWT_APP_ID
           value: jitsi
         - name: JWT_APP_SECRET
-          value: ${var.jitsi_jwt_secret}
+          value: ${var.jitsi_secrets.jwt}
 
       extraVolumeMounts:
         - name: prosody-plugins
@@ -126,7 +132,7 @@ resource "kubernetes_secret_v1" "jitsi_keycloak_config" {
         "resource": "${var.keycloak_clients.jitsi}",
         "public-client": true,
         "credentials": {
-          "secret": "${var.jitsi_jwt_secret}"
+          "secret": "${var.jitsi_secrets.jwt}"
         },
         "confidential-port": 0
       }
@@ -171,7 +177,7 @@ resource "kubernetes_deployment_v1" "jitsi_keycloak" {
 
           env {
             name  = "JITSI_SECRET"
-            value = var.jitsi_jwt_secret
+            value = var.jitsi_secrets.jwt
           }
           env {
             name  = "DEFAULT_ROOM"

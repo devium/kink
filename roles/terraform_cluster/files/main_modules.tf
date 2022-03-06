@@ -78,7 +78,7 @@ module "jitsi" {
 
   domain           = var.domain
   cert_issuer      = module.cert_manager.issuer
-  jitsi_jwt_secret = var.jitsi_jwt_secret
+  jitsi_secrets    = var.jitsi_secrets
   keycloak_clients = module.keycloak_config.clients
   keycloak_realm   = var.keycloak_realm
   namespaces       = module.namespaces.namespaces

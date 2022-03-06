@@ -6,8 +6,8 @@ variable "domain" {
   type = string
 }
 
-variable "jitsi_jwt_secret" {
-  type      = string
+variable "jitsi_secrets" {
+  type      = map(string)
   sensitive = true
 }
 

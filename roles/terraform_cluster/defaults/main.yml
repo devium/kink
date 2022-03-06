@@ -6,7 +6,6 @@ terraform_cluster_google_identity_provider_client_secret:
 terraform_cluster_hcloud_token:
 terraform_cluster_hedgedoc_secret:
 terraform_cluster_homer_assets_image:
-terraform_cluster_jitsi_jwt_secret:
 terraform_cluster_kubeconf_file:
 terraform_cluster_project_name:
 
@@ -20,6 +19,11 @@ terraform_cluster_db_passwords:
   keycloak:
   nextcloud:
   synapse:
+
+terraform_cluster_jitsi_secrets:
+  jicofo:
+  jvb:
+  jwt:
 
 terraform_cluster_keycloak_secrets:
   hedgedoc:
@@ -108,7 +112,7 @@ terraform_cluster_variables:
   hcloud_token: "{{ terraform_cluster_hcloud_token }}"
   hedgedoc_secret: "{{ terraform_cluster_hedgedoc_secret }}"
   homer_assets_image: "{{ terraform_cluster_homer_assets_image }}"
-  jitsi_jwt_secret: "{{ terraform_cluster_jitsi_jwt_secret }}"
+  jitsi_secrets: "{{ terraform_cluster_jitsi_secrets | to_json }}"
   keycloak_realm: "{{ terraform_cluster_keycloak_realm }}"
   keycloak_secrets: "{{ terraform_cluster_keycloak_secrets | to_json }}"
   kubeconf_file: "{{ terraform_cluster_kubeconf_file }}"

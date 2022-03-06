@@ -14,58 +14,77 @@ pip install kubernetes
 ### Create `secrets.yml`
 Create a `secrets.yml` in `inventories/{dev|prod}/group_vars/all/` and fill in the following values:
 ```yaml
-# Project name used in user-facing applications
-project_name: 
-# SSH key name as defined in Hetzner Cloud
-ssh_key: 
+# Email registered with the ACME SSL certificate server
+cert_email: 
 # Fully qualified domain name of the desired root domain
 domain: 
+# Google SSO client ID and secret
+google_identity_provider_client_id: 
+google_identity_provider_client_secret: 
 # Hetzner Cloud project API token
 hcloud_token: 
 # Hetzner DNS API token
 hdns_token: 
 # Hetzner DNS zone ID of the desired hosted zone (check URL in DNS console)
 hdns_zone_id: 
-# ID of the database volume
-postgres_volume_handle: 
-nextcloud_volume_handle: 
+# Container image used for Homer dashboard assets and configuration
+homer_assets_image: 
+# Project name used in user-facing applications
+project_name: 
+# SSH key name as defined in Hetzner Cloud
+ssh_key: 
+
+# IDs of persistent Hetzner volumes
+volume_handles:
+  backup: 
+  nextcloud: 
+  postgres: 
+  synapse: 
+
 # Subdomain for servers/apps
 subdomains:
+  collabora: 
+  element: 
+  hedgedoc: 
+  homer: 
   jitsi: 
   jitsi_keycloak: 
   keycloak: 
   nextcloud: 
-  homer: 
-  hedgedoc: 
-  element: 
-  matrix: 
-# Email registered with the ACME SSL certificate server
-cert_email: 
-# Google SSO client ID and secret
-google_identity_provider_client_id: 
-google_identity_provider_client_secret: 
-# Container image used for Homer dashboard assets and configuration
-homer_assets_image: 
+  synapse: 
+  workadventure_back: 
+  workadventure_front: 
+  workadventure_maps: 
+  workadventure_pusher: 
+  workadventure_uploader: 
 
 # Random tokens and passwords that may be generated
-
-# Token used for communication between nodes on Kubernetes cluster setup
+hedgedoc_secret: <generate>
 rke2_token: <generate>
-# Database user passwords
-db_passwords:
-  root: <generate>
+
+admin_passwords:
+  collabora: <generate>
   keycloak: <generate>
-  hedgedoc: <generate>
   nextcloud: <generate>
-keycloak_admin_password: <generate>
-# Keycloak confidential client secrets
+
+db_passwords:
+  hedgedoc: <generate>
+  keycloak: <generate>
+  nextcloud: <generate>
+  root: <generate>
+  synapse: <generate>
+
+jitsi_secrets:
+  jicofo: <generate>
+  jvb: <generate>
+  jwt: <generate>
+
 keycloak_secrets:
+  hedgedoc: <generate>
   jitsi: <generate>
   nextcloud: <generate>
-  hedgedoc: <generate>
-jitsi_jwt_secret: <generate>
-hedgedoc_secret: <generate>
-nextcloud_admin_password: <generate>
+  synapse: <generate>
+
 ```
 
 ## Deployment
