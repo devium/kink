@@ -27,17 +27,19 @@ resource "helm_release" "postgres" {
   values = [<<-YAML
     image:
       tag: ${var.versions.postgres}
+
     global:
       postgresql:
         auth:
-          postgresPassword: ${var.db_passwords.root}
+          postgresPassword: ${var.db_passwords.postgres}
+
     primary:
       persistence:
         existingClaim: ${var.pvcs.postgres}
       initdb:
         scriptsSecret: ${one(kubernetes_secret_v1.init.metadata).name}
         user: postgres
-        password: ${var.db_passwords.root}
+        password: ${var.db_passwords.postgres}
     YAML
   ]
 }

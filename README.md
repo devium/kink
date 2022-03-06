@@ -71,7 +71,7 @@ db_passwords:
   hedgedoc: <generate>
   keycloak: <generate>
   nextcloud: <generate>
-  root: <generate>
+  postgres: <generate>
   synapse: <generate>
 
 jitsi_secrets:
