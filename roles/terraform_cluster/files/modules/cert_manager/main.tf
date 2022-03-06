@@ -14,8 +14,8 @@ resource "helm_release" "cert_manager" {
   ]
 }
 
-resource "kubernetes_manifest" "issuer" {
-  manifest = yamldecode(<<-YAML
+resource "kubectl_manifest" "issuer" {
+  yaml_body = <<-YAML
     apiVersion: cert-manager.io/v1
     kind: ClusterIssuer
 
@@ -36,7 +36,6 @@ resource "kubernetes_manifest" "issuer" {
                 class: nginx
 
     YAML
-  )
 
   depends_on = [
     helm_release.cert_manager

@@ -20,8 +20,12 @@ locals {
 }
 
 resource "kubernetes_manifest" "hcloud_csi" {
-  for_each = toset(local.csi_documents)
-  manifest = yamldecode(each.key)
+  count = length(local.csi_documents)
+  manifest = yamldecode(local.csi_documents[count.index])
+
+  depends_on = [
+    kubernetes_secret_v1.hcloud_token
+  ]
 }
 
 # Make flannel use the private subnet interface
