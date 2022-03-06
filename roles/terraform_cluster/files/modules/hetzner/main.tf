@@ -37,18 +37,17 @@ resource "kubernetes_manifest" "flannel_iface_patch" {
 
     metadata = {
       name      = "rke2-canal"
-      namespace = var.namespaces.hetzner
+      namespace = "kube-system"
     }
 
     spec = {
       valuesContent = <<-YAML
-        |
         flannel:
           args:
             - --ip-masq
             - --kube-subnet-mgr
             - --iface=ens10
-        YAML
+      YAML
     }
   }
 }
