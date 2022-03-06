@@ -1,47 +1,27 @@
-config_kubeconf_file:
-config_nextcloud_namespace: nextcloud
-config_release_name: primary
 config_domain:
-config_subdomains:
-  jitsi: jitsi
-  jitsi_keycloak: auth.jitsi
-  keycloak: auth
-  nextcloud: next
-  collabora: office.next
-  homer: www
-  hedgedoc: doc
-  element: element
-  synapse: matrix
-  workadventure_front: play
-  workadventure_back: api.play
-  workadventure_maps: maps.play
-  workadventure_pusher: pusher.play
-  workadventure_uploader: uploader.play
 config_keycloak_realm:
-config_keycloak_secrets:
-  jitsi:
-  nextcloud:
-  hedgedoc:
+config_kubeconf_file:
+
 config_admin_passwords:
+  collabora:
   keycloak:
   nextcloud:
-  collabora:
+
 config_db_passwords:
-  keycloak:
   hedgedoc:
+  keycloak:
   nextcloud:
   synapse:
+
+config_keycloak_secrets:
+  hedgedoc:
+  jitsi:
+  nextcloud:
+
 config_helm_release_name: primary
-config_nextcloud_install_apps:
-  - calendar
-  - deck
-  - sociallogin
-  - richdocuments
-config_nextcloud_disable_apps:
-  - circles
-  - dashboard
-  - federation
-  - firstrunwizard
+config_oidc_url: "https://{{ config_subdomains.keycloak }}.{{ config_domain }}/auth/realms/{{ config_keycloak_realm }}/protocol/openid-connect"
+config_release_name: primary
+
 config_nextcloud_config:
   - app: system
     key: overwriteprotocol
@@ -56,12 +36,21 @@ config_nextcloud_config:
     key: skeletondirectory
     value: ""
   - app: system
-    key: trusted_domains
     index: 2
+    key: trusted_domains
     value: "{{ config_subdomains.collabora }}.{{ config_domain }}"
   - app: files
     key: default_quota
     value: "250 MB"
+  - app: richdocuments
+    key: wopi_url
+    value: "https://{{ config_subdomains.collabora }}.{{ config_domain }}"
+  - app: richdocuments
+    key: public_wopi_url
+    value: "https://{{ config_subdomains.collabora }}.{{ config_domain }}"
+  - app: richdocuments
+    key: disable_certificate_verification
+    value: ""
   - app: sociallogin
     key: disable_registration
     value: ""
@@ -95,36 +84,70 @@ config_nextcloud_config:
   - app: sociallogin
     key: hide_default_login
     value: "1"
-  - app: richdocuments
-    key: wopi_url
-    value: "https://{{ config_subdomains.collabora }}.{{ config_domain }}"
-  - app: richdocuments
-    key: public_wopi_url
-    value: "https://{{ config_subdomains.collabora }}.{{ config_domain }}"
-  - app: richdocuments
-    key: disable_certificate_verification
-    value: ""
+
+config_nextcloud_disable_apps:
+  - circles
+  - dashboard
+  - federation
+  - firstrunwizard
 
 config_nextcloud_keycloak_config:
+  {
+    "custom_oidc": [
       {
-        "custom_oidc": [
-          {
-            "name": "keycloak",
-            "title": "Keycloak",
-            "authorizeUrl": "https://{{ config_subdomains.keycloak }}.{{ config_domain }}/auth/realms/{{ config_keycloak_realm }}/protocol/openid-connect/auth",
-            "tokenUrl": "https://{{ config_subdomains.keycloak }}.{{ config_domain }}/auth/realms/{{ config_keycloak_realm }}/protocol/openid-connect/token",
-            "displayNameClaim": "",
-            "userInfoUrl": "https://{{ config_subdomains.keycloak }}.{{ config_domain }}/auth/realms/{{ config_keycloak_realm }}/protocol/openid-connect/userinfo",
-            "logoutUrl": "",
-            "clientId": "nextcloud",
-            "clientSecret": "{{ config_keycloak_secrets.nextcloud }}",
-            "scope": "openid",
-            "groupsClaim": "groups",
-            "style": "keycloak",
-            "defaultGroup": "",
-            "groupMapping": {
-              "admin": "admin"
-            }
-          }
-        ]
+        "name": "keycloak",
+        "title": "Keycloak",
+        "authorizeUrl": "{{ config_oidc_url }}/auth",
+        "tokenUrl": "{{ config_oidc_url }}/token",
+        "displayNameClaim": "",
+        "userInfoUrl": "{{ config_oidc_url }}/userinfo",
+        "logoutUrl": "",
+        "clientId": "nextcloud",
+        "clientSecret": "{{ config_keycloak_secrets.nextcloud }}",
+        "scope": "openid",
+        "groupsClaim": "groups",
+        "style": "keycloak",
+        "defaultGroup": "",
+        "groupMapping": {
+          "admin": "admin"
+        }
       }
+    ]
+  }
+
+config_nextcloud_install_apps:
+  - calendar
+  - deck
+  - richdocuments
+  - sociallogin
+
+terraform_cluster_namespaces:
+  backup: backup
+  cert_manager: cert-manager
+  collabora: collabora
+  element: element
+  hedgedoc: hedgedoc
+  hetzner: hetzner
+  homer: homer
+  jitsi: jitsi
+  keycloak: keycloak
+  nextcloud: nextcloud
+  postgres: postgres
+  synapse: synapse
+  workadventure: workadventure
+
+config_subdomains:
+  collabora: office.next
+  element: element
+  hedgedoc: doc
+  homer: www
+  jitsi: jitsi
+  jitsi_keycloak: auth.jitsi
+  keycloak: auth
+  nextcloud: next
+  synapse: matrix
+  workadventure_back: api.play
+  workadventure_front: play
+  workadventure_maps: maps.play
+  workadventure_pusher: pusher.play
+  workadventure_uploader: uploader.play

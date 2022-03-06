@@ -2,7 +2,7 @@
   kubernetes.core.k8s_info:
     kubeconfig: "{{ config_kubeconf_file }}"
     kind: pods
-    namespace: "{{ config_nextcloud_namespace }}"
+    namespace: "{{ config_namespaces.nextcloud }}"
     label_selectors:
       - app.kubernetes.io/name = nextcloud
   register: pods_result

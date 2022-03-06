@@ -1,7 +1,7 @@
 - name: "Get Nextcloud keycloak config"
   kubernetes.core.k8s_exec:
     kubeconfig: "{{ config_kubeconf_file }}"
-    namespace: "{{ config_nextcloud_namespace }}"
+    namespace: "{{ config_namespaces.nextcloud }}"
     pod: "{{ pods_result.resources[0].metadata.name }}"
     command: su -s /bin/bash -c '/var/www/html/occ config:app:get sociallogin custom_providers' www-data
   register: get_result
@@ -11,7 +11,7 @@
 - name: "Set Nextcloud keycloak config"
   kubernetes.core.k8s_exec:
     kubeconfig: "{{ config_kubeconf_file }}"
-    namespace: "{{ config_nextcloud_namespace }}"
+    namespace: "{{ config_namespaces.nextcloud }}"
     pod: "{{ pods_result.resources[0].metadata.name }}"
     command: su -s /bin/bash -c '/var/www/html/occ config:app:set sociallogin custom_providers --value "{{ value_sanitized }}"' www-data
   vars:

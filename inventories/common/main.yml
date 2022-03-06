@@ -1,16 +1,39 @@
 stage: "{{ lookup('env', 'ANSIBLE_STAGE') }}"
-helm_release_name: "primary{{ '' if stage == 'prod' else '-dev' }}"
+stage_prefix: "{{ '' if stage == 'prod' else stage + '-' }}"
+helm_release_name: "main"
+namespace_prefix: "{{ stage_prefix }}"
+secrets_file: "{{ ansible_inventory_sources[0] | dirname }}/group_vars/all/secrets.yml"
 
-terraform_servers_workspace: "{{ stage }}"
+namespaces_base:
+  backup: backup
+  cert_manager: cert-manager
+  collabora: collabora
+  element: element
+  hedgedoc: hedgedoc
+  hetzner: hetzner
+  homer: homer
+  jitsi: jitsi
+  keycloak: keycloak
+  nextcloud: nextcloud
+  postgres: postgres
+  synapse: synapse
+  workadventure: workadventure
+
+namespaces_combine_regex: ": \"{{ namespace_prefix }}\\1\""
+namespaces: "{{ namespaces_base | to_json | regex_replace(': \"(.+?)\"', namespaces_combine_regex) | from_json }}"
+
+
+terraform_servers_domain: "{{ domain }}"
 terraform_servers_hcloud_token: "{{ hcloud_token }}"
 terraform_servers_hdns_token: "{{ hdns_token }}"
 terraform_servers_hdns_zone_id: "{{ hdns_zone_id }}"
-terraform_servers_domain: "{{ domain }}"
-terraform_servers_subdomains: "{{ subdomains }}"
 terraform_servers_ssh_key: "{{ ssh_key }}"
+terraform_servers_subdomains: "{{ subdomains }}"
+terraform_servers_workspace: "{{ stage }}"
 
-netplan_remove_existing: false
+
 netplan_config_file: /etc/netplan/60-floating-ip.yaml
+
 netplan_configuration:
   network:
    version: 2
@@ -23,63 +46,68 @@ netplan_configuration:
        - "{{ floating_ip.ipv4_address }}/32"
        - "{{ floating_ip.ipv6_address }}/64"
 
-rke2_version: v1.23.4+rke2r1
-rke2_download_kubeconf: true
-rke2_download_kubeconf_path: "{{ ansible_inventory_sources[0] | dirname }}"
-rke2_download_kubeconf_file_name: rke2.yaml
+netplan_remove_existing: false
 
-terraform_cluster_workspace: "{{ stage }}"
-terraform_cluster_kubeconf_file: "{{ rke2_download_kubeconf_path }}/{{ rke2_download_kubeconf_file_name }}"
-terraform_cluster_helm_release_name: "{{ helm_release_name }}"
-terraform_cluster_hcloud_token: "{{ hcloud_token }}"
-terraform_cluster_floating_ipv4: "{{ floating_ip.ipv4_address }}"
-terraform_cluster_domain: "{{ domain }}"
-terraform_cluster_subdomains: "{{ subdomains }}"
-terraform_cluster_use_production_cert: "{{ stage == 'prod' }}"
-terraform_cluster_cert_email: "{{ cert_email }}"
-terraform_cluster_volume_handles: "{{ volume_handles }}"
-terraform_cluster_nextcloud_volume_handle: "{{ nextcloud_volume_handle }}"
-terraform_cluster_db_passwords: "{{ db_passwords }}"
+
+rke2_download_kubeconf: true
+rke2_download_kubeconf_file_name: rke2.yaml
+rke2_download_kubeconf_path: "{{ ansible_inventory_sources[0] | dirname }}"
+rke2_version: v1.23.4+rke2r1
+
 terraform_cluster_admin_passwords: "{{ admin_passwords }}"
-terraform_cluster_jitsi_jwt_secret: "{{ jitsi_jwt_secret }}"
-terraform_cluster_keycloak_realm: "{{ project_name }}"
-terraform_cluster_homer_assets_image: "{{ homer_assets_image }}"
-terraform_cluster_project_name: "{{ project_name }}"
-terraform_cluster_hedgedoc_secret: "{{ hedgedoc_secret }}"
-terraform_cluster_keycloak_secrets: "{{ keycloak_secrets }}"
+terraform_cluster_backup_schedule: "0 0 * * *"
+terraform_cluster_cert_email: "{{ cert_email }}"
+terraform_cluster_db_passwords: "{{ db_passwords }}"
+terraform_cluster_domain: "{{ domain }}"
+terraform_cluster_floating_ipv4: "{{ floating_ip.ipv4_address }}"
 terraform_cluster_google_identity_provider_client_id: "{{ google_identity_provider_client_id }}"
 terraform_cluster_google_identity_provider_client_secret: "{{ google_identity_provider_client_secret }}"
-terraform_cluster_backup_schedule: "0 0 * * *"
+terraform_cluster_hcloud_token: "{{ hcloud_token }}"
+terraform_cluster_hedgedoc_secret: "{{ hedgedoc_secret }}"
+terraform_cluster_helm_release_name: "{{ helm_release_name }}"
+terraform_cluster_homer_assets_image: "{{ homer_assets_image }}"
+terraform_cluster_jitsi_jwt_secret: "{{ jitsi_jwt_secret }}"
+terraform_cluster_keycloak_realm: "{{ project_name }}"
+terraform_cluster_keycloak_secrets: "{{ keycloak_secrets }}"
+terraform_cluster_kubeconf_file: "{{ rke2_download_kubeconf_path }}/{{ rke2_download_kubeconf_file_name }}"
+terraform_cluster_namespaces: "{{ namespaces }}"
+terraform_cluster_nextcloud_volume_handle: "{{ nextcloud_volume_handle }}"
+terraform_cluster_project_name: "{{ project_name }}"
+terraform_cluster_subdomains: "{{ subdomains }}"
+terraform_cluster_use_production_cert: "{{ stage == 'prod' }}"
+terraform_cluster_volume_handles: "{{ volume_handles }}"
+terraform_cluster_workspace: "{{ stage }}"
+
 terraform_cluster_versions:
+  cert_manager_helm: v1.7.1
+  collabora: 22.05.0.1
+  collabora_helm: 2.2.1
+  element: v1.10.4
+  element_helm: 1.0.34
+  hcloud_csi: v1.6.0
+  hedgedoc: 1.9.2
+  hedgedoc_helm: 1.1.0
+  homer: 22.02.1
   jitsi: stable-6865
   jitsi_helm: v1.0.0
   jitsi_keycloak: v0.2.0
-  hcloud_csi: v1.6.0
-  cert_manager_helm: v1.7.1
-  postgres: 14.1.0-debian-10-r80
   keycloak_helm: v17.0.2
   keycloak_theme: v0.3.3
-  hedgedoc: 1.9.2
-  hedgedoc_helm: 1.1.0
   nextcloud: 23.0.2-apache
   nextcloud_helm: 2.12.1
-  collabora: 22.05.0.1
-  collabora_helm: 2.2.1
-  homer: 22.02.1
-  synapse: v1.51.0
-  synapse_helm: 0.8.7
-  element: v1.10.4
-  element_helm: 1.0.34
   nginx: 1.21.6
   nginx_helm: 9.9.0
-  workadventure_helm: 0.1.0
+  postgres: 14.1.0-debian-10-r80
+  synapse: v1.51.0
+  synapse_helm: 0.8.7
   workadventure: v1.8.4
+  workadventure_helm: 0.1.0
 
-secrets_file: "{{ ansible_inventory_sources[0] | dirname }}/group_vars/all/secrets.yml"
 
 config_kubeconf_file: "{{ rke2_download_kubeconf_path }}/{{ rke2_download_kubeconf_file_name }}"
 config_domain: "{{ domain }}"
 config_subdomains: "{{ subdomains }}"
+config_namespaces: "{{ namespaces }}"
 config_keycloak_realm: "{{ project_name }}"
 config_keycloak_secrets: "{{ keycloak_secrets }}"
 config_admin_passwords: "{{ admin_passwords }}"

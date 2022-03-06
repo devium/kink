@@ -1,7 +1,7 @@
 - name: Disable Nextcloud app
   kubernetes.core.k8s_exec:
     kubeconfig: "{{ config_kubeconf_file }}"
-    namespace: "{{ config_nextcloud_namespace }}"
+    namespace: "{{ config_namespaces.nextcloud }}"
     pod: "{{ pods_result.resources[0].metadata.name }}"
     command: "su -s /bin/bash -c '/var/www/html/occ app:disable {{ item }}' www-data"
   register: disable_result
@@ -11,7 +11,7 @@
 - name: Install Nextcloud app
   kubernetes.core.k8s_exec:
     kubeconfig: "{{ config_kubeconf_file }}"
-    namespace: "{{ config_nextcloud_namespace }}"
+    namespace: "{{ config_namespaces.nextcloud }}"
     pod: "{{ pods_result.resources[0].metadata.name }}"
     command: "su -s /bin/bash -c '/var/www/html/occ app:install {{ item }}' www-data"
   register: install_result

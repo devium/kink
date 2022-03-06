@@ -5,6 +5,7 @@
     variables: "{{ terraform_cluster_variables }}"
     state: present
     plan_file: "{{ terraform_cluster_plan_file }}"
+    targets: "{{ terraform_cluster_targets }}"
   register: terraform_result
 
 - name: Print Terraform output

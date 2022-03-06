@@ -4,6 +4,7 @@
     workspace: "{{ terraform_cluster_workspace }}"
     variables: "{{ terraform_cluster_variables }}"
     state: absent
+    targets: "{{ terraform_cluster_targets }}"
   register: terraform_result
   when: terraform_cluster_kubeconf_file is file
 
