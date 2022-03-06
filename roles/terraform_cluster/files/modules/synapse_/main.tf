@@ -92,12 +92,14 @@ resource "helm_release" "synapse" {
     homeserver:
       server_name: ${var.domain}
       public_baseurl: https://${local.fqdn}
+
+      default_room_version: "9"
+      media_store_path: /media
       report_stats: false
       send_federation: true
+      signing_key_path: "/data/${var.domain}.signing.key"
       web_client_location: https://${local.fqdn}
 
-      signing_key_path: "/data/${var.domain}.signing.key"
-      media_store_path: /media
 
       database:
         name: psycopg2
