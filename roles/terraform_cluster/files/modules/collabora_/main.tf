@@ -33,7 +33,6 @@ resource "helm_release" "collabora" {
         - secretName: ${local.fqdn}-tls
           hosts:
             - ${local.fqdn}
-
-    YAML
+  YAML
   ]
 }

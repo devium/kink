@@ -20,7 +20,7 @@ locals {
 }
 
 resource "kubernetes_manifest" "hcloud_csi" {
-  count = length(local.csi_documents)
+  count    = length(local.csi_documents)
   manifest = yamldecode(local.csi_documents[count.index])
 
   depends_on = [

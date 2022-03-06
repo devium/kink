@@ -34,8 +34,7 @@ resource "kubectl_manifest" "issuer" {
           - http01:
               ingress:
                 class: nginx
-
-    YAML
+  YAML
 
   depends_on = [
     helm_release.cert_manager

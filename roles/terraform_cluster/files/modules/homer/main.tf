@@ -19,7 +19,7 @@ locals {
   rooms_file = templatefile(
     "${path.module}/rooms.html.tftpl",
     {
-      jitsi_domain = "${local.fqdn}"
+      jitsi_domain = "${var.subdomains.jitsi}.${var.domain}"
     }
   )
 }
@@ -31,16 +31,15 @@ resource "kubernetes_config_map_v1" "config" {
   }
 
   data = {
-    "config.yml" = indent(4, <<-YAML
-      |
+    "config.yml" = <<-YAML
       ${local.config_file}
-      YAML
-    )
-    "rooms.html" = indent(4, <<-YAML
-      |
+    YAML
+
+    "rooms.html" = <<-YAML
       ${local.rooms_file}
-      YAML
-    )
+    YAML
+
+    "manifest.json" = ""
   }
 }
 
@@ -106,14 +105,21 @@ resource "kubernetes_deployment_v1" "homer" {
 
           volume_mount {
             name       = "config"
-            mount_path = "/www/assets/config.yml"
+            mount_path = "/www/config.yml"
             sub_path   = "config.yml"
           }
 
           volume_mount {
             name       = "config"
-            mount_path = "/www/assets/rooms.html"
+            mount_path = "/www/rooms.html"
             sub_path   = "rooms.html"
+          }
+
+          # Disable service worker caching
+          volume_mount {
+            name       = "config"
+            mount_path = "/www/assets/manifest.json"
+            sub_path   = "manifest.json"
           }
         }
 

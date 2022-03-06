@@ -37,12 +37,10 @@ resource "kubernetes_secret_v1" "backup_script" {
   }
 
   data = {
-    "backup.sh" = indent(4, <<-YAML
-      |
+    "backup.sh" = <<-YAML
       mkdir -p /backup/db
       ${local.pg_dump_script}
-      YAML
-    )
+    YAML
   }
 }
 

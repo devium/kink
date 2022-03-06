@@ -51,7 +51,7 @@ resource "helm_release" "nginx" {
           alias /app/;
         }
       }
-    YAML
+  YAML
   ]
 }
 
@@ -100,7 +100,6 @@ resource "helm_release" "synapse" {
       signing_key_path: "/data/${var.domain}.signing.key"
       web_client_location: https://${local.fqdn}
 
-
       database:
         name: psycopg2
 
@@ -144,7 +143,6 @@ resource "helm_release" "synapse" {
         - secretName: ${local.fqdn}-tls
           hosts:
             - ${local.fqdn}
-
-    YAML
+  YAML
   ]
 }

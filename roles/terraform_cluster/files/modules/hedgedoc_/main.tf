@@ -51,7 +51,6 @@ resource "helm_release" "hedgedoc" {
         - secretName: ${local.fqdn}-tls
           hosts:
             - ${local.fqdn}
-
-    YAML
+  YAML
   ]
 }

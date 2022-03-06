@@ -10,11 +10,9 @@ resource "kubernetes_config_map_v1" "prosody_plugins" {
   }
 
   data = {
-    "mod_muc_rooms.lua" = indent(4, <<-LUA
-      |
+    "mod_muc_rooms.lua" = <<-LUA
       ${file("${path.module}/mod_muc_rooms.lua")}
-      LUA
-    )
+    LUA
   }
 }
 
@@ -109,8 +107,7 @@ resource "helm_release" "jitsi" {
           - secretName: ${local.fqdn}-tls
             hosts:
               - ${local.fqdn}
-
-    YAML
+  YAML
   ]
 }
 
@@ -121,7 +118,7 @@ resource "kubernetes_secret_v1" "jitsi_keycloak_config" {
   }
 
   data = {
-    "keycloak.json" = indent(4, <<-JSON
+    "keycloak.json" = <<-JSON
       {
         "realm": "${var.keycloak_realm}",
         "auth-server-url": "https://${var.subdomains.keycloak}.${var.domain}/auth/",
@@ -133,8 +130,7 @@ resource "kubernetes_secret_v1" "jitsi_keycloak_config" {
         },
         "confidential-port": 0
       }
-      JSON
-    )
+    JSON
   }
 }
 

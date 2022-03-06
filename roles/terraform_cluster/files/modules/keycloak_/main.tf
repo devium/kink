@@ -81,7 +81,6 @@ resource "helm_release" "keycloak" {
         volumeMounts:
           - name: theme
             mountPath: /theme
-
-    YAML
+  YAML
   ]
 }

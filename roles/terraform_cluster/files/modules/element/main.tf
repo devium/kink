@@ -39,7 +39,6 @@ resource "helm_release" "element" {
         - secretName: ${local.fqdn}-tls
           hosts:
             - ${local.fqdn}
-
-    YAML
+  YAML
   ]
 }

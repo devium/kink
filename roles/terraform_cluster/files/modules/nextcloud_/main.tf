@@ -67,7 +67,6 @@ resource "helm_release" "nextcloud" {
     persistence:
       enabled: true
       existingClaim: ${var.pvcs.nextcloud}
-
-    YAML
+  YAML
   ]
 }

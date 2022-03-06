@@ -5,8 +5,7 @@ resource "kubernetes_secret_v1" "init" {
   }
 
   data = {
-    "init.sql" = indent(4, <<-YAML
-      |
+    "init.sql" = <<-YAML
       CREATE USER keycloak WITH PASSWORD '${var.db_passwords.keycloak}';
       CREATE DATABASE keycloak WITH OWNER keycloak;
       CREATE USER hedgedoc WITH PASSWORD '${var.db_passwords.hedgedoc}';
@@ -15,8 +14,7 @@ resource "kubernetes_secret_v1" "init" {
       CREATE DATABASE nextcloud WITH OWNER nextcloud;
       CREATE USER synapse WITH PASSWORD '${var.db_passwords.synapse}';
       CREATE DATABASE synapse WITH OWNER synapse LC_COLLATE 'C' LC_CTYPE 'C' TEMPLATE template0;
-      YAML
-    )
+    YAML
   }
 }
 
