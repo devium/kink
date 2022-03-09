@@ -30,6 +30,10 @@ terraform_cluster_keycloak_secrets:
   jitsi:
   nextcloud:
 
+terraform_cluster_synapse_secrets:
+  registration:
+  macaroon:
+
 terraform_cluster_volume_handles:
   nextcloud:
   postgres:
@@ -79,14 +83,14 @@ terraform_cluster_versions:
   cert_manager_helm: v1.7.1
   collabora: 22.05.0.1
   collabora_helm: 2.2.1
-  element: v1.10.4
-  element_helm: 1.0.34
+  element: v1.53.0
+  element_helm: 2.1.28
   hcloud_csi: v1.6.0
   hedgedoc: 1.9.2
   hedgedoc_helm: 1.1.0
   homer: 22.02.1
-  jitsi: stable-6726
-  jitsi_helm: v1.0.0
+  jitsi: stable-6865
+  jitsi_helm: v1.2.1
   jitsi_keycloak: v0.2.0
   keycloak_helm: v17.0.2
   keycloak_theme: v0.3.2
@@ -95,8 +99,8 @@ terraform_cluster_versions:
   nginx: 1.21.6
   nginx_helm: 9.9.0
   postgres: 14.1.0-debian-10-r80
-  synapse: v1.51.0
-  synapse_helm: 0.8.7
+  synapse: v1.54.0
+  synapse_helm: 2.1.29
   workadventure: v1.8.4
   workadventure_helm: 0.1.0
 
@@ -120,6 +124,7 @@ terraform_cluster_variables:
   project_name: "{{ terraform_cluster_project_name }}"
   release_name: "{{ terraform_cluster_helm_release_name }}"
   subdomains: "{{ terraform_cluster_subdomains | to_json }}"
+  synapse_secrets: "{{ terraform_cluster_synapse_secrets | to_json }}"
   use_production_cert: "{{ terraform_cluster_use_production_cert | to_json }}"
   versions: "{{ terraform_cluster_versions | to_json }}"
   volume_handles: "{{ terraform_cluster_volume_handles | to_json }}"

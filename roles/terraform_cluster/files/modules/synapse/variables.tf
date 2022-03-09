@@ -44,6 +44,11 @@ variable "subdomains" {
   type = map(string)
 }
 
+variable "synapse_secrets" {
+  type      = map(string)
+  sensitive = true
+}
+
 variable "versions" {
   type = map(string)
 }

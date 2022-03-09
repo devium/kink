@@ -4,12 +4,20 @@ module "namespaces" {
   namespaces = var.namespaces
 }
 
+module "rke2" {
+  source = "./modules/rke2"
+}
+
 module "hetzner" {
   source = "./modules/hetzner"
 
   hcloud_token = var.hcloud_token
   namespaces   = module.namespaces.namespaces
   versions     = var.versions
+
+  depends_on = [
+    module.rke2
+  ]
 }
 
 module "volumes" {
@@ -85,6 +93,10 @@ module "jitsi" {
   release_name     = var.release_name
   subdomains       = var.subdomains
   versions         = var.versions
+
+  depends_on = [
+    module.rke2
+  ]
 }
 
 module "homer" {
@@ -145,7 +157,7 @@ module "collabora" {
 }
 
 module "synapse" {
-  source = "./modules/synapse_"
+  source = "./modules/synapse"
 
   db_host          = module.postgres.host
   db_passwords     = var.db_passwords
@@ -158,6 +170,7 @@ module "synapse" {
   pvcs             = module.volumes.pvcs
   release_name     = var.release_name
   subdomains       = var.subdomains
+  synapse_secrets  = var.synapse_secrets
   versions         = var.versions
 }
 

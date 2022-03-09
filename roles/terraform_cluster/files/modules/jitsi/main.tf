@@ -35,6 +35,10 @@ resource "helm_release" "jitsi" {
         annotations:
           kubernetes.io/ingress.class: nginx
           cert-manager.io/cluster-issuer: ${var.cert_issuer}
+          nginx.ingress.kubernetes.io/enable-cors: "true"
+          nginx.ingress.kubernetes.io/cors-allow-origin: https://*.${var.domain}
+          nginx.ingress.kubernetes.io/configuration-snippet: |
+            more_set_headers "Content-Security-Policy: frame-ancestors https://*.${var.domain}";
 
         enabled: true
 

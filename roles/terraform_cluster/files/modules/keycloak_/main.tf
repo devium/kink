@@ -16,6 +16,8 @@ resource "helm_release" "keycloak" {
       annotations:
         cert-manager.io/cluster-issuer: ${var.cert_issuer}
         nginx.ingress.kubernetes.io/proxy-buffer-size: "128k"
+        nginx.ingress.kubernetes.io/configuration-snippet: |
+          more_set_headers "Content-Security-Policy: frame-ancestors https://*.${var.domain}";
 
       rules:
         - host: ${local.fqdn}

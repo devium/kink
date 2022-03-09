@@ -27,27 +27,3 @@ resource "kubernetes_manifest" "hcloud_csi" {
     kubernetes_secret_v1.hcloud_token
   ]
 }
-
-# Make flannel use the private subnet interface
-# Using args instead of the iface value enforces a new pod rollout
-resource "kubernetes_manifest" "flannel_iface_patch" {
-  manifest = {
-    apiVersion = "helm.cattle.io/v1"
-    kind       = "HelmChartConfig"
-
-    metadata = {
-      name      = "rke2-canal"
-      namespace = "kube-system"
-    }
-
-    spec = {
-      valuesContent = <<-YAML
-        flannel:
-          args:
-            - --ip-masq
-            - --kube-subnet-mgr
-            - --iface=ens10
-      YAML
-    }
-  }
-}

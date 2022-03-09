@@ -5,7 +5,7 @@ locals {
 resource "helm_release" "element" {
   name       = var.release_name
   namespace  = var.namespaces.element
-  repository = "https://halkeye.github.io/helm-charts/"
+  repository = "https://ananace.gitlab.io/charts"
   chart      = "element-web"
   version    = var.versions.element_helm
 
@@ -13,11 +13,14 @@ resource "helm_release" "element" {
     image:
       tag: ${var.versions.element}
 
-    configjson:
-      default_server_name: ${var.domain}
+    defaultServer:
+      url: https://${var.domain}
+      name: ${var.domain}
+
+    config:
+      default_theme: dark
       disable_custom_urls: true
       disable_guests: true
-      default_theme: dark
 
       sso_redirect_options:
         immediate: true
@@ -30,11 +33,12 @@ resource "helm_release" "element" {
 
       annotations:
         cert-manager.io/cluster-issuer: ${var.cert_issuer}
+        nginx.ingress.kubernetes.io/configuration-snippet: |
+          more_set_headers "Content-Security-Policy: frame-ancestors https://*.${var.domain}";
 
       hosts:
-        - host: ${local.fqdn}
-          paths:
-            - /
+        - ${local.fqdn}
+
       tls:
         - secretName: ${local.fqdn}-tls
           hosts:
