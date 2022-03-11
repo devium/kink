@@ -128,7 +128,7 @@ terraform_cluster_namespaces:
   element: element
   hedgedoc: hedgedoc
   hetzner: hetzner
-  homer: homer
+  home: home
   jitsi: jitsi
   keycloak: keycloak
   nextcloud: nextcloud
@@ -140,7 +140,7 @@ config_subdomains:
   collabora: office.next
   element: element
   hedgedoc: doc
-  homer: www
+  home: www
   jitsi: jitsi
   jitsi_keycloak: auth.jitsi
   keycloak: auth

@@ -6,11 +6,7 @@ variable "domain" {
   type = string
 }
 
-variable "homer_assets_image" {
-  type = string
-}
-
-variable "keycloak_realm" {
+variable "home_site_image" {
   type = string
 }
 
@@ -18,7 +14,7 @@ variable "namespaces" {
   type = map(string)
 }
 
-variable "project_name" {
+variable "release_name" {
   type = string
 }
 

@@ -99,15 +99,14 @@ module "jitsi" {
   ]
 }
 
-module "homer" {
-  source = "./modules/homer"
+module "home" {
+  source = "./modules/home"
 
   domain             = var.domain
-  homer_assets_image = var.homer_assets_image
+  home_site_image    = var.home_site_image
   cert_issuer        = module.cert_manager.issuer
-  keycloak_realm     = var.keycloak_realm
   namespaces         = module.namespaces.namespaces
-  project_name       = var.project_name
+  release_name       = var.release_name
   subdomains         = var.subdomains
   versions           = var.versions
 }

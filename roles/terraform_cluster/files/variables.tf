@@ -43,7 +43,7 @@ variable "hedgedoc_secret" {
   sensitive = true
 }
 
-variable "homer_assets_image" {
+variable "home_site_image" {
   type = string
 }
 
