@@ -26,6 +26,8 @@ resource "helm_release" "home" {
 
       annotations:
         cert-manager.io/cluster-issuer: ${var.cert_issuer}
+        nginx.ingress.kubernetes.io/configuration-snippet: |
+          more_set_headers 'Clear-Site-Data: "storage"';
 
     service:
       type: ClusterIP
