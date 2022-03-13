@@ -81,7 +81,7 @@ terraform_cluster_workspace: "{{ stage }}"
 
 terraform_cluster_versions:
   cert_manager_helm: v1.7.1
-  collabora: 22.05.0.1
+  collabora: 21.11.2.4.1
   collabora_helm: 2.2.1
   element: v1.10.6
   element_helm: 1.1.6
