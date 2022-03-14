@@ -4,6 +4,7 @@ config_kubeconf_file:
 
 config_admin_passwords:
   collabora:
+  grafana:
   keycloak:
   nextcloud:
 

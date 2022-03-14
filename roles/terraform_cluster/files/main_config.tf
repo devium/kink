@@ -27,3 +27,8 @@ provider "keycloak" {
   tls_insecure_skip_verify = true
   initial_login            = false
 }
+
+provider "grafana" {
+  url  = "https://${var.subdomains.grafana}.${var.domain}"
+  auth = "admin:${var.admin_passwords.grafana}"
+}

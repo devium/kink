@@ -15,5 +15,9 @@ terraform {
     keycloak = {
       source = "mrparkers/keycloak"
     }
+
+    grafana = {
+      source = "grafana/grafana"
+    }
   }
 }

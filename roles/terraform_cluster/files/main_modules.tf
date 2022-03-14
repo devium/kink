@@ -200,6 +200,7 @@ module "backup" {
 module "grafana" {
   source = "./modules/grafana"
 
+  admin_passwords  = var.admin_passwords
   domain           = var.domain
   cert_issuer      = module.cert_manager.issuer
   db_host          = module.postgres.host
@@ -211,4 +212,14 @@ module "grafana" {
   release_name     = var.release_name
   subdomains       = var.subdomains
   versions         = var.versions
+}
+
+module "grafana_config" {
+  source = "./modules/grafana_config"
+
+  versions = var.versions
+
+  depends_on = [
+    module.grafana
+  ]
 }

@@ -29,8 +29,7 @@ resource "helm_release" "grafana" {
             hosts:
               - ${local.fqdn}
 
-      env:
-        GF_SECURITY_DISABLE_INITIAL_ADMIN_CREATION: true
+      adminPassword: ${var.admin_passwords.grafana}
 
       grafana.ini:
         server:
@@ -61,6 +60,14 @@ resource "helm_release" "grafana" {
           tls_skip_verify_insecure: false
           use_pkce: true
           role_attribute_path: contains(groups[*], 'admin') && 'Admin' || contains(groups[*], 'grafana_editor') && 'Editor' || 'Viewer'
+
+    prometheus:
+      prometheusSpec:
+        serviceMonitorSelectorNilUsesHelmValues: false
+
+        serviceMonitorNamespaceSelector:
+          matchLabels:
+            prometheus: prometheus
   YAML
   ]
 }

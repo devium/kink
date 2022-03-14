@@ -71,6 +71,9 @@ resource "helm_release" "jitsi" {
       metrics:
         enabled: true
 
+        image:
+          tag: ${var.versions.jitsi_prometheus_exporter}
+
     jicofo:
       image:
         tag: ${var.versions.jitsi}

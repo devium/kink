@@ -1,3 +1,8 @@
+variable "admin_passwords" {
+  type      = map(string)
+  sensitive = true
+}
+
 variable "cert_issuer" {
   type = string
 }
