@@ -68,6 +68,9 @@ resource "helm_release" "jitsi" {
       xmpp:
         password: ${var.jitsi_secrets.jvb}
 
+      metrics:
+        enabled: true
+
     jicofo:
       image:
         tag: ${var.versions.jitsi}

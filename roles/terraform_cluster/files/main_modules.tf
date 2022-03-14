@@ -52,7 +52,7 @@ module "postgres" {
 module "keycloak" {
   # Note on module folder name:
   # https://github.com/hashicorp/terraform-provider-helm/issues/735
-  source = "./modules/keycloak_"
+  source = "./modules/keycloak"
 
   admin_passwords = var.admin_passwords
   db_host         = module.postgres.host
@@ -113,7 +113,7 @@ module "home" {
 }
 
 module "hedgedoc" {
-  source = "./modules/hedgedoc_"
+  source = "./modules/hedgedoc"
 
   db_host          = module.postgres.host
   db_passwords     = var.db_passwords
@@ -130,7 +130,7 @@ module "hedgedoc" {
 }
 
 module "nextcloud" {
-  source = "./modules/nextcloud_"
+  source = "./modules/nextcloud"
 
   admin_passwords = var.admin_passwords
   db_host         = module.postgres.host
@@ -145,7 +145,7 @@ module "nextcloud" {
 }
 
 module "collabora" {
-  source = "./modules/collabora_"
+  source = "./modules/collabora"
 
   admin_passwords = var.admin_passwords
   domain          = var.domain
