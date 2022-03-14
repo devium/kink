@@ -136,7 +136,7 @@ resource "kubernetes_secret_v1" "jitsi_keycloak_config" {
         "resource": "${var.keycloak_clients.jitsi}",
         "public-client": true,
         "credentials": {
-          "secret": "${var.jitsi_secrets.jwt}"
+          "secret": "${var.keycloak_secrets.jitsi}"
         },
         "confidential-port": 0
       }

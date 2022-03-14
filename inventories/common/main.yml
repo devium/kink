@@ -9,6 +9,7 @@ namespaces_base:
   cert_manager: cert-manager
   collabora: collabora
   element: element
+  grafana: grafana
   hedgedoc: hedgedoc
   hetzner: hetzner
   home: home
@@ -86,6 +87,8 @@ terraform_cluster_versions:
   element: v1.10.6
   element_helm: 1.1.6
   hcloud_csi: v1.6.0
+  grafana: 8.4.2
+  grafana_helm: 6.24.1
   hedgedoc: 1.9.2
   hedgedoc_helm: 1.1.0
   jitsi: stable-7001

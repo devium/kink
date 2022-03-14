@@ -60,14 +60,15 @@ resource "keycloak_openid_user_property_protocol_mapper" "locale" {
 
 # Add new profile to client default scopes
 locals {
-  client_ids = [
-    data.keycloak_openid_client.account.id,
-    data.keycloak_openid_client.account_console.id,
-    keycloak_openid_client.jitsi.id,
-    keycloak_openid_client.nextcloud.id,
-    keycloak_openid_client.hedgedoc.id,
-    keycloak_openid_client.synapse.id
-  ]
+  client_ids = concat(
+    [
+      data.keycloak_openid_client.account.id,
+      data.keycloak_openid_client.account_console.id
+    ],
+    [
+      for key, value in local.clients : value.id
+    ]
+  )
 }
 resource "keycloak_openid_client_default_scopes" "defaults" {
   count     = length(local.client_ids)

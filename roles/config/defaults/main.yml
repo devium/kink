@@ -8,6 +8,7 @@ config_admin_passwords:
   nextcloud:
 
 config_db_passwords:
+  grafana:
   hedgedoc:
   keycloak:
   nextcloud:
@@ -126,6 +127,7 @@ terraform_cluster_namespaces:
   cert_manager: cert-manager
   collabora: collabora
   element: element
+  grafana: grafana
   hedgedoc: hedgedoc
   hetzner: hetzner
   home: home
@@ -139,6 +141,7 @@ terraform_cluster_namespaces:
 config_subdomains:
   collabora: office.next
   element: element
+  grafana: grafana
   hedgedoc: doc
   home: www
   jitsi: jitsi

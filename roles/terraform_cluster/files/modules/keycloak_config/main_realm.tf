@@ -32,3 +32,8 @@ resource "keycloak_group" "admin" {
   realm_id = keycloak_realm.realm.id
   name     = "admin"
 }
+
+resource "keycloak_group" "grafana_editor" {
+  realm_id = keycloak_realm.realm.id
+  name     = "grafana_editor"
+}

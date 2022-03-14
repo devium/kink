@@ -2,13 +2,17 @@ variable "cert_issuer" {
   type = string
 }
 
-variable "domain" {
+variable "db_host" {
   type = string
 }
 
-variable "jitsi_secrets" {
+variable "db_passwords" {
   type      = map(string)
   sensitive = true
+}
+
+variable "domain" {
+  type = string
 }
 
 variable "keycloak_clients" {
@@ -32,10 +36,10 @@ variable "release_name" {
   type = string
 }
 
-variable "subdomains" {
+variable "versions" {
   type = map(string)
 }
 
-variable "versions" {
+variable "subdomains" {
   type = map(string)
 }

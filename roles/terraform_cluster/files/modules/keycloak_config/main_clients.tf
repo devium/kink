@@ -53,3 +53,27 @@ resource "keycloak_openid_client" "synapse" {
   valid_redirect_uris   = ["/*"]
   admin_url             = "/"
 }
+
+resource "keycloak_openid_client" "grafana" {
+  realm_id  = keycloak_realm.realm.id
+  client_id = "grafana"
+
+  access_type   = "CONFIDENTIAL"
+  client_secret = var.keycloak_secrets.grafana
+
+  standard_flow_enabled = true
+  root_url              = "https://${var.subdomains.grafana}.${var.domain}"
+  web_origins           = ["+"]
+  valid_redirect_uris   = ["/*"]
+  admin_url             = "/"
+}
+
+locals {
+  clients = {
+    jitsi     = keycloak_openid_client.jitsi,
+    nextcloud = keycloak_openid_client.nextcloud,
+    hedgedoc  = keycloak_openid_client.hedgedoc,
+    synapse   = keycloak_openid_client.synapse,
+    grafana   = keycloak_openid_client.grafana
+  }
+}

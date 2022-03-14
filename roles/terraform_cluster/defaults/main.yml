@@ -15,6 +15,7 @@ terraform_cluster_admin_passwords:
   nextcloud:
 
 terraform_cluster_db_passwords:
+  grafana:
   hedgedoc:
   keycloak:
   nextcloud:
@@ -26,6 +27,7 @@ terraform_cluster_jitsi_secrets:
   jwt:
 
 terraform_cluster_keycloak_secrets:
+  grafana:
   hedgedoc:
   jitsi:
   nextcloud:
@@ -53,6 +55,7 @@ terraform_cluster_namespaces:
   cert_manager: cert-manager
   collabora: collabora
   element: element
+  grafana: grafana
   hedgedoc: hedgedoc
   hetzner: hetzner
   home: home
@@ -66,6 +69,7 @@ terraform_cluster_namespaces:
 terraform_cluster_subdomains:
   collabora: office.next
   element: element
+  grafana: grafana
   hedgedoc: doc
   home: www
   jitsi: jitsi
@@ -86,6 +90,8 @@ terraform_cluster_versions:
   element: v1.53.0
   element_helm: 2.1.28
   hcloud_csi: v1.6.0
+  grafana: 8.4.2
+  grafana_helm: 6.24.1
   hedgedoc: 1.9.2
   hedgedoc_helm: 1.1.0
   jitsi: stable-6865

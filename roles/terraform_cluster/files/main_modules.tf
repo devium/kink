@@ -89,6 +89,7 @@ module "jitsi" {
   jitsi_secrets    = var.jitsi_secrets
   keycloak_clients = module.keycloak_config.clients
   keycloak_realm   = var.keycloak_realm
+  keycloak_secrets = var.keycloak_secrets
   namespaces       = module.namespaces.namespaces
   release_name     = var.release_name
   subdomains       = var.subdomains
@@ -102,13 +103,13 @@ module "jitsi" {
 module "home" {
   source = "./modules/home"
 
-  domain             = var.domain
-  home_site_image    = var.home_site_image
-  cert_issuer        = module.cert_manager.issuer
-  namespaces         = module.namespaces.namespaces
-  release_name       = var.release_name
-  subdomains         = var.subdomains
-  versions           = var.versions
+  domain          = var.domain
+  home_site_image = var.home_site_image
+  cert_issuer     = module.cert_manager.issuer
+  namespaces      = module.namespaces.namespaces
+  release_name    = var.release_name
+  subdomains      = var.subdomains
+  versions        = var.versions
 }
 
 module "hedgedoc" {
@@ -194,4 +195,20 @@ module "backup" {
   pvcs            = module.volumes.pvcs
   release_name    = var.release_name
   versions        = var.versions
+}
+
+module "grafana" {
+  source = "./modules/grafana"
+
+  domain           = var.domain
+  cert_issuer      = module.cert_manager.issuer
+  db_host          = module.postgres.host
+  db_passwords     = var.db_passwords
+  keycloak_clients = module.keycloak_config.clients
+  keycloak_realm   = var.keycloak_realm
+  keycloak_secrets = var.keycloak_secrets
+  namespaces       = module.namespaces.namespaces
+  release_name     = var.release_name
+  subdomains       = var.subdomains
+  versions         = var.versions
 }
