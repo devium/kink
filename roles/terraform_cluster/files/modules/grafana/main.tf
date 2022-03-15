@@ -71,3 +71,18 @@ resource "helm_release" "grafana" {
   YAML
   ]
 }
+
+resource "helm_release" "loki" {
+  name       = "${var.release_name}-loki"
+  namespace  = var.namespaces.grafana
+  repository = "https://grafana.github.io/helm-charts"
+  chart      = "loki-stack"
+  version    = var.versions.loki_helm
+
+  values = [<<-YAML
+    loki:
+      image:
+        tag: ${var.versions.loki}
+  YAML
+  ]
+}

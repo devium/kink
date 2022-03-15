@@ -97,6 +97,8 @@ terraform_cluster_versions:
   jitsi_prometheus_exporter: 1.1.9
   keycloak_helm: v17.0.2
   keycloak_theme: v0.3.3
+  loki: 2.4.2
+  loki_helm: 2.6.1
   nextcloud: 23.0.2-apache
   nextcloud_helm: 2.12.1
   nginx: 1.21.6
