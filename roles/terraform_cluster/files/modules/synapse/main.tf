@@ -59,6 +59,10 @@ resource "helm_release" "synapse" {
         runAsUser: 666
         fsGroupChangePolicy: "OnRootMismatch"
 
+      resources:
+        requests:
+          memory: ${var.resources.memory.synapse}
+
     postgresql:
       enabled: false
 

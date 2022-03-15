@@ -29,6 +29,10 @@ resource "helm_release" "home" {
         nginx.ingress.kubernetes.io/configuration-snippet: |
           more_set_headers 'Clear-Site-Data: "storage"';
 
+    resources:
+      requests:
+        memory: ${var.resources.memory.home}
+
     service:
       type: ClusterIP
 

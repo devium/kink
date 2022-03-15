@@ -9,8 +9,23 @@ resource "helm_release" "cert_manager" {
   chart      = "cert-manager"
   version    = var.versions.cert_manager_helm
 
-  values = [
-    "installCRDs: true"
+  values = [<<-YAML
+    installCRDs: true
+
+    resources:
+      requests:
+        memory: ${var.resources.memory.cert_manager}
+
+    webhook:
+      resources:
+        requests:
+          memory: ${var.resources.memory.cert_manager_webhook}
+
+    cainjector:
+      resources:
+        requests:
+          memory: ${var.resources.memory.cert_manager_cainjector}
+  YAML
   ]
 }
 

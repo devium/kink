@@ -35,6 +35,7 @@ module "cert_manager" {
   domain              = var.domain
   namespaces          = module.namespaces.namespaces
   release_name        = var.release_name
+  resources           = var.resources
   use_production_cert = var.use_production_cert
   versions            = var.versions
 }
@@ -45,6 +46,7 @@ module "postgres" {
   db_passwords = var.db_passwords
   namespaces   = module.namespaces.namespaces
   release_name = var.release_name
+  resources    = var.resources
   pvcs         = module.volumes.pvcs
   versions     = var.versions
 }
@@ -61,6 +63,7 @@ module "keycloak" {
   cert_issuer     = module.cert_manager.issuer
   namespaces      = module.namespaces.namespaces
   release_name    = var.release_name
+  resources       = var.resources
   subdomains      = var.subdomains
   versions        = var.versions
 }
@@ -92,6 +95,7 @@ module "jitsi" {
   keycloak_secrets = var.keycloak_secrets
   namespaces       = module.namespaces.namespaces
   release_name     = var.release_name
+  resources        = var.resources
   subdomains       = var.subdomains
   versions         = var.versions
 
@@ -108,6 +112,7 @@ module "home" {
   cert_issuer     = module.cert_manager.issuer
   namespaces      = module.namespaces.namespaces
   release_name    = var.release_name
+  resources       = var.resources
   subdomains      = var.subdomains
   versions        = var.versions
 }
@@ -125,6 +130,7 @@ module "hedgedoc" {
   keycloak_secrets = var.keycloak_secrets
   namespaces       = module.namespaces.namespaces
   release_name     = var.release_name
+  resources        = var.resources
   subdomains       = var.subdomains
   versions         = var.versions
 }
@@ -139,6 +145,7 @@ module "nextcloud" {
   cert_issuer     = module.cert_manager.issuer
   namespaces      = module.namespaces.namespaces
   release_name    = var.release_name
+  resources       = var.resources
   pvcs            = module.volumes.pvcs
   subdomains      = var.subdomains
   versions        = var.versions
@@ -152,6 +159,7 @@ module "collabora" {
   cert_issuer     = module.cert_manager.issuer
   namespaces      = module.namespaces.namespaces
   release_name    = var.release_name
+  resources       = var.resources
   subdomains      = var.subdomains
   versions        = var.versions
 }
@@ -169,6 +177,7 @@ module "synapse" {
   namespaces       = module.namespaces.namespaces
   pvcs             = module.volumes.pvcs
   release_name     = var.release_name
+  resources        = var.resources
   subdomains       = var.subdomains
   synapse_secrets  = var.synapse_secrets
   versions         = var.versions
@@ -181,6 +190,7 @@ module "element" {
   cert_issuer  = module.cert_manager.issuer
   namespaces   = module.namespaces.namespaces
   release_name = var.release_name
+  resources    = var.resources
   subdomains   = var.subdomains
   versions     = var.versions
 }
@@ -194,6 +204,7 @@ module "backup" {
   namespaces      = module.namespaces.namespaces
   pvcs            = module.volumes.pvcs
   release_name    = var.release_name
+  resources       = var.resources
   versions        = var.versions
 }
 
@@ -210,6 +221,7 @@ module "grafana" {
   keycloak_secrets = var.keycloak_secrets
   namespaces       = module.namespaces.namespaces
   release_name     = var.release_name
+  resources        = var.resources
   subdomains       = var.subdomains
   versions         = var.versions
 }

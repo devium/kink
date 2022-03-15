@@ -33,6 +33,10 @@ resource "helm_release" "collabora" {
         - secretName: ${local.fqdn}-tls
           hosts:
             - ${local.fqdn}
+
+    resources:
+      requests:
+        memory: ${var.resources.memory.collabora}
   YAML
   ]
 }

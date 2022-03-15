@@ -14,6 +14,10 @@ variable "release_name" {
   type = string
 }
 
+variable "resources" {
+  type = map(map(string))
+}
+
 variable "use_production_cert" {
   type = bool
 }

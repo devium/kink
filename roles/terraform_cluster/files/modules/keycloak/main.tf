@@ -30,6 +30,10 @@ resource "helm_release" "keycloak" {
           hosts:
             - ${local.fqdn}
 
+    resources:
+      requests:
+        memory: ${var.resources.memory.keycloak}
+
     postgresql:
       enabled: false
 

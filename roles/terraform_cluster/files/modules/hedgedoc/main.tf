@@ -51,6 +51,10 @@ resource "helm_release" "hedgedoc" {
         - secretName: ${local.fqdn}-tls
           hosts:
             - ${local.fqdn}
+
+    resources:
+      requests:
+        memory: ${var.resources.memory.hedgedoc}
   YAML
   ]
 }

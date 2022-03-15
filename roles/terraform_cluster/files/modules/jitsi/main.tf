@@ -55,6 +55,10 @@ resource "helm_release" "jitsi" {
       extraEnvs:
         TOKEN_AUTH_URL: https://${local.fqdn_jitsi_keycloak}/{room}
 
+      resources:
+        requests:
+          memory: ${var.resources.memory.jitsi_web}
+
     jvb:
       image:
         tag: ${var.versions.jitsi}
@@ -74,12 +78,20 @@ resource "helm_release" "jitsi" {
         image:
           tag: ${var.versions.jitsi_prometheus_exporter}
 
+      resources:
+        requests:
+          memory: ${var.resources.memory.jitsi_jvb}
+
     jicofo:
       image:
         tag: ${var.versions.jitsi}
 
       xmpp:
         password: ${var.jitsi_secrets.jicofo}
+
+      resources:
+        requests:
+          memory: ${var.resources.memory.jitsi_jicofo}
 
     prosody:
       image:
@@ -123,6 +135,10 @@ resource "helm_release" "jitsi" {
           - secretName: ${local.fqdn}-tls
             hosts:
               - ${local.fqdn}
+
+      resources:
+        requests:
+          memory: ${var.resources.memory.prosody}
   YAML
   ]
 }
@@ -206,6 +222,12 @@ resource "kubernetes_deployment_v1" "jitsi_keycloak" {
             name       = "keycloak-config"
             mount_path = "/config/keycloak.json"
             sub_path   = "keycloak.json"
+          }
+
+          resources {
+            requests = {
+              memory = var.resources.memory.jitsi_keycloak
+            }
           }
         }
 

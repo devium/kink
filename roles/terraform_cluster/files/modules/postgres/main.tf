@@ -42,6 +42,10 @@ resource "helm_release" "postgres" {
         scriptsSecret: ${one(kubernetes_secret_v1.init.metadata).name}
         user: postgres
         password: ${var.db_passwords.postgres}
+
+    resources:
+      requests:
+        memory: ${var.resources.memory.postgres}
     YAML
   ]
 }

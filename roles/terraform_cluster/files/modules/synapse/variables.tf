@@ -40,6 +40,10 @@ variable "release_name" {
   type = string
 }
 
+variable "resources" {
+  type = map(map(string))
+}
+
 variable "subdomains" {
   type = map(string)
 }

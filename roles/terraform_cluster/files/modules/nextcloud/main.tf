@@ -27,6 +27,10 @@ resource "helm_release" "nextcloud" {
           hosts:
             - ${local.fqdn}
 
+    resources:
+      requests:
+        memory: ${var.resources.memory.nextcloud}
+
     nextcloud:
       host: ${local.fqdn}
       username: admin_temp

@@ -20,6 +20,10 @@ variable "domain" {
   type = string
 }
 
+variable "resources" {
+  type = map(map(string))
+}
+
 variable "keycloak_clients" {
   type = map(string)
 }

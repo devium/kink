@@ -29,6 +29,10 @@ resource "helm_release" "grafana" {
             hosts:
               - ${local.fqdn}
 
+      resources:
+        requests:
+          memory: ${var.resources.memory.grafana}
+
       adminPassword: ${var.admin_passwords.grafana}
 
       grafana.ini:
@@ -61,6 +65,12 @@ resource "helm_release" "grafana" {
           use_pkce: true
           role_attribute_path: contains(groups[*], 'admin') && 'Admin' || contains(groups[*], 'grafana_editor') && 'Editor' || 'Viewer'
 
+    alertmanager:
+      alertmanagerSpec:
+        resources:
+          requests:
+            memory: ${var.resources.memory.alertmanager}
+
     prometheus:
       prometheusSpec:
         serviceMonitorSelectorNilUsesHelmValues: false
@@ -68,6 +78,10 @@ resource "helm_release" "grafana" {
         serviceMonitorNamespaceSelector:
           matchLabels:
             prometheus: prometheus
+
+        resources:
+          requests:
+            memory: ${var.resources.memory.prometheus}
   YAML
   ]
 }
@@ -83,6 +97,15 @@ resource "helm_release" "loki" {
     loki:
       image:
         tag: ${var.versions.loki}
+
+      resources:
+        requests:
+          memory: ${var.resources.memory.loki}
+
+    promtail:
+      resources:
+        requests:
+          memory: ${var.resources.memory.loki_promtail}
   YAML
   ]
 }

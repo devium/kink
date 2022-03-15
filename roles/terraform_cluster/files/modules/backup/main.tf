@@ -84,6 +84,12 @@ resource "kubernetes_cron_job_v1" "backup" {
                 sub_path   = "backup.sh"
                 name       = "backup-script"
               }
+
+              resources {
+                requests = {
+                  memory = var.resources.memory.backup
+                }
+              }
             }
             restart_policy = "OnFailure"
 
