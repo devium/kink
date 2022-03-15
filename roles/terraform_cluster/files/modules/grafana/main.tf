@@ -64,6 +64,7 @@ resource "helm_release" "grafana" {
           tls_skip_verify_insecure: false
           use_pkce: true
           login_attribute_path: sub
+          name_attribute_path: preferred_username
           role_attribute_path: contains(groups[*], 'admin') && 'Admin' || contains(groups[*], 'grafana_editor') && 'Editor' || 'Viewer'
 
     alertmanager:
