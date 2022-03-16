@@ -35,6 +35,9 @@ resource "helm_release" "synapse" {
     extraConfig:
       default_room_version: "9"
       web_client_location: https://${var.subdomains.element}.${var.domain}
+      autocreate_auto_join_rooms: false
+      auto_join_rooms:
+        - "#lobby:${var.domain}"
 
       oidc_providers:
         - idp_id: keycloak
