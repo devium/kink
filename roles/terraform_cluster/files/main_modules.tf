@@ -235,3 +235,17 @@ module "grafana_config" {
     module.grafana
   ]
 }
+
+module "workadventure" {
+  source = "./modules/workadventure"
+
+  domain                   = var.domain
+  cert_issuer              = module.cert_manager.issuer
+  jitsi_secrets            = var.jitsi_secrets
+  namespaces               = module.namespaces.namespaces
+  release_name             = var.release_name
+  subdomains               = var.subdomains
+  versions                 = var.versions
+  workadventure_maps_image = var.workadventure_maps_image
+  workadventure_start_map  = var.workadventure_start_map
+}

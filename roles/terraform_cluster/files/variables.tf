@@ -101,3 +101,11 @@ variable "versions" {
 variable "volume_handles" {
   type = map(string)
 }
+
+variable "workadventure_maps_image" {
+  type = string
+}
+
+variable "workadventure_start_map" {
+  type = string
+}

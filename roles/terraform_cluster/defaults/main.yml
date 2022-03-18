@@ -8,6 +8,7 @@ terraform_cluster_hedgedoc_secret:
 terraform_cluster_home_site_image:
 terraform_cluster_kubeconf_file:
 terraform_cluster_project_name:
+terraform_cluster_workadventure_maps_image:
 
 terraform_cluster_admin_passwords:
   collabora:
@@ -49,6 +50,7 @@ terraform_cluster_keycloak_realm: primary
 terraform_cluster_plan_file: "{{ role_path }}/files/terraform.tfstate.d/{{ terraform_cluster_workspace }}/tfplan"
 terraform_cluster_targets: []
 terraform_cluster_use_production_cert: false
+terraform_cluster_workadventure_start_map: /src/map.json
 terraform_cluster_workspace: default
 
 terraform_cluster_namespaces:
@@ -136,7 +138,7 @@ terraform_cluster_versions:
   synapse: v1.54.0
   synapse_helm: 2.1.29
   workadventure: v1.8.4
-  workadventure_helm: 0.1.0
+  workadventure_helm: 0.2.0
 
 terraform_cluster_variables:
   admin_passwords: "{{ terraform_cluster_admin_passwords | to_json }}"
@@ -163,3 +165,5 @@ terraform_cluster_variables:
   use_production_cert: "{{ terraform_cluster_use_production_cert | to_json }}"
   versions: "{{ terraform_cluster_versions | to_json }}"
   volume_handles: "{{ terraform_cluster_volume_handles | to_json }}"
+  workadventure_maps_image: "{{ terraform_cluster_workadventure_maps_image }}"
+  workadventure_start_map: "{{ terraform_cluster_workadventure_start_map }}"

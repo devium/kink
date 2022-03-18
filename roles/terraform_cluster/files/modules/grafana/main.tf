@@ -104,6 +104,14 @@ resource "helm_release" "loki" {
         requests:
           memory: ${var.resources.memory.loki}
 
+      config:
+        query_scheduler:
+          max_outstanding_requests_per_tenant: 2048
+
+        query_range:
+          parallelise_shardable_queries: false
+          split_queries_by_interval: 0
+
     promtail:
       resources:
         requests:
