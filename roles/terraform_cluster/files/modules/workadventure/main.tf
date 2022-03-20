@@ -45,6 +45,7 @@ resource "helm_release" "workadventure" {
           - secretName: ${local.fqdn_back}-tls
 
       subdomain: ${var.subdomains.workadventure_back}
+      replicaCount: 1
 
     pusher:
       ingress:
