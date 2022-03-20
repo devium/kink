@@ -29,6 +29,11 @@ resource "helm_release" "workadventure" {
         nginx.ingress.kubernetes.io/enable-cors: "true"
         nginx.ingress.kubernetes.io/cors-allow-origin: "https://${local.fqdn_front}/*"
 
+    resources:
+      requests:
+        # TODO: Modify Helm chart so it allows for deployment-specific resource requests
+        memory: ${var.resources.memory.workadventure_uploader}
+
     front:
       ingress:
         tls:
@@ -53,6 +58,7 @@ resource "helm_release" "workadventure" {
           - secretName: ${local.fqdn_pusher}-tls
 
       subdomain: ${var.subdomains.workadventure_pusher}
+      replicaCount: 1
 
     uploader:
       ingress:
@@ -60,6 +66,7 @@ resource "helm_release" "workadventure" {
           - secretName: ${local.fqdn_uploader}-tls
 
       subdomain: ${var.subdomains.workadventure_uploader}
+      replicaCount: 1
 
     maps:
       ingress:
@@ -67,6 +74,7 @@ resource "helm_release" "workadventure" {
           - secretName: ${local.fqdn_maps}-tls
 
       subdomain: ${var.subdomains.workadventure_maps}
+      replicaCount: 1
 
       volumes: |
         - name: maps

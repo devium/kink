@@ -244,6 +244,7 @@ module "workadventure" {
   jitsi_secrets            = var.jitsi_secrets
   namespaces               = module.namespaces.namespaces
   release_name             = var.release_name
+  resources                = var.resources
   subdomains               = var.subdomains
   versions                 = var.versions
   workadventure_maps_image = var.workadventure_maps_image

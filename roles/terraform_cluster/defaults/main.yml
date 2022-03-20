@@ -94,6 +94,11 @@ terraform_cluster_resources:
     prometheus: 600Mi
     prosody: 50Mi
     synapse: 600Mi
+    workadventure_front: 20Mi
+    workadventure_back: 100Mi
+    workadventure_pusher: 100Mi
+    workadventure_uploader: 80Mi
+    workadventure_maps: 30Mi
 
 terraform_cluster_subdomains:
   collabora: office.next
