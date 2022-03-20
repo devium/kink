@@ -16,6 +16,20 @@ resource "kubernetes_config_map_v1" "prosody_plugins" {
   }
 }
 
+resource "kubernetes_config_map_v1" "jvb_patches" {
+  metadata {
+    name      = "jvb-patches"
+    namespace = var.namespaces.jitsi
+  }
+
+  data = {
+    "20-bwe-patch" = <<-BASH
+      #!/usr/bin/env bash
+      sed -i -e '/videobridge {/a    cc {\n        trust-bwe=false\n    }' /config/jvb.conf
+    BASH
+  }
+}
+
 resource "helm_release" "jitsi" {
   name       = var.release_name
   namespace  = var.namespaces.jitsi
@@ -54,6 +68,7 @@ resource "helm_release" "jitsi" {
 
       extraEnvs:
         TOKEN_AUTH_URL: https://${local.fqdn_jitsi_keycloak}/{room}
+        ENABLE_P2P: "false"
 
       resources:
         requests:
@@ -81,6 +96,27 @@ resource "helm_release" "jitsi" {
       resources:
         requests:
           memory: ${var.resources.memory.jitsi_jvb}
+
+      extraVolumeMounts:
+        - mountPath: /etc/cont-init.d/20-bwe-patch
+          subPath: 20-bwe-patch
+          name: bwe-patch
+
+      extraVolumes:
+        - name: bwe-patch
+          configMap:
+            name: jvb-patches
+            defaultMode: 0777
+
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                - key: role
+                  operator: NotIn
+                  values:
+                    - master
 
     jicofo:
       image:

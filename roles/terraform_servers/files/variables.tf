@@ -45,7 +45,7 @@ variable "location" {
 }
 
 variable "num_workers" {
-  default = 2
+  default = 3
 }
 
 variable "ip_range" {

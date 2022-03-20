@@ -8,7 +8,8 @@ resource "local_file" "AnsibleInventory" {
             ipv6_address = module.master.ipv6_address
             rke2_type    = "server"
             rke2_server_options = [
-              "node-ip: ${module.master.internal_ip}"
+              "node-ip: ${module.master.internal_ip}",
+              "control-plane-resource-requests: kube-apiserver-memory=1000Mi"
             ]
           }
         },

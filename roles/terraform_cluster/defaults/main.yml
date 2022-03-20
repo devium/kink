@@ -73,6 +73,7 @@ terraform_cluster_resources:
   memory:
     alertmanager: 50Mi
     backup: 100Mi
+    canal: 150Mi
     cert_manager: 150Mi
     cert_manager_cainjector: 150Mi
     cert_manager_webhook: 50Mi
@@ -82,7 +83,7 @@ terraform_cluster_resources:
     hedgedoc: 300Mi
     home: 20Mi
     jitsi_jicofo: 300Mi
-    jitsi_jvb: 1000Mi
+    jitsi_jvb: 1500Mi
     jitsi_keycloak: 30Mi
     jitsi_web: 30Mi
     keycloak: 800Mi

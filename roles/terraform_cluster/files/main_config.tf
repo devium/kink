@@ -29,6 +29,7 @@ provider "keycloak" {
 }
 
 provider "grafana" {
-  url  = "https://${var.subdomains.grafana}.${var.domain}"
-  auth = "admin:${var.admin_passwords.grafana}"
+  url                  = "https://${var.subdomains.grafana}.${var.domain}"
+  auth                 = "admin:${var.admin_passwords.grafana}"
+  insecure_skip_verify = true
 }
