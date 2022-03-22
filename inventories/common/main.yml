@@ -30,11 +30,12 @@ terraform_servers_hcloud_token: "{{ hcloud_token }}"
 terraform_servers_hdns_token: "{{ hdns_token }}"
 terraform_servers_hdns_zone_id: "{{ hdns_zone_id }}"
 terraform_servers_ssh_key: "{{ ssh_key }}"
-terraform_servers_subdomains: "{{ subdomains }}"
+terraform_servers_subdomains_override: "{{ subdomains_override }}"
 terraform_servers_workspace: "{{ stage }}"
 
 
 netplan_config_file: /etc/netplan/60-floating-ip.yaml
+netplan_remove_existing: false
 
 netplan_configuration:
   network:
@@ -48,13 +49,12 @@ netplan_configuration:
        - "{{ floating_ip.ipv4_address }}/32"
        - "{{ floating_ip.ipv6_address }}/64"
 
-netplan_remove_existing: false
-
 
 rke2_download_kubeconf: true
 rke2_download_kubeconf_file_name: rke2.yaml
 rke2_download_kubeconf_path: "{{ ansible_inventory_sources[0] | dirname }}"
 rke2_version: v1.23.4+rke2r1
+
 
 terraform_cluster_admin_passwords: "{{ admin_passwords }}"
 terraform_cluster_backup_schedule: "0 0 * * *"
@@ -72,10 +72,10 @@ terraform_cluster_jitsi_secrets: "{{ jitsi_secrets }}"
 terraform_cluster_keycloak_realm: "{{ project_name }}"
 terraform_cluster_keycloak_secrets: "{{ keycloak_secrets }}"
 terraform_cluster_kubeconf_file: "{{ rke2_download_kubeconf_path }}/{{ rke2_download_kubeconf_file_name }}"
-terraform_cluster_namespaces: "{{ namespaces }}"
+terraform_cluster_namespaces_override: "{{ namespaces }}"
 terraform_cluster_nextcloud_volume_handle: "{{ nextcloud_volume_handle }}"
 terraform_cluster_project_name: "{{ project_name }}"
-terraform_cluster_subdomains: "{{ subdomains }}"
+terraform_cluster_subdomains_override: "{{ subdomains_override }}"
 terraform_cluster_synapse_secrets: "{{ synapse_secrets }}"
 terraform_cluster_use_production_cert: "{{ stage == 'prod' }}"
 terraform_cluster_volume_handles: "{{ volume_handles }}"
@@ -83,43 +83,14 @@ terraform_cluster_workadventure_maps_image: "{{ workadventure_maps_image }}"
 terraform_cluster_workadventure_start_map: "{{ workadventure_start_map }}"
 terraform_cluster_workspace: "{{ stage }}"
 
-terraform_cluster_versions:
-  cert_manager_helm: v1.7.1
-  collabora: 21.11.2.4.1
-  collabora_helm: 2.2.1
-  element: v1.10.6
-  element_helm: 1.1.6
-  hcloud_csi: v1.6.0
-  grafana: 8.4.2
-  grafana_helm: 33.2.1
-  hedgedoc: 1.9.2
-  hedgedoc_helm: 1.1.0
+terraform_cluster_versions_override:
   jitsi: stable-7001
-  jitsi_helm: v1.2.2
-  jitsi_keycloak: v0.2.0
-  jitsi_prometheus_exporter: 1.1.9
-  keycloak_helm: v17.0.2
-  keycloak_theme: v0.3.3
   loki: 2.4.2
-  loki_helm: 2.6.1
-  nextcloud: 23.0.2-apache
-  nextcloud_helm: 2.12.1
-  nginx: 1.21.6
-  nginx_helm: 9.9.3
-  postgres: 14.1.0-debian-10-r80
-  shlink: 3.0.3
-  shlink_helm: 4.0.0
-  shlink_web: 3.6.0
-  synapse: v1.54.0
-  synapse_helm: 2.1.29
-  workadventure: v1.8.4
-  workadventure_helm: 0.2.0
-
 
 config_kubeconf_file: "{{ rke2_download_kubeconf_path }}/{{ rke2_download_kubeconf_file_name }}"
 config_domain: "{{ domain }}"
-config_subdomains: "{{ subdomains }}"
-config_namespaces: "{{ namespaces }}"
+config_subdomains_override: "{{ subdomains_override }}"
+config_namespaces_override: "{{ namespaces }}"
 config_keycloak_realm: "{{ project_name }}"
 config_keycloak_secrets: "{{ keycloak_secrets }}"
 config_admin_passwords: "{{ admin_passwords }}"

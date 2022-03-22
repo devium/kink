@@ -40,9 +40,13 @@ resource "helm_release" "workadventure" {
           - secretName: ${local.fqdn_front}-tls
 
       subdomain: ${var.subdomains.workadventure_front}
+
       env:
         startRoomUniverse: _
         startRoomPath: ${var.workadventure_start_map}
+
+      autoscaling:
+        enabled: false
 
     back:
       ingress:
@@ -52,6 +56,9 @@ resource "helm_release" "workadventure" {
       subdomain: ${var.subdomains.workadventure_back}
       replicaCount: 1
 
+      autoscaling:
+        enabled: false
+
     pusher:
       ingress:
         tls:
@@ -59,6 +66,9 @@ resource "helm_release" "workadventure" {
 
       subdomain: ${var.subdomains.workadventure_pusher}
       replicaCount: 1
+
+      autoscaling:
+        enabled: false
 
     uploader:
       ingress:
@@ -68,6 +78,9 @@ resource "helm_release" "workadventure" {
       subdomain: ${var.subdomains.workadventure_uploader}
       replicaCount: 1
 
+      autoscaling:
+        enabled: false
+
     maps:
       ingress:
         tls:
@@ -75,6 +88,9 @@ resource "helm_release" "workadventure" {
 
       subdomain: ${var.subdomains.workadventure_maps}
       replicaCount: 1
+
+      autoscaling:
+        enabled: false
 
       volumes: |
         - name: maps
