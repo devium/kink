@@ -268,6 +268,7 @@ resource "kubernetes_service_v1" "jitsi_keycloak" {
     }
 
     port {
+      name        = "http"
       protocol    = "TCP"
       port        = 80
       target_port = 3000

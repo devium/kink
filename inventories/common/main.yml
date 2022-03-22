@@ -17,6 +17,7 @@ namespaces_base:
   keycloak: keycloak
   nextcloud: nextcloud
   postgres: postgres
+  shlink: shlink
   synapse: synapse
   workadventure: workadventure
 
@@ -106,6 +107,9 @@ terraform_cluster_versions:
   nginx: 1.21.6
   nginx_helm: 9.9.3
   postgres: 14.1.0-debian-10-r80
+  shlink: 3.0.3
+  shlink_helm: 4.0.0
+  shlink_web: 3.6.0
   synapse: v1.54.0
   synapse_helm: 2.1.29
   workadventure: v1.8.4

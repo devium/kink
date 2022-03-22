@@ -250,3 +250,17 @@ module "workadventure" {
   workadventure_maps_image = var.workadventure_maps_image
   workadventure_start_map  = var.workadventure_start_map
 }
+
+module "shlink" {
+  source = "./modules/shlink"
+
+  db_host      = module.postgres.host
+  db_passwords = var.db_passwords
+  domain       = var.domain
+  cert_issuer  = module.cert_manager.issuer
+  namespaces   = module.namespaces.namespaces
+  release_name = var.release_name
+  resources    = var.resources
+  subdomains   = var.subdomains
+  versions     = var.versions
+}

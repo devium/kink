@@ -16,6 +16,8 @@ resource "kubernetes_secret_v1" "init" {
       CREATE DATABASE synapse WITH OWNER synapse LC_COLLATE 'C' LC_CTYPE 'C' TEMPLATE template0;
       CREATE USER grafana WITH PASSWORD '${var.db_passwords.grafana}';
       CREATE DATABASE grafana WITH OWNER grafana;
+      CREATE USER shlink WITH PASSWORD '${var.db_passwords.shlink}';
+      CREATE DATABASE shlink WITH OWNER shlink;
     YAML
   }
 }

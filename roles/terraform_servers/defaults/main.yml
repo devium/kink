@@ -4,14 +4,22 @@ terraform_servers_hdns_token:
 terraform_servers_hdns_zone_id:
 terraform_servers_domain:
 terraform_cluster_subdomains:
+  collabora: office.next
+  element: element
+  grafana: grafana
+  hedgedoc: doc
+  home: www
   jitsi: jitsi
   jitsi_keycloak: auth.jitsi
-  keycloak: keycloak
+  keycloak: auth
   nextcloud: next
-  homer: www
-  hedgedoc: doc
-  element: element
+  shlink: shlink
   synapse: matrix
+  workadventure_back: api.play
+  workadventure_front: play
+  workadventure_maps: maps.play
+  workadventure_pusher: pusher.play
+  workadventure_uploader: uploader.play
 terraform_servers_ssh_key:
 terraform_servers_inventory_file: "{{ ansible_inventory_sources[0] }}"
 terraform_servers_plan_file: "{{ role_path }}/files/terraform.tfstate.d/{{ terraform_servers_workspace }}/tfplan"

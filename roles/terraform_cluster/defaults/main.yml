@@ -21,6 +21,7 @@ terraform_cluster_db_passwords:
   hedgedoc:
   keycloak:
   nextcloud:
+  shlink:
   synapse:
 
 terraform_cluster_jitsi_secrets:
@@ -66,6 +67,7 @@ terraform_cluster_namespaces:
   keycloak: keycloak
   nextcloud: nextcloud
   postgres: postgres
+  shlink: shlink
   synapse: synapse
   workadventure: workadventure
 
@@ -93,6 +95,8 @@ terraform_cluster_resources:
     postgres: 100Mi
     prometheus: 600Mi
     prosody: 50Mi
+    shlink: 100Mi
+    shlink_web: 20Mi
     synapse: 600Mi
     workadventure_front: 20Mi
     workadventure_back: 100Mi
@@ -110,6 +114,8 @@ terraform_cluster_subdomains:
   jitsi_keycloak: auth.jitsi
   keycloak: auth
   nextcloud: next
+  shlink: api.shlink
+  shlink_web: shlink
   synapse: matrix
   workadventure_back: api.play
   workadventure_front: play
@@ -141,6 +147,9 @@ terraform_cluster_versions:
   nginx: 1.21.6
   nginx_helm: 9.9.0
   postgres: 14.1.0-debian-10-r80
+  shlink: 3.0.3
+  shlink_helm: 4.0.0
+  shlink_web: 3.6.0
   synapse: v1.54.0
   synapse_helm: 2.1.29
   workadventure: v1.8.4

@@ -81,7 +81,7 @@ resource "kubernetes_ingress_v1" "home_redirect" {
       http {
         path {
           path      = "/"
-          path_type = "Prefix"
+          path_type = "Exact"
 
           # This is not used but required anyway
           backend {
