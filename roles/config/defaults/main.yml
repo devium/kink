@@ -126,6 +126,7 @@ config_nextcloud_install_apps:
   - deck
   - richdocuments
   - sociallogin
+  - polls
 
 config_namespaces_default:
   backup: backup
