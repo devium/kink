@@ -129,6 +129,7 @@ module "hedgedoc" {
   keycloak_realm   = var.keycloak_realm
   keycloak_secrets = var.keycloak_secrets
   namespaces       = module.namespaces.namespaces
+  pvcs             = module.volumes.pvcs
   release_name     = var.release_name
   resources        = var.resources
   subdomains       = var.subdomains

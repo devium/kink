@@ -37,6 +37,10 @@ variable "namespaces" {
   type = map(string)
 }
 
+variable "pvcs" {
+  type = map(string)
+}
+
 variable "release_name" {
   type = string
 }

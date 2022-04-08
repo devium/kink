@@ -6,6 +6,11 @@ locals {
       password = var.db_passwords.keycloak
     },
     {
+      username = "grafana"
+      database = "grafana"
+      password = var.db_passwords.grafana
+    },
+    {
       username = "hedgedoc"
       database = "hedgedoc"
       password = var.db_passwords.hedgedoc

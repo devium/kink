@@ -44,6 +44,7 @@ terraform_cluster_synapse_secrets:
   macaroon:
 
 terraform_cluster_volume_handles:
+  hedgedoc:
   nextcloud:
   postgres:
   synapse:

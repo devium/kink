@@ -52,6 +52,11 @@ resource "helm_release" "hedgedoc" {
           hosts:
             - ${local.fqdn}
 
+    persistence:
+      config:
+        enabled: true
+        existingClaim: ${var.pvcs.hedgedoc}
+
     resources:
       requests:
         memory: ${var.resources.memory.hedgedoc}
