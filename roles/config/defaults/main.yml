@@ -45,6 +45,12 @@ config_nextcloud_config:
     index: 2
     key: trusted_domains
     value: "{{ config_subdomains.collabora }}.{{ config_domain }}"
+  - app: system
+    key: profile.enabled
+    value: "false"
+  - app: core
+    key: shareapi_allow_share_dialog_user_enumeration
+    value: "no"
   - app: files
     key: default_quota
     value: "250 MB"
