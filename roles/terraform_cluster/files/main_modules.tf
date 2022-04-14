@@ -277,6 +277,7 @@ module "pretix" {
   keycloak_realm   = var.keycloak_realm
   keycloak_secrets = var.keycloak_secrets
   namespaces       = module.namespaces.namespaces
+  pvcs             = module.volumes.pvcs
   resources        = var.resources
   subdomains       = var.subdomains
   versions         = var.versions

@@ -88,6 +88,12 @@ resource "kubernetes_deployment_v1" "pretix" {
             sub_path   = "pretix.cfg"
           }
 
+          volume_mount {
+            name       = "data"
+            mount_path = "/data"
+            sub_path   = "data"
+          }
+
           resources {
             requests = {
               memory = var.resources.memory.pretix
@@ -104,6 +110,12 @@ resource "kubernetes_deployment_v1" "pretix" {
             container_port = 6379
           }
 
+          volume_mount {
+            name       = "data"
+            mount_path = "/var/run/redis"
+            sub_path   = "redis"
+          }
+
           resources {
             requests = {
               memory = var.resources.memory.pretix_redis
@@ -111,10 +123,21 @@ resource "kubernetes_deployment_v1" "pretix" {
           }
         }
 
+        security_context {
+          fs_group = 15371
+        }
+
         volume {
           name = "config"
           secret {
             secret_name = one(kubernetes_secret_v1.config.metadata).name
+          }
+        }
+
+        volume {
+          name = "data"
+          persistent_volume_claim {
+            claim_name = var.pvcs.pretix
           }
         }
       }

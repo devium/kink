@@ -32,6 +32,10 @@ variable "namespaces" {
   type = map(string)
 }
 
+variable "pvcs" {
+  type = map(string)
+}
+
 variable "resources" {
   type = map(map(string))
 }
