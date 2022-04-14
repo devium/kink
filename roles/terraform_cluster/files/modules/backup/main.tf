@@ -21,6 +21,11 @@ locals {
       password = var.db_passwords.nextcloud
     },
     {
+      username = "pretix"
+      database = "pretix"
+      password = var.db_passwords.pretix
+    },
+    {
       username = "synapse"
       database = "synapse"
       password = var.db_passwords.synapse

@@ -76,6 +76,7 @@ terraform_cluster_namespaces_default:
   keycloak: keycloak
   nextcloud: nextcloud
   postgres: postgres
+  pretix: pretix
   shlink: shlink
   synapse: synapse
   workadventure: workadventure
@@ -102,6 +103,8 @@ terraform_cluster_resources_default:
     loki_promtail: 100Mi
     nextcloud: 600Mi
     postgres: 100Mi
+    pretix: 1300Mi
+    pretix_redis: 200Mi
     prometheus: 600Mi
     prosody: 50Mi
     shlink: 100Mi
@@ -123,6 +126,7 @@ terraform_cluster_subdomains_default:
   jitsi_keycloak: auth.jitsi
   keycloak: auth
   nextcloud: next
+  pretix: tickets
   shlink: api.shlink
   shlink_web: shlink
   synapse: matrix
@@ -156,6 +160,7 @@ terraform_cluster_versions_default:
   nginx: 1.21.6
   nginx_helm: 9.9.3
   postgres: 14.1.0-debian-10-r80
+  pretix: 4.8.0
   shlink: 3.0.3
   shlink_helm: 4.0.0
   shlink_web: 3.6.0

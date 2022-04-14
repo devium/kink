@@ -17,6 +17,7 @@ namespaces_base:
   keycloak: keycloak
   nextcloud: nextcloud
   postgres: postgres
+  pretix: pretix
   shlink: shlink
   synapse: synapse
   workadventure: workadventure

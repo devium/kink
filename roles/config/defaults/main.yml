@@ -147,6 +147,7 @@ config_namespaces_default:
   keycloak: keycloak
   nextcloud: nextcloud
   postgres: postgres
+  pretix: pretix
   synapse: synapse
   workadventure: workadventure
 
@@ -160,6 +161,7 @@ config_subdomains_default:
   jitsi_keycloak: auth.jitsi
   keycloak: auth
   nextcloud: next
+  pretix: tickets
   synapse: matrix
   workadventure_back: api.play
   workadventure_front: play

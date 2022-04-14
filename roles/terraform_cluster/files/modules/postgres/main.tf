@@ -18,6 +18,8 @@ resource "kubernetes_secret_v1" "init" {
       CREATE DATABASE grafana WITH OWNER grafana;
       CREATE USER shlink WITH PASSWORD '${var.db_passwords.shlink}';
       CREATE DATABASE shlink WITH OWNER shlink;
+      CREATE USER pretix WITH PASSWORD '${var.db_passwords.pretix}';
+      CREATE DATABASE pretix WITH OWNER pretix;
     YAML
   }
 }

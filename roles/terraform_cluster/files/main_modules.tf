@@ -265,3 +265,19 @@ module "shlink" {
   subdomains   = var.subdomains
   versions     = var.versions
 }
+
+module "pretix" {
+  source = "./modules/pretix"
+
+  cert_issuer      = module.cert_manager.issuer
+  db_host          = module.postgres.host
+  db_passwords     = var.db_passwords
+  domain           = var.domain
+  keycloak_clients = module.keycloak_config.clients
+  keycloak_realm   = var.keycloak_realm
+  keycloak_secrets = var.keycloak_secrets
+  namespaces       = module.namespaces.namespaces
+  resources        = var.resources
+  subdomains       = var.subdomains
+  versions         = var.versions
+}
