@@ -9,7 +9,8 @@ resource "local_file" "AnsibleInventory" {
             rke2_type    = "server"
             rke2_server_options = [
               "node-ip: ${module.master.internal_ip}",
-              "control-plane-resource-requests: kube-apiserver-memory=1000Mi"
+              "control-plane-resource-requests: kube-apiserver-memory=1000Mi",
+              "node-taint: [CriticalAddonsOnly=true:NoSchedule]"
             ]
           }
         },

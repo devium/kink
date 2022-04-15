@@ -20,6 +20,7 @@ terraform_servers_subdomains_default:
   jitsi_keycloak: auth.jitsi
   keycloak: auth
   nextcloud: next
+  pretix: tickets
   shlink: shlink
   synapse: matrix
   workadventure_back: api.play

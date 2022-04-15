@@ -66,6 +66,10 @@ resource "helm_release" "synapse" {
         requests:
           memory: ${var.resources.memory.synapse}
 
+      strategy:
+        type: Recreate
+
+
     postgresql:
       enabled: false
 

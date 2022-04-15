@@ -59,6 +59,10 @@ resource "kubernetes_deployment_v1" "pretix" {
   spec {
     replicas = 1
 
+    strategy {
+      type = "Recreate"
+    }
+
     selector {
       match_labels = {
         app = "pretix"

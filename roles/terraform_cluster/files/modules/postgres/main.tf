@@ -42,6 +42,7 @@ resource "helm_release" "postgres" {
     primary:
       persistence:
         existingClaim: ${var.pvcs.postgres}
+
       initdb:
         scriptsSecret: ${one(kubernetes_secret_v1.init.metadata).name}
         user: postgres
