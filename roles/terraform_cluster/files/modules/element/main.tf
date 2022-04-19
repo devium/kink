@@ -22,9 +22,6 @@ resource "helm_release" "element" {
       disable_custom_urls: true
       disable_guests: true
 
-      sso_redirect_options:
-        immediate: true
-
       settingDefaults:
         UIFeature.registration: false
 

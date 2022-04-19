@@ -29,6 +29,7 @@ resource "helm_release" "synapse" {
           preferredDomain: ${var.subdomains.jitsi}.${var.domain}
 
     config:
+      enableRegistration: false
       registrationSharedSecret: ${var.synapse_secrets.registration}
       macaroonSecretKey: ${var.synapse_secrets.macaroon}
 
@@ -38,6 +39,9 @@ resource "helm_release" "synapse" {
       autocreate_auto_join_rooms: false
       auto_join_rooms:
         - "#lobby:${var.domain}"
+
+      password_config:
+        enabled: false
 
       oidc_providers:
         - idp_id: keycloak
