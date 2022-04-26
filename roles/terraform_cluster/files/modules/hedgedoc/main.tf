@@ -1,6 +1,6 @@
 locals {
   fqdn     = "${var.subdomains.hedgedoc}.${var.domain}"
-  oidc_url = "https://${var.subdomains.keycloak}.${var.domain}/auth/realms/${var.keycloak_realm}/protocol/openid-connect"
+  oidc_url = "https://${var.subdomains.keycloak}.${var.domain}/realms/${var.keycloak_realm}/protocol/openid-connect"
 }
 
 resource "helm_release" "hedgedoc" {
@@ -60,6 +60,9 @@ resource "helm_release" "hedgedoc" {
     resources:
       requests:
         memory: ${var.resources.memory.hedgedoc}
+
+    strategy:
+      type: Recreate
   YAML
   ]
 }

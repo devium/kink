@@ -1,6 +1,6 @@
 locals {
   fqdn     = "${var.subdomains.grafana}.${var.domain}"
-  oidc_url = "https://${var.subdomains.keycloak}.${var.domain}/auth/realms/${var.keycloak_realm}"
+  oidc_url = "https://${var.subdomains.keycloak}.${var.domain}/realms/${var.keycloak_realm}"
 }
 
 resource "helm_release" "grafana" {

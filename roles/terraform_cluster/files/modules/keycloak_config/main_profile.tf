@@ -79,6 +79,7 @@ resource "keycloak_openid_client_default_scopes" "defaults" {
     keycloak_openid_client_scope.private_profile.name,
     "email",
     "roles",
-    "web-origins"
+    "web-origins",
+    "acr"
   ]
 }

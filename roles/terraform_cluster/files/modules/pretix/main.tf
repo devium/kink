@@ -1,6 +1,6 @@
 locals {
   fqdn     = "${var.subdomains.pretix}.${var.domain}"
-  oidc_url = "/auth/realms/${var.keycloak_realm}/protocol/openid-connect"
+  oidc_url = "/realms/${var.keycloak_realm}/protocol/openid-connect"
 }
 
 resource "kubernetes_secret_v1" "config" {

@@ -15,7 +15,7 @@
 # TODO: Include this in the terraform project once possible
 - name: Set realm's browser flow and default client scopes
   community.general.keycloak_realm:
-    auth_keycloak_url: "https://{{ terraform_cluster_subdomains.keycloak }}.{{ terraform_cluster_domain }}/auth"
+    auth_keycloak_url: "https://{{ terraform_cluster_subdomains.keycloak }}.{{ terraform_cluster_domain }}"
     auth_realm: master
     auth_username: admin
     auth_password: "{{ terraform_cluster_admin_passwords.keycloak }}"

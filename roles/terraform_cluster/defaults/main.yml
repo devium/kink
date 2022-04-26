@@ -140,23 +140,24 @@ terraform_cluster_versions_default:
   cert_manager_helm: v1.7.1
   collabora: 21.11.2.4.1
   collabora_helm: 2.2.1
-  element: v1.10.7
-  element_helm: 1.1.7
+  element: v1.10.11
+  element_helm: 1.1.10
   hcloud_csi: v1.6.0
   grafana: 8.4.2
   grafana_helm: 33.2.1
-  hedgedoc: 1.9.2
+  hedgedoc: 1.9.3
   hedgedoc_helm: 1.1.0
   jitsi: stable-6865
   jitsi_helm: v1.2.2
   jitsi_keycloak: v0.2.0
   jitsi_prometheus_exporter: 1.1.9
-  keycloak_helm: v17.0.2
-  keycloak_theme: v0.3.3
+  keycloak: 18.0.0
+  keycloak_helm: 1.3.1
+  keycloak_theme: v0.3.5
   loki: v2.1.0
   loki_helm: 2.6.1
   nextcloud: 23.0.3-apache
-  nextcloud_helm: 2.13.2
+  nextcloud_helm: 2.14.2
   nginx: 1.21.6
   nginx_helm: 9.9.3
   postgres: 14.1.0-debian-10-r80
@@ -164,8 +165,8 @@ terraform_cluster_versions_default:
   shlink: 3.0.3
   shlink_helm: 4.0.0
   shlink_web: 3.6.0
-  synapse: v1.54.0
-  synapse_helm: 2.1.29
+  synapse: v1.57.1
+  synapse_helm: 2.1.34
   workadventure: v1.8.4
   workadventure_helm: 0.2.0
 

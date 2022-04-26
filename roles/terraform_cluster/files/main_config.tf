@@ -20,6 +20,7 @@ provider "helm" {
 provider "keycloak" {
   url       = "https://${var.subdomains.keycloak}.${var.domain}"
   client_id = "admin-cli"
+  base_path = ""
 
   username = "admin"
   password = var.admin_passwords.keycloak

@@ -86,16 +86,6 @@ resource "helm_release" "jitsi" {
       websockets:
         enabled: true
 
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                - key: role
-                  operator: NotIn
-                  values:
-                    - master
-
     jicofo:
       image:
         tag: ${var.versions.jitsi}
@@ -167,7 +157,7 @@ resource "kubernetes_secret_v1" "jitsi_keycloak_config" {
     "keycloak.json" = <<-JSON
       {
         "realm": "${var.keycloak_realm}",
-        "auth-server-url": "https://${var.subdomains.keycloak}.${var.domain}/auth/",
+        "auth-server-url": "https://${var.subdomains.keycloak}.${var.domain}/",
         "ssl-required": "external",
         "resource": "${var.keycloak_clients.jitsi}",
         "public-client": true,

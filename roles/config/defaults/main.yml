@@ -24,7 +24,7 @@ config_keycloak_secrets:
 
 config_helm_release_name: primary
 config_namespaces: "{{ config_namespaces_default | combine(config_namespaces_override, recursive=True) }}"
-config_oidc_url: "https://{{ config_subdomains.keycloak }}.{{ config_domain }}/auth/realms/{{ config_keycloak_realm }}/protocol/openid-connect"
+config_oidc_url: "https://{{ config_subdomains.keycloak }}.{{ config_domain }}/realms/{{ config_keycloak_realm }}/protocol/openid-connect"
 config_release_name: primary
 config_subdomains: "{{ config_subdomains_default | combine(config_subdomains_override, recursive=True) }}"
 

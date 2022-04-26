@@ -6,10 +6,13 @@ resource "helm_release" "keycloak" {
   name       = var.release_name
   namespace  = var.namespaces.keycloak
   repository = "https://codecentric.github.io/helm-charts"
-  chart      = "keycloak"
+  chart      = "keycloakx"
   version    = var.versions.keycloak_helm
 
   values = [<<-YAML
+    image:
+      tag: ${var.versions.keycloak}
+
     ingress:
       enabled: true
 
@@ -34,37 +37,39 @@ resource "helm_release" "keycloak" {
       requests:
         memory: ${var.resources.memory.keycloak}
 
+    args:
+      - start
+      - --auto-build
+      - --http-enabled=true
+      - --http-port=8080
+      - --hostname-strict=false
+      - --hostname-strict-https=false
+
     postgresql:
       enabled: false
 
     extraEnv: |
-      - name: DB_VENDOR
-        value: postgres
-      - name: DB_ADDR
-        value: ${var.db_host}
-      - name: KEYCLOAK_USER
+      - name: KEYCLOAK_ADMIN
         value: admin
-      - name: PROXY_ADDRESS_FORWARDING
-        value: "true"
+      - name: JAVA_OPTS_APPEND
+        value: >-
+          -Djgroups.dns.query={{ include "keycloak.fullname" . }}-headless
 
     extraEnvFrom: |
-      - secretRef:
-          name: '{{ include "keycloak.fullname" . }}-db'
       - secretRef:
           name: '{{ include "keycloak.fullname" . }}-admin-password'
 
     secrets:
-      db:
-        stringData:
-          DB_PASSWORD: ${var.db_passwords.keycloak}
-
       admin-password:
         stringData:
-          KEYCLOAK_PASSWORD: ${var.admin_passwords.keycloak}
+          KEYCLOAK_ADMIN_PASSWORD: ${var.admin_passwords.keycloak}
+
+    http:
+      relativePath: ""
 
     extraVolumeMounts: |
       - name: theme
-        mountPath: /opt/jboss/keycloak/themes/custom
+        mountPath: /opt/keycloak/themes/custom
 
     extraVolumes: |
       - name: theme
@@ -87,6 +92,14 @@ resource "helm_release" "keycloak" {
         volumeMounts:
           - name: theme
             mountPath: /theme
+
+    database:
+      vendor: postgres
+      hostname: ${var.db_host}
+      port: 5432
+      database: keycloak
+      username: keycloak
+      password: ${var.db_passwords.keycloak}
   YAML
   ]
 }
