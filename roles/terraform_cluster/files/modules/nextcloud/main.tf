@@ -17,6 +17,7 @@ resource "helm_release" "nextcloud" {
       enabled: true
       annotations:
         cert-manager.io/cluster-issuer: ${var.cert_issuer}
+        nginx.ingress.kubernetes.io/enable-cors: "true"
       hosts:
         - host: ${local.fqdn}
           paths:
