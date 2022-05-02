@@ -13,7 +13,8 @@
     kubeconfig: "{{ config_kubeconf_file }}"
     namespace: "{{ config_namespaces.nextcloud }}"
     pod: "{{ pods_result.resources[0].metadata.name }}"
-    command: su -s /bin/bash -c '/var/www/html/occ config:{{ category }}:set {{ identifier }} --value "{{ value_sanitized }}"' www-data
+    command: su -s /bin/bash -c '/var/www/html/occ config:{{ category }}:set {{ identifier }} --value "{{ item.value }}" {{ enforce_boolean }}' www-data
   vars:
-    value_sanitized: "{{ item.value if item.value is string }}"
+    enforce_boolean: "{{ '--type=boolean' if item.value is boolean }}"
+  # Currently no way to check if the returned value is a string or boolean, so bools are updated always.
   when: get_result.stdout | length == 0 or get_result.stdout[:-1] != item.value

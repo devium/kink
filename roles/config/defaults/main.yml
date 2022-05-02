@@ -34,10 +34,10 @@ config_nextcloud_config:
     value: https
   - app: system
     key: allow_user_to_change_display_name
-    value: "false"
+    value: false
   - app: system
     key: hide_login_form
-    value: "true"
+    value: true
   - app: system
     key: skeletondirectory
     value: ""
@@ -47,7 +47,7 @@ config_nextcloud_config:
     value: "{{ config_subdomains.collabora }}.{{ config_domain }}"
   - app: system
     key: profile.enabled
-    value: "false"
+    value: false
   - app: core
     key: shareapi_allow_share_dialog_user_enumeration
     value: "no"
@@ -133,6 +133,7 @@ config_nextcloud_install_apps:
   - richdocuments
   - sociallogin
   - polls
+  - forms
 
 config_namespaces_default:
   backup: backup

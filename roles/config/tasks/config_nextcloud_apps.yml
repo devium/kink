@@ -1,4 +1,4 @@
-- name: Disable Nextcloud app
+- name: Disable Nextcloud apps
   kubernetes.core.k8s_exec:
     kubeconfig: "{{ config_kubeconf_file }}"
     namespace: "{{ config_namespaces.nextcloud }}"
@@ -8,7 +8,7 @@
   changed_when: "'No such app enabled' not in disable_result.stdout"
   with_items: "{{ config_nextcloud_disable_apps }}"
 
-- name: Install Nextcloud app
+- name: Install Nextcloud apps
   kubernetes.core.k8s_exec:
     kubeconfig: "{{ config_kubeconf_file }}"
     namespace: "{{ config_namespaces.nextcloud }}"
