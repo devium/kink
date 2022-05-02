@@ -1,3 +1,8 @@
+- name: Store terraform variables in file for manual tasks
+  copy:
+    dest: "{{ role_path }}/files/terraform.tfstate.d/{{ terraform_cluster_workspace }}/ansible_vars.json"
+    content: "{{ terraform_cluster_variables | to_nice_json | regex_replace('\"{', '{') | regex_replace('}\"', '}') | regex_replace('\\\\\"', '\"') }}"
+
 - name: Plan terraform project
   community.general.terraform:
     project_path: "{{ role_path }}/files"

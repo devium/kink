@@ -37,6 +37,10 @@ resource "kubernetes_manifest" "ingress_patch" {
       valuesContent = <<-YAML
         controller:
           allowSnippetAnnotations: true
+
+          tolerations:
+            - key: "CriticalAddonsOnly"
+              operator: "Exists"
       YAML
     }
   }

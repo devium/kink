@@ -29,6 +29,11 @@ locals {
       username = "synapse"
       database = "synapse"
       password = var.db_passwords.synapse
+    },
+    {
+      username = "shlink"
+      database = "shlink"
+      password = var.db_passwords.shlink
     }
   ]
   pg_dump_script = join(
