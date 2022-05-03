@@ -1,4 +1,25 @@
-- name: "Get Nextcloud keycloak config"
+- name: Get Nextcloud groups
+  kubernetes.core.k8s_exec:
+    kubeconfig: "{{ config_kubeconf_file }}"
+    namespace: "{{ config_namespaces.nextcloud }}"
+    pod: "{{ pods_result.resources[0].metadata.name }}"
+    command: su -s /bin/bash -c '/var/www/html/occ group:list' www-data
+  register: groups_result
+  failed_when: groups_result.rc != 0 and groups_result.stderr | length > 0
+  changed_when: false
+
+- name: Create missing groups
+  kubernetes.core.k8s_exec:
+    kubeconfig: "{{ config_kubeconf_file }}"
+    namespace: "{{ config_namespaces.nextcloud }}"
+    pod: "{{ pods_result.resources[0].metadata.name }}"
+    command: su -s /bin/bash -c '/var/www/html/occ group:add "{{ item }}"' www-data
+  when: group_expr not in groups_result.stdout
+  vars:
+    group_expr: "- {{ item }}:"
+  with_items: "{{ config_nextcloud_groups }}"
+
+- name: Get Nextcloud keycloak config
   kubernetes.core.k8s_exec:
     kubeconfig: "{{ config_kubeconf_file }}"
     namespace: "{{ config_namespaces.nextcloud }}"
@@ -8,7 +29,7 @@
   failed_when: get_result.rc != 0 and get_result.stderr | length > 0
   changed_when: false
 
-- name: "Set Nextcloud keycloak config"
+- name: Set Nextcloud keycloak config
   kubernetes.core.k8s_exec:
     kubeconfig: "{{ config_kubeconf_file }}"
     namespace: "{{ config_namespaces.nextcloud }}"

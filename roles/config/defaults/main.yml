@@ -103,6 +103,9 @@ config_nextcloud_disable_apps:
   - federation
   - firstrunwizard
 
+config_nextcloud_groups:
+  - Default
+
 config_nextcloud_keycloak_config:
   {
     "custom_oidc": [
@@ -119,7 +122,7 @@ config_nextcloud_keycloak_config:
         "scope": "openid",
         "groupsClaim": "groups",
         "style": "keycloak",
-        "defaultGroup": "",
+        "defaultGroup": "Default",
         "groupMapping": {
           "admin": "admin"
         }
