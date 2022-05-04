@@ -1,5 +1,11 @@
 locals {
   fqdn = "${var.subdomains.keycloak}.${var.domain}"
+
+  csp = merge(var.default_csp, {
+    "script-src"      = "'self' 'unsafe-inline' 'unsafe-eval'"
+    "frame-src"       = "'self'"
+    "frame-ancestors" = "'self' https://${var.subdomains.element}.${var.domain}"
+  })
 }
 
 resource "helm_release" "keycloak" {
@@ -20,7 +26,7 @@ resource "helm_release" "keycloak" {
         cert-manager.io/cluster-issuer: ${var.cert_issuer}
         nginx.ingress.kubernetes.io/proxy-buffer-size: "128k"
         nginx.ingress.kubernetes.io/configuration-snippet: |
-          more_set_headers "Content-Security-Policy: frame-ancestors https://*.${var.domain}";
+          more_set_headers "Content-Security-Policy: ${join(";", [for key, value in local.csp : "${key} ${value}"])}";
 
       rules:
         - host: ${local.fqdn}

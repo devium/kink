@@ -34,3 +34,20 @@ provider "grafana" {
   auth                 = "admin:${var.admin_passwords.grafana}"
   insecure_skip_verify = true
 }
+
+locals {
+  default_csp = {
+    "default-src"     = "'none'"
+    "script-src"      = "'self'"
+    "connect-src"     = "'self' https://${var.subdomains.keycloak}.${var.domain}"
+    "style-src"       = "'self' 'unsafe-inline'"
+    "img-src"         = "* blob: data:"
+    "font-src"        = "* blob: data:"
+    "frame-src"       = "'none'"
+    "object-src"      = "'none'"
+    "media-src"       = "'self'"
+    "manifest-src"    = "'self'"
+    "frame-ancestors" = "'none'"
+    "base-uri"        = "'self'"
+  }
+}

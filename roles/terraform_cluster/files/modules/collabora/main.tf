@@ -1,5 +1,10 @@
 locals {
   fqdn = "${var.subdomains.collabora}.${var.domain}"
+
+  csp = merge(var.default_csp, {
+    "script-src"      = "'self' 'unsafe-inline'"
+    "frame-ancestors" = "https://${var.subdomains.nextcloud}.${var.domain}"
+  })
 }
 
 resource "helm_release" "collabora" {
@@ -24,6 +29,8 @@ resource "helm_release" "collabora" {
 
       annotations:
         cert-manager.io/cluster-issuer: ${var.cert_issuer}
+        nginx.ingress.kubernetes.io/configuration-snippet: |
+          more_set_headers "Content-Security-Policy: ${join(";", [for key, value in local.csp : "${key} ${value}"])}";
 
       paths:
         - /

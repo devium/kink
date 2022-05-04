@@ -1,6 +1,16 @@
 locals {
   fqdn                = "${var.subdomains.jitsi}.${var.domain}"
   fqdn_jitsi_keycloak = "${var.subdomains.jitsi_keycloak}.${var.domain}"
+
+  csp = merge(var.default_csp, {
+    "script-src"      = "'self' 'unsafe-inline' 'unsafe-eval'"
+    "worker-src"      = "'self' blob:"
+    "frame-ancestors" = "https://${var.subdomains.workadventure_front}.${var.domain} https://${var.subdomains.element}.${var.domain}"
+  })
+  csp_jitsi_keycloak = merge(var.default_csp, {
+    "style-src"       = "'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net"
+    "frame-ancestors" = "https://${var.subdomains.element}.${var.domain}"
+  })
 }
 
 resource "kubernetes_config_map_v1" "prosody_plugins" {
@@ -38,7 +48,7 @@ resource "helm_release" "jitsi" {
           nginx.ingress.kubernetes.io/enable-cors: "true"
           nginx.ingress.kubernetes.io/cors-allow-origin: https://*.${var.domain}
           nginx.ingress.kubernetes.io/configuration-snippet: |
-            more_set_headers "Content-Security-Policy: frame-ancestors https://*.${var.domain}";
+            more_set_headers "Content-Security-Policy: ${join(";", [for key, value in local.csp : "${key} ${value}"])}";
 
         enabled: true
 
@@ -272,7 +282,10 @@ resource "kubernetes_ingress_v1" "jitsi_keycloak" {
     namespace = var.namespaces.jitsi
 
     annotations = {
-      "cert-manager.io/cluster-issuer" = var.cert_issuer
+      "cert-manager.io/cluster-issuer"                    = var.cert_issuer
+      "nginx.ingress.kubernetes.io/configuration-snippet" = <<-CONF
+        more_set_headers "Content-Security-Policy: ${join(";", [for key, value in local.csp_jitsi_keycloak : "${key} ${value}"])}";
+      CONF
     }
   }
 

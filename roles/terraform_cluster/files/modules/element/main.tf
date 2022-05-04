@@ -1,5 +1,12 @@
 locals {
   fqdn = "${var.subdomains.element}.${var.domain}"
+
+  csp = merge(var.default_csp, {
+    "script-src"      = "'self' 'unsafe-eval'",
+    "connect-src"     = "'self' https://${var.subdomains.keycloak}.${var.domain} https://${var.subdomains.synapse}.${var.domain} https://${var.domain} https://vector.im https://pingback.giphy.com https://scalar.vector.im"
+    "frame-src"       = "'self' https://${var.subdomains.jitsi}.${var.domain} https://${var.subdomains.jitsi_keycloak}.${var.domain} https://${var.subdomains.keycloak}.${var.domain} https://scalar.vector.im"
+    "frame-ancestors" = "'self'"
+  })
 }
 
 resource "helm_release" "element" {
@@ -31,7 +38,7 @@ resource "helm_release" "element" {
       annotations:
         cert-manager.io/cluster-issuer: ${var.cert_issuer}
         nginx.ingress.kubernetes.io/configuration-snippet: |
-          more_set_headers "Content-Security-Policy: frame-ancestors https://*.${var.domain}";
+          more_set_headers "Content-Security-Policy: ${join(";", [for key, value in local.csp : "${key} ${value}"])}";
 
       hosts:
         - ${local.fqdn}

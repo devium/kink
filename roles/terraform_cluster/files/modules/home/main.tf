@@ -1,5 +1,9 @@
 locals {
   fqdn = "${var.subdomains.home}.${var.domain}"
+
+  csp = merge(var.default_csp, {
+    "connect-src" = "https://${var.subdomains.jitsi}.${var.domain} https://${var.subdomains.nextcloud}.${var.domain}"
+  })
 }
 
 resource "helm_release" "home" {
@@ -26,6 +30,8 @@ resource "helm_release" "home" {
 
       annotations:
         cert-manager.io/cluster-issuer: ${var.cert_issuer}
+        nginx.ingress.kubernetes.io/configuration-snippet: |
+          more_set_headers "Content-Security-Policy: ${join(";", [for key, value in local.csp : "${key} ${value}"])}";
 
     resources:
       requests:

@@ -4,6 +4,13 @@ locals {
   fqdn_maps     = "${var.subdomains.workadventure_maps}.${var.domain}"
   fqdn_pusher   = "${var.subdomains.workadventure_pusher}.${var.domain}"
   fqdn_uploader = "${var.subdomains.workadventure_uploader}.${var.domain}"
+
+  csp = merge(var.default_csp, {
+    "script-src"  = "'self' https://${var.subdomains.jitsi}.${var.domain}"
+    "connect-src" = "'self' https://${local.fqdn_pusher} https://${local.fqdn_maps} wss://${local.fqdn_pusher}"
+    "style-src"   = "'self' 'unsafe-inline' https://unpkg.com https://cdn.quilljs.com"
+    "frame-src"   = "https://${var.subdomains.jitsi}.${var.domain}"
+  })
 }
 
 resource "helm_release" "workadventure" {
@@ -36,6 +43,10 @@ resource "helm_release" "workadventure" {
 
     front:
       ingress:
+        annotations:
+          nginx.ingress.kubernetes.io/configuration-snippet: |
+            more_set_headers "Content-Security-Policy: ${join(";", [for key, value in local.csp : "${key} ${value}"])}";
+
         tls:
           - secretName: ${local.fqdn_front}-tls
 

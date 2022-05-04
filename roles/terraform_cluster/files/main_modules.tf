@@ -6,6 +6,8 @@ module "namespaces" {
 
 module "rke2" {
   source = "./modules/rke2"
+
+  default_csp = local.default_csp
 }
 
 module "hetzner" {
@@ -57,10 +59,11 @@ module "keycloak" {
   source = "./modules/keycloak"
 
   admin_passwords = var.admin_passwords
+  cert_issuer     = module.cert_manager.issuer
   db_host         = module.postgres.host
   db_passwords    = var.db_passwords
+  default_csp     = local.default_csp
   domain          = var.domain
-  cert_issuer     = module.cert_manager.issuer
   namespaces      = module.namespaces.namespaces
   release_name    = var.release_name
   resources       = var.resources
@@ -87,8 +90,9 @@ module "keycloak_config" {
 module "jitsi" {
   source = "./modules/jitsi"
 
-  domain           = var.domain
   cert_issuer      = module.cert_manager.issuer
+  default_csp      = local.default_csp
+  domain           = var.domain
   jitsi_secrets    = var.jitsi_secrets
   keycloak_clients = module.keycloak_config.clients
   keycloak_realm   = var.keycloak_realm
@@ -107,9 +111,10 @@ module "jitsi" {
 module "home" {
   source = "./modules/home"
 
+  cert_issuer     = module.cert_manager.issuer
+  default_csp     = local.default_csp
   domain          = var.domain
   home_site_image = var.home_site_image
-  cert_issuer     = module.cert_manager.issuer
   namespaces      = module.namespaces.namespaces
   release_name    = var.release_name
   resources       = var.resources
@@ -120,11 +125,11 @@ module "home" {
 module "hedgedoc" {
   source = "./modules/hedgedoc"
 
+  cert_issuer      = module.cert_manager.issuer
   db_host          = module.postgres.host
   db_passwords     = var.db_passwords
   domain           = var.domain
   hedgedoc_secret  = var.hedgedoc_secret
-  cert_issuer      = module.cert_manager.issuer
   keycloak_clients = module.keycloak_config.clients
   keycloak_realm   = var.keycloak_realm
   keycloak_secrets = var.keycloak_secrets
@@ -140,14 +145,15 @@ module "nextcloud" {
   source = "./modules/nextcloud"
 
   admin_passwords = var.admin_passwords
+  cert_issuer     = module.cert_manager.issuer
   db_host         = module.postgres.host
   db_passwords    = var.db_passwords
+  default_csp     = local.default_csp
   domain          = var.domain
-  cert_issuer     = module.cert_manager.issuer
   namespaces      = module.namespaces.namespaces
+  pvcs            = module.volumes.pvcs
   release_name    = var.release_name
   resources       = var.resources
-  pvcs            = module.volumes.pvcs
   subdomains      = var.subdomains
   versions        = var.versions
 }
@@ -156,8 +162,9 @@ module "collabora" {
   source = "./modules/collabora"
 
   admin_passwords = var.admin_passwords
-  domain          = var.domain
   cert_issuer     = module.cert_manager.issuer
+  default_csp     = local.default_csp
+  domain          = var.domain
   namespaces      = module.namespaces.namespaces
   release_name    = var.release_name
   resources       = var.resources
@@ -168,10 +175,10 @@ module "collabora" {
 module "synapse" {
   source = "./modules/synapse"
 
+  cert_issuer      = module.cert_manager.issuer
   db_host          = module.postgres.host
   db_passwords     = var.db_passwords
   domain           = var.domain
-  cert_issuer      = module.cert_manager.issuer
   keycloak_clients = module.keycloak_config.clients
   keycloak_realm   = var.keycloak_realm
   keycloak_secrets = var.keycloak_secrets
@@ -187,8 +194,9 @@ module "synapse" {
 module "element" {
   source = "./modules/element"
 
-  domain       = var.domain
   cert_issuer  = module.cert_manager.issuer
+  default_csp  = local.default_csp
+  domain       = var.domain
   namespaces   = module.namespaces.namespaces
   release_name = var.release_name
   resources    = var.resources
@@ -213,10 +221,11 @@ module "grafana" {
   source = "./modules/grafana"
 
   admin_passwords  = var.admin_passwords
-  domain           = var.domain
   cert_issuer      = module.cert_manager.issuer
   db_host          = module.postgres.host
   db_passwords     = var.db_passwords
+  default_csp      = local.default_csp
+  domain           = var.domain
   keycloak_clients = module.keycloak_config.clients
   keycloak_realm   = var.keycloak_realm
   keycloak_secrets = var.keycloak_secrets
@@ -240,8 +249,9 @@ module "grafana_config" {
 module "workadventure" {
   source = "./modules/workadventure"
 
-  domain                   = var.domain
   cert_issuer              = module.cert_manager.issuer
+  default_csp              = local.default_csp
+  domain                   = var.domain
   jitsi_secrets            = var.jitsi_secrets
   namespaces               = module.namespaces.namespaces
   release_name             = var.release_name
@@ -255,10 +265,10 @@ module "workadventure" {
 module "shlink" {
   source = "./modules/shlink"
 
+  cert_issuer  = module.cert_manager.issuer
   db_host      = module.postgres.host
   db_passwords = var.db_passwords
   domain       = var.domain
-  cert_issuer  = module.cert_manager.issuer
   namespaces   = module.namespaces.namespaces
   release_name = var.release_name
   resources    = var.resources

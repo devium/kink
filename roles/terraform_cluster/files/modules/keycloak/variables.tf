@@ -7,6 +7,10 @@ variable "cert_issuer" {
   type = string
 }
 
+variable "default_csp" {
+  type = map(string)
+}
+
 variable "db_host" {
   type = string
 }

@@ -1,6 +1,10 @@
 locals {
   fqdn     = "${var.subdomains.grafana}.${var.domain}"
   oidc_url = "https://${var.subdomains.keycloak}.${var.domain}/realms/${var.keycloak_realm}"
+
+  csp = merge(var.default_csp, {
+    "script-src" = "'self' 'unsafe-inline' 'unsafe-eval'"
+  })
 }
 
 resource "helm_release" "grafana" {
@@ -20,6 +24,8 @@ resource "helm_release" "grafana" {
 
         annotations:
           cert-manager.io/cluster-issuer: ${var.cert_issuer}
+          nginx.ingress.kubernetes.io/configuration-snippet: |
+            more_set_headers "Content-Security-Policy: ${join(";", [for key, value in local.csp : "${key} ${value}"])}";
 
         hosts:
           - ${local.fqdn}

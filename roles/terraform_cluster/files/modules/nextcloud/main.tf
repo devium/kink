@@ -1,5 +1,11 @@
 locals {
   fqdn = "${var.subdomains.nextcloud}.${var.domain}"
+
+  csp = merge(var.default_csp, {
+    "script-src"      = "'self' 'unsafe-inline'"
+    "frame-src"       = "'self' https://${var.subdomains.collabora}.${var.domain}"
+    "frame-ancestors" = "'self'"
+  })
 }
 
 resource "helm_release" "nextcloud" {
@@ -18,6 +24,9 @@ resource "helm_release" "nextcloud" {
       annotations:
         cert-manager.io/cluster-issuer: ${var.cert_issuer}
         nginx.ingress.kubernetes.io/enable-cors: "true"
+        nginx.ingress.kubernetes.io/configuration-snippet: |
+          more_set_headers "Content-Security-Policy: ${join(";", [for key, value in local.csp : "${key} ${value}"])}";
+
       hosts:
         - host: ${local.fqdn}
           paths:

@@ -16,6 +16,10 @@ variable "db_passwords" {
   sensitive = true
 }
 
+variable "default_csp" {
+  type = map(string)
+}
+
 variable "domain" {
   type = string
 }

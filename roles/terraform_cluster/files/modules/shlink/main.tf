@@ -3,7 +3,7 @@ locals {
   fqdn_web = "${var.subdomains.shlink_web}.${var.domain}"
 }
 
-resource "helm_release" "synapse" {
+resource "helm_release" "shlink" {
   name      = var.release_name
   namespace = var.namespaces.shlink
 
@@ -135,7 +135,9 @@ resource "kubernetes_ingress_v1" "web" {
     namespace = var.namespaces.shlink
 
     annotations = {
-      "cert-manager.io/cluster-issuer" = var.cert_issuer
+      "cert-manager.io/cluster-issuer"                = var.cert_issuer
+      "nginx.ingress.kubernetes.io/enable-cors"       = "true"
+      "nginx.ingress.kubernetes.io/cors-allow-origin" = "https://${local.fqdn}/*"
     }
   }
 

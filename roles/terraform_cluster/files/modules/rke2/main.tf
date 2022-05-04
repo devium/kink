@@ -41,6 +41,11 @@ resource "kubernetes_manifest" "ingress_patch" {
           tolerations:
             - key: "CriticalAddonsOnly"
               operator: "Exists"
+
+          addHeaders:
+            Content-Security-Policy: "${join(";", [for key, value in var.default_csp : "${key} ${value}"])}"
+            X-Content-Type-Options: nosniff
+            Referrer-Policy: same-origin
       YAML
     }
   }
