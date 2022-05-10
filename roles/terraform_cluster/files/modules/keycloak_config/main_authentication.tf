@@ -120,3 +120,9 @@ resource "keycloak_authentication_execution" "otp" {
     keycloak_authentication_execution.webauthn
   ]
 }
+
+# Set above flow as default browser flow
+resource "keycloak_authentication_bindings" "browser_flow" {
+  realm_id     = keycloak_realm.realm.id
+  browser_flow = keycloak_authentication_flow.browser_custom.alias
+}

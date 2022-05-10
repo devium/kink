@@ -12,6 +12,7 @@
     plan_file: "{{ terraform_cluster_plan_file }}"
     force_init: yes
     targets: "{{ terraform_cluster_targets }}"
+    provider_upgrade: yes
   register: terraform_result
 
 - name: Print Terraform output
