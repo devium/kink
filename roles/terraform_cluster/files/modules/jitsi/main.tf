@@ -26,6 +26,28 @@ resource "kubernetes_config_map_v1" "prosody_plugins" {
   }
 }
 
+resource "kubernetes_config_map_v1" "web_config" {
+  metadata {
+    name      = "web-config"
+    namespace = var.namespaces.jitsi
+  }
+
+  data = {
+    "20-config-manual" = <<-BASH
+      #!/usr/bin/env bash
+      cat <<JS>>/config/config.js
+      config.toolbarConfig = {
+        autoHideWhileChatIsOpen: true
+      };
+      config.desktopSharingFrameRate = {
+        min: 30,
+        max: 30
+      };
+      JS
+    BASH
+  }
+}
+
 resource "helm_release" "jitsi" {
   name       = var.release_name
   namespace  = var.namespaces.jitsi
@@ -62,6 +84,17 @@ resource "helm_release" "jitsi" {
             hosts:
               - ${local.fqdn}
 
+      extraVolumeMounts:
+        - name: web-config
+          mountPath: /etc/cont-init.d/20-config-manual
+          subPath: 20-config-manual
+
+      extraVolumes:
+        - name: web-config
+          configMap:
+            name: ${one(kubernetes_config_map_v1.web_config.metadata).name}
+            defaultMode: 0777
+
       extraEnvs:
         TOKEN_AUTH_URL: https://${local.fqdn_jitsi_keycloak}/{room}
         ENABLE_P2P: "false"
@@ -95,6 +128,20 @@ resource "helm_release" "jitsi" {
 
       websockets:
         enabled: true
+
+      readinessProbe:
+        httpGet:
+          path: /about/health
+          port: 8080
+
+        initialDelaySeconds: 45
+
+      livenessProbe:
+        httpGet:
+          path: /about/health
+          port: 8080
+
+        initialDelaySeconds: 45
 
     jicofo:
       image:
