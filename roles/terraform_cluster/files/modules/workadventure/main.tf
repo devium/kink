@@ -7,7 +7,7 @@ locals {
 
   csp = merge(var.default_csp, {
     "script-src"  = "'self' https://${var.subdomains.jitsi}.${var.domain}"
-    "connect-src" = "'self' https://${local.fqdn_pusher} https://${local.fqdn_maps} wss://${local.fqdn_pusher}"
+    "connect-src" = "'self' https://${local.fqdn_pusher} https://${local.fqdn_maps} wss://${local.fqdn_pusher} wss:"
     "style-src"   = "'self' 'unsafe-inline' https://unpkg.com https://cdn.quilljs.com"
     "frame-src"   = "https://${var.subdomains.jitsi}.${var.domain}"
   })

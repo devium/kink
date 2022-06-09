@@ -2,7 +2,7 @@ locals {
   fqdn = "${var.subdomains.home}.${var.domain}"
 
   csp = merge(var.default_csp, {
-    "connect-src" = "https://${var.subdomains.jitsi}.${var.domain} https://${var.subdomains.nextcloud}.${var.domain}"
+    "connect-src" = "https://${var.subdomains.jitsi}.${var.domain} https://${var.subdomains.nextcloud}.${var.domain} wss:"
   })
 }
 

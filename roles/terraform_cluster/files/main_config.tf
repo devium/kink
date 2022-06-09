@@ -39,7 +39,7 @@ locals {
   default_csp = {
     "default-src"     = "'none'"
     "script-src"      = "'self'"
-    "connect-src"     = "'self' https://${var.subdomains.keycloak}.${var.domain}"
+    "connect-src"     = "'self' https://${var.subdomains.keycloak}.${var.domain} wss:"
     "style-src"       = "'self' 'unsafe-inline'"
     "img-src"         = "* blob: data:"
     "font-src"        = "* blob: data:"
