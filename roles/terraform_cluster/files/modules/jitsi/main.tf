@@ -68,6 +68,7 @@ resource "helm_release" "jitsi" {
           kubernetes.io/ingress.class: nginx
           cert-manager.io/cluster-issuer: ${var.cert_issuer}
           nginx.ingress.kubernetes.io/enable-cors: "true"
+          # TODO: This wildcard does not actually work. Instead it defaults to *. Should be fixed in a newer Ingress version.
           nginx.ingress.kubernetes.io/cors-allow-origin: https://*.${var.domain}
           nginx.ingress.kubernetes.io/configuration-snippet: |
             more_set_headers "Content-Security-Policy: ${join(";", [for key, value in local.csp : "${key} ${value}"])}";

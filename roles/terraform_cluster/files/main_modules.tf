@@ -268,6 +268,7 @@ module "shlink" {
   cert_issuer  = module.cert_manager.issuer
   db_host      = module.postgres.host
   db_passwords = var.db_passwords
+  default_csp  = local.default_csp
   domain       = var.domain
   namespaces   = module.namespaces.namespaces
   release_name = var.release_name

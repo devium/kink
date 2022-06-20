@@ -37,6 +37,7 @@ resource "helm_release" "element" {
 
       annotations:
         cert-manager.io/cluster-issuer: ${var.cert_issuer}
+
         nginx.ingress.kubernetes.io/configuration-snippet: |
           more_set_headers "Content-Security-Policy: ${join(";", [for key, value in local.csp : "${key} ${value}"])}";
 

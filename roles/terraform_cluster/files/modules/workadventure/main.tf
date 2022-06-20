@@ -34,7 +34,7 @@ resource "helm_release" "workadventure" {
       annotations:
         cert-manager.io/cluster-issuer: ${var.cert_issuer}
         nginx.ingress.kubernetes.io/enable-cors: "true"
-        nginx.ingress.kubernetes.io/cors-allow-origin: "https://${local.fqdn_front}/*"
+        nginx.ingress.kubernetes.io/cors-allow-origin: "https://${local.fqdn_front}"
 
     resources:
       requests:

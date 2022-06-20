@@ -1,6 +1,7 @@
 locals {
-  fqdn     = "${var.subdomains.synapse}.${var.domain}"
-  oidc_url = "https://${var.subdomains.keycloak}.${var.domain}/realms/${var.keycloak_realm}"
+  fqdn       = "${var.subdomains.synapse}.${var.domain}"
+  oidc_url   = "https://${var.subdomains.keycloak}.${var.domain}/realms/${var.keycloak_realm}"
+  max_upload = "20M"
 }
 
 resource "helm_release" "synapse" {
@@ -37,6 +38,7 @@ resource "helm_release" "synapse" {
       default_room_version: "9"
       web_client_location: https://${var.subdomains.element}.${var.domain}
       autocreate_auto_join_rooms: false
+      max_upload_size: ${local.max_upload}
       auto_join_rooms:
         - "#lobby:${var.domain}"
 
@@ -93,6 +95,8 @@ resource "helm_release" "synapse" {
 
       annotations:
         cert-manager.io/cluster-issuer: ${var.cert_issuer}
+        nginx.ingress.kubernetes.io/enable-cors: "true"
+        nginx.ingress.kubernetes.io/proxy-body-size: ${local.max_upload}
 
       tls:
         - secretName: ${local.fqdn}-tls
