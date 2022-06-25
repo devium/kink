@@ -43,6 +43,10 @@ resource "kubernetes_config_map_v1" "web_config" {
         min: 30,
         max: 30
       };
+      config.flags = {
+        sourceNameSignaling: true,
+        sendMultipleVideoStreams: true
+      };
       JS
     BASH
   }
@@ -143,6 +147,9 @@ resource "helm_release" "jitsi" {
           port: 8080
 
         initialDelaySeconds: 45
+
+      extraEnvs:
+        ENABLE_MULTI_STREAM: "true"
 
     jicofo:
       image:
