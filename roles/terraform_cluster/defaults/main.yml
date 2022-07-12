@@ -85,6 +85,7 @@ terraform_cluster_resources_default:
   memory:
     alertmanager: 50Mi
     backup: 100Mi
+    buddy: 20Mi
     canal: 150Mi
     cert_manager: 150Mi
     cert_manager_cainjector: 150Mi
@@ -117,6 +118,7 @@ terraform_cluster_resources_default:
     workadventure_maps: 30Mi
 
 terraform_cluster_subdomains_default:
+  buddy: buddy
   collabora: office.next
   element: element
   grafana: grafana
@@ -137,6 +139,7 @@ terraform_cluster_subdomains_default:
   workadventure_uploader: uploader.play
 
 terraform_cluster_versions_default:
+  buddy: 0.1.0
   cert_manager_helm: v1.7.1
   collabora: 21.11.2.4.1
   collabora_helm: 2.2.1
@@ -148,7 +151,7 @@ terraform_cluster_versions_default:
   hedgedoc: 1.9.3
   hedgedoc_helm: 1.1.0
   jitsi: stable-6865
-  jitsi_helm: v1.2.2
+  jitsi_helm: 1.2.2
   jitsi_keycloak: v0.2.0
   jitsi_prometheus_exporter: 1.2.0
   keycloak: 18.0.0
@@ -158,8 +161,8 @@ terraform_cluster_versions_default:
   loki_helm: 2.6.1
   nextcloud: 24.0.1-apache
   nextcloud_helm: 2.14.4
-  nginx: 1.21.6
-  nginx_helm: 9.9.3
+  nginx: 1.23.0
+  nginx_helm: 13.1.0
   postgres: 14.1.0-debian-10-r80
   pretix: 4.8.0
   shlink: 3.0.3

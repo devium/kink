@@ -6,6 +6,7 @@ secrets_file: "{{ ansible_inventory_sources[0] | dirname }}/group_vars/all/secre
 
 namespaces_base:
   backup: backup
+  buddy: buddy
   cert_manager: cert-manager
   collabora: collabora
   element: element

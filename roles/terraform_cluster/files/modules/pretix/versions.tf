@@ -1,6 +1,6 @@
 terraform {
   required_providers {
-    kubectl = {
+    kubernetes = {
       source = "hashicorp/kubernetes"
     }
   }

@@ -293,3 +293,16 @@ module "pretix" {
   subdomains       = var.subdomains
   versions         = var.versions
 }
+
+module "buddy" {
+  source = "./modules/buddy"
+
+  cert_issuer  = module.cert_manager.issuer
+  default_csp  = local.default_csp
+  domain       = var.domain
+  namespaces   = module.namespaces.namespaces
+  release_name = var.release_name
+  resources    = var.resources
+  subdomains   = var.subdomains
+  versions     = var.versions
+}
