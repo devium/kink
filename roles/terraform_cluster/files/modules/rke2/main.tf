@@ -1,3 +1,7 @@
+locals {
+  mailserver_service = "${var.namespaces.mailserver}/${var.release_name}-docker-mailserver"
+}
+
 # Make flannel use the private subnet interface
 # Using args instead of the iface value enforces a new pod rollout
 resource "kubernetes_manifest" "flannel_iface_patch" {
@@ -46,6 +50,12 @@ resource "kubernetes_manifest" "ingress_patch" {
             Content-Security-Policy: "${join(";", [for key, value in var.default_csp : "${key} ${value}"])}"
             X-Content-Type-Options: nosniff
             Referrer-Policy: same-origin
+
+        tcp:
+          25: "${local.mailserver_service}:25"
+          143: "${local.mailserver_service}:143"
+          587: "${local.mailserver_service}:587"
+          993: "${local.mailserver_service}:993"
       YAML
     }
   }

@@ -1,0 +1,50 @@
+- name: Create temporary directory for mail configuration
+  file:
+    path: "{{ playbook_dir }}/.tmp"
+    state: directory
+
+- name: Download docker-mailserver setup script
+  get_url:
+    url: "https://raw.githubusercontent.com/docker-mailserver/docker-mailserver/v{{ mail_versions.mailserver }}/setup.sh"
+    dest: "{{ playbook_dir }}/.tmp/setup.sh"
+    mode: "+x"
+
+- name: Generate Postfix accounts
+  command:
+    cmd: "{{ playbook_dir }}/.tmp/setup.sh email add {{ item.name }}@{{ mail_domain }} {{ item.password }}"
+  with_items: "{{ mail_accounts }}"
+  become: yes
+
+- name: Generate DKIM key and DNS entries
+  command:
+    cmd: "{{ playbook_dir }}/.tmp/setup.sh config dkim"
+  environment:
+    NAME: ""
+  become: yes
+
+- name: Make files readable
+  file:
+    path: "{{ playbook_dir }}/.tmp"
+    state: directory
+    mode: o+r
+    recurse: yes
+  become: yes
+
+- name: Copy files to secrets dir
+  copy:
+    src: "{{ playbook_dir }}/.tmp/docker-data/dms/config/{{ item.src }}"
+    dest: "{{ mail_secrets_dir }}/{{ item.dest }}"
+    remote_src: yes
+  with_items:
+    - src: "postfix-accounts.cf"
+      dest: "postfix-accounts.{{ mail_stage }}.cf"
+    - src: "opendkim/keys/{{ mail_domain }}/mail.private"
+      dest: "mail.{{ mail_stage }}.private"
+    - src: "opendkim/keys/{{ mail_domain }}/mail.txt"
+      dest: "mail.{{ mail_stage }}.txt"
+
+- name: Delete temporary mail config directory
+  file:
+    path: "{{ playbook_dir }}/.tmp"
+    state: absent
+  become: yes

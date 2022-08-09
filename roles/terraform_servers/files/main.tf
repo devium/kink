@@ -66,6 +66,7 @@ resource "hcloud_floating_ip_assignment" "master_ipv6" {
 
 module "domain" {
   source        = "./domain"
+  dkim_file     = var.dkim_file
   domain        = var.domain
   subdomains    = var.subdomains
   floating_ipv4 = module.network.floating_ipv4

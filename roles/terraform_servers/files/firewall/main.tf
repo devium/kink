@@ -85,6 +85,7 @@ resource "hcloud_firewall" "firewall" {
     description = "RKE2 metrics server"
   }
 
+  # TODO: Change to use ingress-nginx instead of node port
   rule {
     direction = "in"
     protocol  = "udp"
@@ -94,5 +95,51 @@ resource "hcloud_firewall" "firewall" {
       "::/0"
     ]
     description = "Jitsi JVB"
+  }
+
+  # Mail stuff
+
+  rule {
+    direction = "in"
+    protocol  = "tcp"
+    port      = "25"
+    source_ips = [
+      "0.0.0.0/0",
+      "::/0"
+    ]
+    description = "SMTP"
+  }
+
+  rule {
+    direction = "in"
+    protocol  = "tcp"
+    port      = "143"
+    source_ips = [
+      "0.0.0.0/0",
+      "::/0"
+    ]
+    description = "IMAP"
+  }
+
+  rule {
+    direction = "in"
+    protocol  = "tcp"
+    port      = "587"
+    source_ips = [
+      "0.0.0.0/0",
+      "::/0"
+    ]
+    description = "SMTP-over-TLS"
+  }
+
+  rule {
+    direction = "in"
+    protocol  = "tcp"
+    port      = "993"
+    source_ips = [
+      "0.0.0.0/0",
+      "::/0"
+    ]
+    description = "IMAPS"
   }
 }

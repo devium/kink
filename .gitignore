@@ -34,5 +34,7 @@ override.tf.json
 terraform.rc
 
 inventory.yml
-secrets.yml
 rke2.yaml
+
+/secrets/
+/.tmp/

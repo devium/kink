@@ -4,12 +4,15 @@ terraform_cluster_floating_ipv4:
 terraform_cluster_google_identity_provider_client_id:
 terraform_cluster_google_identity_provider_client_secret:
 terraform_cluster_hcloud_token:
+terraform_cluster_hdns_token:
+terraform_cluster_hdns_zone_id:
 terraform_cluster_hedgedoc_secret:
 terraform_cluster_home_site_image:
 terraform_cluster_kubeconf_file:
 terraform_cluster_namespaces_override:
 terraform_cluster_project_name:
 terraform_cluster_resources_override:
+terraform_cluster_stage:
 terraform_cluster_subdomains_override:
 terraform_cluster_versions_override:
 terraform_cluster_workadventure_maps_image:
@@ -56,12 +59,17 @@ terraform_cluster_keycloak_realm: primary
 terraform_cluster_namespaces: "{{ terraform_cluster_namespaces_default | combine(terraform_cluster_namespaces_override, recursive=True) }}"
 terraform_cluster_plan_file: "{{ role_path }}/files/terraform.tfstate.d/{{ terraform_cluster_workspace }}/tfplan"
 terraform_cluster_resources: "{{ terraform_cluster_resources_default | combine(terraform_cluster_resources_override, recursive=True) }}"
+terraform_cluster_secrets_dir: "{{ playbook_dir }}/secrets"
 terraform_cluster_subdomains: "{{ terraform_cluster_subdomains_default | combine(terraform_cluster_subdomains_override, recursive=True) }}"
 terraform_cluster_targets: []
 terraform_cluster_use_production_cert: false
 terraform_cluster_versions: "{{ terraform_cluster_versions_default | combine(terraform_cluster_versions_override, recursive=True) }}"
 terraform_cluster_workadventure_start_map: /src/map.json
-terraform_cluster_workspace: default
+terraform_cluster_workspace: "{{ terraform_cluster_stage }}"
+
+terraform_cluster_mail_secrets_files:
+  key: "{{ terraform_cluster_secrets_dir }}/mail.{{ terraform_cluster_stage }}.private"
+  accounts: "{{ terraform_cluster_secrets_dir }}/postfix-accounts.{{ terraform_cluster_stage }}.cf"
 
 terraform_cluster_namespaces_default:
   backup: backup
@@ -74,6 +82,7 @@ terraform_cluster_namespaces_default:
   home: home
   jitsi: jitsi
   keycloak: keycloak
+  mailserver: mail
   nextcloud: nextcloud
   postgres: postgres
   pretix: pretix
@@ -127,6 +136,7 @@ terraform_cluster_subdomains_default:
   jitsi: jitsi
   jitsi_keycloak: auth.jitsi
   keycloak: auth
+  mailserver: mail
   nextcloud: next
   pretix: tickets
   shlink: api.shlink
@@ -159,6 +169,8 @@ terraform_cluster_versions_default:
   keycloak_theme: v0.3.5
   loki: v2.1.0
   loki_helm: 2.6.1
+  mailserver: 11.0.0
+  mailserver_helm: 1.0.1
   nextcloud: 24.0.1-apache
   nextcloud_helm: 2.14.4
   nginx: 1.23.0
@@ -183,12 +195,15 @@ terraform_cluster_variables:
   google_identity_provider_client_id: "{{ terraform_cluster_google_identity_provider_client_id }}"
   google_identity_provider_client_secret: "{{ terraform_cluster_google_identity_provider_client_secret }}"
   hcloud_token: "{{ terraform_cluster_hcloud_token }}"
+  hdns_token: "{{ terraform_cluster_hdns_token }}"
+  hdns_zone_id: "{{ terraform_cluster_hdns_zone_id }}"
   hedgedoc_secret: "{{ terraform_cluster_hedgedoc_secret }}"
   home_site_image: "{{ terraform_cluster_home_site_image }}"
   jitsi_secrets: "{{ terraform_cluster_jitsi_secrets | to_json }}"
   keycloak_realm: "{{ terraform_cluster_keycloak_realm }}"
   keycloak_secrets: "{{ terraform_cluster_keycloak_secrets | to_json }}"
   kubeconf_file: "{{ terraform_cluster_kubeconf_file }}"
+  mail_secrets_files: "{{ terraform_cluster_mail_secrets_files | to_json }}"
   namespaces: "{{ terraform_cluster_namespaces | to_json }}"
   project_name: "{{ terraform_cluster_project_name }}"
   release_name: "{{ terraform_cluster_helm_release_name }}"

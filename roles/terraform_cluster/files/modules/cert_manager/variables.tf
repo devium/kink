@@ -6,6 +6,16 @@ variable "cert_email" {
   type = string
 }
 
+variable "hdns_token" {
+  type      = string
+  sensitive = true
+}
+
+variable "hdns_zone_id" {
+  type      = string
+  sensitive = true
+}
+
 variable "namespaces" {
   type = map(string)
 }

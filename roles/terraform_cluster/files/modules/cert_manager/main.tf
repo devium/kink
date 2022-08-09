@@ -29,6 +29,29 @@ resource "helm_release" "cert_manager" {
   ]
 }
 
+resource "kubernetes_secret_v1" "hetzner-secret" {
+  metadata {
+    name      = "jitsi-keycloak-config"
+    namespace = var.namespaces.cert_manager
+  }
+
+  data = {
+    api-key = var.hdns_token
+  }
+}
+
+resource "helm_release" "hetzner_webhook" {
+  name       = "${var.release_name}-hetzner"
+  namespace  = var.namespaces.cert_manager
+  repository = "https://vadimkim.github.io/cert-manager-webhook-hetzner"
+  chart      = "cert-manager-webhook-hetzner"
+
+  values = [<<-YAML
+    groupName: acme.${var.domain}
+  YAML
+  ]
+}
+
 resource "kubectl_manifest" "issuer" {
   yaml_body = <<-YAML
     apiVersion: cert-manager.io/v1
@@ -49,6 +72,15 @@ resource "kubectl_manifest" "issuer" {
           - http01:
               ingress:
                 class: nginx
+
+          - dns01:
+              webhook:
+                groupName: acme.${var.domain}
+                solverName: hetzner
+                config:
+                  secretName: hetzner-secret
+                  zoneName: ${var.domain}
+                  apiUrl: https://dns.hetzner.com/api/v1
   YAML
 
   depends_on = [

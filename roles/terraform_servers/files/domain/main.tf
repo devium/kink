@@ -59,3 +59,11 @@ resource "hetznerdns_record" "subdomain" {
   type    = "CNAME"
   ttl     = 300
 }
+
+resource "hetznerdns_record" "dkim" {
+  zone_id = var.hdns_zone_id
+  name    = local.root_subdomain == "" ? "mail._domainkey" : "mail._domainkey.${local.root_subdomain}"
+  value   = regex("\\((.*)\\)", replace(file(var.dkim_file), "/[\\s|\"]/", ""))[0]
+  type    = "TXT"
+  ttl     = 300
+}

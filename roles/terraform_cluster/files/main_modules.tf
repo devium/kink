@@ -7,7 +7,9 @@ module "namespaces" {
 module "rke2" {
   source = "./modules/rke2"
 
-  default_csp = local.default_csp
+  default_csp  = local.default_csp
+  namespaces   = module.namespaces.namespaces
+  release_name = var.release_name
 }
 
 module "hetzner" {
@@ -35,6 +37,8 @@ module "cert_manager" {
 
   cert_email          = var.cert_email
   domain              = var.domain
+  hdns_token          = var.hdns_token
+  hdns_zone_id        = var.hdns_zone_id
   namespaces          = module.namespaces.namespaces
   release_name        = var.release_name
   resources           = var.resources
@@ -305,4 +309,18 @@ module "buddy" {
   resources    = var.resources
   subdomains   = var.subdomains
   versions     = var.versions
+}
+
+module "mailserver" {
+  source = "./modules/mailserver"
+
+  cert_issuer   = module.cert_manager.issuer
+  default_csp   = local.default_csp
+  domain        = var.domain
+  namespaces    = module.namespaces.namespaces
+  pvcs          = module.volumes.pvcs
+  release_name  = var.release_name
+  secrets_files = var.mail_secrets_files
+  subdomains    = var.subdomains
+  versions      = var.versions
 }

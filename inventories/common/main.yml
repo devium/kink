@@ -16,6 +16,7 @@ namespaces_base:
   home: home
   jitsi: jitsi
   keycloak: keycloak
+  mailserver: mail
   nextcloud: nextcloud
   postgres: postgres
   pretix: pretix
@@ -27,13 +28,17 @@ namespaces_combine_regex: ": \"{{ namespace_prefix }}\\1\""
 namespaces: "{{ namespaces_base | to_json | regex_replace(': \"(.+?)\"', namespaces_combine_regex) | from_json }}"
 
 
+mail_domain: "{{ domain }}"
+mail_stage: "{{ stage }}"
+
+
 terraform_servers_domain: "{{ domain }}"
 terraform_servers_hcloud_token: "{{ hcloud_token }}"
 terraform_servers_hdns_token: "{{ hdns_token }}"
 terraform_servers_hdns_zone_id: "{{ hdns_zone_id }}"
 terraform_servers_ssh_key: "{{ ssh_key }}"
+terraform_servers_stage: "{{ stage }}"
 terraform_servers_subdomains_override: "{{ subdomains_override }}"
-terraform_servers_workspace: "{{ stage }}"
 
 
 netplan_config_file: /etc/netplan/60-floating-ip.yaml
@@ -67,6 +72,8 @@ terraform_cluster_floating_ipv4: "{{ floating_ip.ipv4_address }}"
 terraform_cluster_google_identity_provider_client_id: "{{ google_identity_provider_client_id }}"
 terraform_cluster_google_identity_provider_client_secret: "{{ google_identity_provider_client_secret }}"
 terraform_cluster_hcloud_token: "{{ hcloud_token }}"
+terraform_cluster_hdns_token: "{{ hdns_token }}"
+terraform_cluster_hdns_zone_id: "{{ hdns_zone_id }}"
 terraform_cluster_hedgedoc_secret: "{{ hedgedoc_secret }}"
 terraform_cluster_helm_release_name: "{{ helm_release_name }}"
 terraform_cluster_home_site_image: "{{ home_site_image }}"
@@ -77,13 +84,13 @@ terraform_cluster_kubeconf_file: "{{ rke2_download_kubeconf_path }}/{{ rke2_down
 terraform_cluster_namespaces_override: "{{ namespaces }}"
 terraform_cluster_nextcloud_volume_handle: "{{ nextcloud_volume_handle }}"
 terraform_cluster_project_name: "{{ project_name }}"
+terraform_cluster_stage: "{{ stage }}"
 terraform_cluster_subdomains_override: "{{ subdomains_override }}"
 terraform_cluster_synapse_secrets: "{{ synapse_secrets }}"
 terraform_cluster_use_production_cert: true
 terraform_cluster_volume_handles: "{{ volume_handles }}"
 terraform_cluster_workadventure_maps_image: "{{ workadventure_maps_image }}"
 terraform_cluster_workadventure_start_map: "{{ workadventure_start_map }}"
-terraform_cluster_workspace: "{{ stage }}"
 
 terraform_cluster_versions_override:
   jitsi: stable-7439-2

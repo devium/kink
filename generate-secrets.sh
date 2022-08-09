@@ -2,7 +2,7 @@
 NUM_WORDS=4
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 WORDS=$(curl -L https://raw.githubusercontent.com/bitcoin/bips/master/bip-0039/english.txt | sed "s#.#\u&#")
-FILE=$SCRIPT_DIR/inventories/$ANSIBLE_STAGE/group_vars/all/secrets.yml
+FILE=$SCRIPT_DIR/secrets/secrets.$ANSIBLE_STAGE.yml
 
 export NUM_WORDS
 export WORDS

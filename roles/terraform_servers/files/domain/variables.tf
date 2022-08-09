@@ -1,3 +1,7 @@
+variable "dkim_file" {
+  type = string
+}
+
 variable "domain" {
   type = string
 }
