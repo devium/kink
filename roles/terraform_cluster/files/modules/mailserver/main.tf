@@ -92,7 +92,7 @@ resource "kubernetes_secret_v1" "secrets" {
   }
 
   data = {
-    "dev.autsch.org-mail.private" = file(var.secrets_files.key)
+    "${var.domain}-mail.private" = file(var.secrets_files.key)
   }
 }
 

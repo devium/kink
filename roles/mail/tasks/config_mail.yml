@@ -9,11 +9,12 @@
     dest: "{{ playbook_dir }}/.tmp/setup.sh"
     mode: "+x"
 
-- name: Generate Postfix accounts
+- name: Generate Postfix accounts (requires sudo, use --ask-become-pass)
   command:
     cmd: "{{ playbook_dir }}/.tmp/setup.sh email add {{ item.name }}@{{ mail_domain }} {{ item.password }}"
   with_items: "{{ mail_accounts }}"
   become: yes
+  no_log: true
 
 - name: Generate DKIM key and DNS entries
   command:
