@@ -114,6 +114,7 @@ resource "helm_release" "jitsi" {
 
       service:
         enabled: true
+        # Nginx UDP ingress didn't seem to work, so back to good old direct NodePort.
         type: NodePort
 
       UDPPort: 30000
@@ -178,6 +179,8 @@ resource "helm_release" "jitsi" {
           value: jitsi
         - name: JWT_APP_SECRET
           value: ${var.jitsi_secrets.jwt}
+        - name: JWT_ALLOW_EMPTY
+          value: "true"
 
       extraVolumeMounts:
         - name: prosody-plugins
@@ -284,7 +287,7 @@ resource "kubernetes_deployment_v1" "jitsi_keycloak" {
           }
           env {
             name  = "JITSI_SUB"
-            value = local.fqdn
+            value = "meet.jitsi"
           }
 
           volume_mount {

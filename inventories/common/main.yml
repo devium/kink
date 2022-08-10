@@ -93,7 +93,7 @@ terraform_cluster_workadventure_maps_image: "{{ workadventure_maps_image }}"
 terraform_cluster_workadventure_start_map: "{{ workadventure_start_map }}"
 
 terraform_cluster_versions_override:
-  jitsi: stable-7439-2
+  jitsi: stable-7577-2
   loki: 2.4.2
 
 config_kubeconf_file: "{{ rke2_download_kubeconf_path }}/{{ rke2_download_kubeconf_file_name }}"

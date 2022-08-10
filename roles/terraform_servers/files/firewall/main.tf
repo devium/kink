@@ -85,7 +85,6 @@ resource "hcloud_firewall" "firewall" {
     description = "RKE2 metrics server"
   }
 
-  # TODO: Change to use ingress-nginx instead of node port
   rule {
     direction = "in"
     protocol  = "udp"
