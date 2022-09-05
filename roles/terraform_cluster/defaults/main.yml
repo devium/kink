@@ -177,9 +177,9 @@ terraform_cluster_versions_default:
   nginx_helm: 13.1.0
   postgres: 14.1.0-debian-10-r80
   pretix: 4.8.0
-  shlink: 3.0.3
-  shlink_helm: 4.0.0
-  shlink_web: 3.6.0
+  shlink: 3.2.1
+  shlink_helm: 5.1.2
+  shlink_web: 3.7.2
   synapse: v1.57.1
   synapse_helm: 2.1.34
   workadventure: v1.8.4
