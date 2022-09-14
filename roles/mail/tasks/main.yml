@@ -1,11 +1,3 @@
-- name: Check if accounts config already exists
-  stat:
-    path: "{{ mail_secrets_dir }}/postfix-accounts.{{ mail_stage }}.cf"
-  register: stat_result
-  tags:
-    - config-mail
-
 - import_tasks: "{{ role_path }}/tasks/config_mail.yml"
-  when: not stat_result.stat.exists
   tags:
     - config-mail

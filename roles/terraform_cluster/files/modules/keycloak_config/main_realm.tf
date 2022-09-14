@@ -4,9 +4,9 @@ resource "keycloak_realm" "realm" {
   user_managed_access      = true
   registration_allowed     = true
   edit_username_allowed    = true
-  reset_password_allowed   = false
+  reset_password_allowed   = true
   remember_me              = true
-  verify_email             = false
+  verify_email             = true
   login_with_email_allowed = true
   duplicate_emails_allowed = false
 
@@ -16,6 +16,19 @@ resource "keycloak_realm" "realm" {
   internationalization {
     supported_locales = ["ca", "cs", "da", "de", "en", "es", "fr", "hu", "it", "ja", "lt", "nl", "no", "pl", "pt-BR", "ru", "sk", "sv", "tr", "zh-CN"]
     default_locale    = "en"
+  }
+
+  smtp_server {
+    host              = "${var.subdomains.mailserver}.${var.domain}"
+    from              = "${var.mail_account}@${var.domain}"
+    port              = 587
+    starttls          = true
+    from_display_name = "${title(var.project_name)} Account"
+
+    auth {
+      username = var.mail_account
+      password = var.mail_password
+    }
   }
 
   lifecycle {

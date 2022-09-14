@@ -9,6 +9,8 @@ terraform_cluster_hdns_zone_id:
 terraform_cluster_hedgedoc_secret:
 terraform_cluster_home_site_image:
 terraform_cluster_kubeconf_file:
+terraform_cluster_mail_account:
+terraform_cluster_mail_password:
 terraform_cluster_namespaces_override:
 terraform_cluster_project_name:
 terraform_cluster_resources_override:
@@ -203,6 +205,8 @@ terraform_cluster_variables:
   keycloak_realm: "{{ terraform_cluster_keycloak_realm }}"
   keycloak_secrets: "{{ terraform_cluster_keycloak_secrets | to_json }}"
   kubeconf_file: "{{ terraform_cluster_kubeconf_file }}"
+  mail_account: "{{ terraform_cluster_mail_account }}"
+  mail_password: "{{ terraform_cluster_mail_password }}"
   mail_secrets_files: "{{ terraform_cluster_mail_secrets_files | to_json }}"
   namespaces: "{{ terraform_cluster_namespaces | to_json }}"
   project_name: "{{ terraform_cluster_project_name }}"

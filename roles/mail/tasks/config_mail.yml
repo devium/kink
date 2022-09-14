@@ -1,51 +1,75 @@
-- name: Create temporary directory for mail configuration
-  file:
-    path: "{{ playbook_dir }}/.tmp"
-    state: directory
+- name: Check if Postfix accounts already exist (does not check for changes!)
+  stat:
+    path: "{{ mail_secrets_dir }}/postfix-accounts.{{ mail_stage }}.cf"
+  register: postfix_stat_result
+  tags:
+    - config-mail
 
-- name: Download docker-mailserver setup script
-  get_url:
-    url: "https://raw.githubusercontent.com/docker-mailserver/docker-mailserver/v{{ mail_versions.mailserver }}/setup.sh"
-    dest: "{{ playbook_dir }}/.tmp/setup.sh"
-    mode: "+x"
+- name: Check if DKIM keys already exist
+  stat:
+    path: "{{ mail_secrets_dir }}/mail.{{ mail_stage }}.private"
+  register: dkim_stat_result
+  tags:
+    - config-mail
 
-- name: Generate Postfix accounts (requires sudo, use --ask-become-pass)
-  command:
-    cmd: "{{ playbook_dir }}/.tmp/setup.sh email add {{ item.name }}@{{ mail_domain }} {{ item.password }}"
-  with_items: "{{ mail_accounts }}"
-  become: yes
-  no_log: true
+- name: Generate accounts and DKIM keys
+  block:
+  - name: Create temporary directory for mail configuration
+    file:
+      path: "{{ playbook_dir }}/.tmp"
+      state: directory
 
-- name: Generate DKIM key and DNS entries
-  command:
-    cmd: "{{ playbook_dir }}/.tmp/setup.sh config dkim"
-  environment:
-    NAME: ""
-  become: yes
+  - name: Download docker-mailserver setup script
+    get_url:
+      url: "https://raw.githubusercontent.com/docker-mailserver/docker-mailserver/v{{ mail_versions.mailserver }}/setup.sh"
+      dest: "{{ playbook_dir }}/.tmp/setup.sh"
+      mode: "+x"
 
-- name: Make files readable
-  file:
-    path: "{{ playbook_dir }}/.tmp"
-    state: directory
-    mode: o+r
-    recurse: yes
-  become: yes
+  - name: Generate Postfix accounts (requires sudo, use --ask-become-pass)
+    command:
+      cmd: "{{ playbook_dir }}/.tmp/setup.sh email add {{ item.name }}@{{ mail_domain }} {{ item.password }}"
+    with_items: "{{ mail_accounts }}"
+    become: yes
+    # no_log: true
+    when: not postfix_stat_result.stat.exists
 
-- name: Copy files to secrets dir
-  copy:
-    src: "{{ playbook_dir }}/.tmp/docker-data/dms/config/{{ item.src }}"
-    dest: "{{ mail_secrets_dir }}/{{ item.dest }}"
-    remote_src: yes
-  with_items:
-    - src: "postfix-accounts.cf"
-      dest: "postfix-accounts.{{ mail_stage }}.cf"
-    - src: "opendkim/keys/{{ mail_domain }}/mail.private"
-      dest: "mail.{{ mail_stage }}.private"
-    - src: "opendkim/keys/{{ mail_domain }}/mail.txt"
-      dest: "mail.{{ mail_stage }}.txt"
+  - name: Generate DKIM key and DNS entries
+    command:
+      cmd: "{{ playbook_dir }}/.tmp/setup.sh config dkim domain {{ mail_domain }}"
+    environment:
+      NAME: ""
+    become: yes
+    when: not dkim_stat_result.stat.exists
 
-- name: Delete temporary mail config directory
-  file:
-    path: "{{ playbook_dir }}/.tmp"
-    state: absent
-  become: yes
+  - name: Make files readable
+    file:
+      path: "{{ playbook_dir }}/.tmp"
+      state: directory
+      mode: o+r
+      recurse: yes
+    become: yes
+
+  - name: Copy files to secrets dir
+    copy:
+      src: "{{ playbook_dir }}/.tmp/docker-data/dms/config/{{ item.src }}"
+      dest: "{{ mail_secrets_dir }}/{{ item.dest }}"
+      remote_src: yes
+    with_items:
+      - src: "postfix-accounts.cf"
+        dest: "postfix-accounts.{{ mail_stage }}.cf"
+        cond: "{{ not postfix_stat_result.stat.exists }}"
+      - src: "opendkim/keys/{{ mail_domain }}/mail.private"
+        dest: "mail.{{ mail_stage }}.private"
+        cond: "{{ not dkim_stat_result.stat.exists }}"
+      - src: "opendkim/keys/{{ mail_domain }}/mail.txt"
+        dest: "mail.{{ mail_stage }}.txt"
+        cond: "{{ not dkim_stat_result.stat.exists }}"
+    when: item.cond
+
+  - name: Delete temporary mail config directory
+    file:
+      path: "{{ playbook_dir }}/.tmp"
+      state: absent
+    become: yes
+
+  when: not postfix_stat_result.stat.exists or not dkim_stat_result.stat.exists

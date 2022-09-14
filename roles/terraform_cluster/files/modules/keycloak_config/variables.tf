@@ -19,6 +19,19 @@ variable "keycloak_secrets" {
   type = map(string)
 }
 
+variable "mail_account" {
+  type = string
+}
+
+variable "mail_password" {
+  type      = string
+  sensitive = true
+}
+
+variable "project_name" {
+  type = string
+}
+
 variable "subdomains" {
   type = map(string)
 }

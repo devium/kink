@@ -71,6 +71,15 @@ variable "keycloak_secrets" {
   sensitive = true
 }
 
+variable "mail_account" {
+  type = string
+}
+
+variable "mail_password" {
+  type      = string
+  sensitive = true
+}
+
 variable "mail_secrets_files" {
   type = map(string)
 }

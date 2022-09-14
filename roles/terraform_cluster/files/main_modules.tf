@@ -81,6 +81,9 @@ module "keycloak_config" {
   domain           = var.domain
   keycloak_realm   = var.keycloak_realm
   keycloak_secrets = var.keycloak_secrets
+  mail_account     = var.mail_account
+  mail_password    = var.mail_password
+  project_name     = var.project_name
   subdomains       = var.subdomains
 
   google_identity_provider_client_id     = var.google_identity_provider_client_id
