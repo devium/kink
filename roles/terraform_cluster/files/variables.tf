@@ -20,10 +20,6 @@ variable "domain" {
   type = string
 }
 
-variable "floating_ipv4" {
-  type = string
-}
-
 variable "google_identity_provider_client_id" {
   type = string
 }

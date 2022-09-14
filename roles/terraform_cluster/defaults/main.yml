@@ -193,7 +193,6 @@ terraform_cluster_variables:
   cert_email: "{{ terraform_cluster_cert_email }}"
   db_passwords: "{{ terraform_cluster_db_passwords | to_json }}"
   domain: "{{ terraform_cluster_domain }}"
-  floating_ipv4: "{{ terraform_cluster_floating_ipv4 }}"
   google_identity_provider_client_id: "{{ terraform_cluster_google_identity_provider_client_id }}"
   google_identity_provider_client_secret: "{{ terraform_cluster_google_identity_provider_client_secret }}"
   hcloud_token: "{{ terraform_cluster_hcloud_token }}"

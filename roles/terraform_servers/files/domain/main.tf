@@ -12,24 +12,37 @@ provider "hetznerdns" {
 
 locals {
   root_subdomain = regex("^(.*?)\\.?[\\w-]+\\.\\w+$", var.domain)[0]
+  node_domains = [
+    for node in var.nodes :
+    {
+      name : node.name
+      subdomain : local.root_subdomain == "" ? node.name : "${node.name}.${local.root_subdomain}"
+      ipv4_address : node.ipv4_address
+      ipv6_address : node.ipv6_address
+    }
+  ]
+  spf_record = join(" ", [
+    for node_domain in local.node_domains :
+    "ip4:${node_domain.ipv4_address} ip6:${node_domain.ipv6_address}"
+  ])
 }
 
 resource "hetznerdns_record" "node_ipv4" {
-  count = length(var.nodes)
+  count = length(local.node_domains)
 
   zone_id = var.hdns_zone_id
-  name    = local.root_subdomain == "" ? var.nodes[count.index].name : "${var.nodes[count.index].name}.${local.root_subdomain}"
-  value   = var.nodes[count.index].ipv4_address
+  name    = local.node_domains[count.index].subdomain
+  value   = local.node_domains[count.index].ipv4_address
   type    = "A"
   ttl     = 300
 }
 
 resource "hetznerdns_record" "node_ipv6" {
-  count = length(var.nodes)
+  count = length(local.node_domains)
 
   zone_id = var.hdns_zone_id
-  name    = local.root_subdomain == "" ? var.nodes[count.index].name : "${var.nodes[count.index].name}.${local.root_subdomain}"
-  value   = var.nodes[count.index].ipv6_address
+  name    = local.node_domains[count.index].subdomain
+  value   = local.node_domains[count.index].ipv6_address
   type    = "AAAA"
   ttl     = 300
 }
@@ -37,7 +50,7 @@ resource "hetznerdns_record" "node_ipv6" {
 resource "hetznerdns_record" "root_ipv4" {
   zone_id = var.hdns_zone_id
   name    = local.root_subdomain == "" ? "@" : local.root_subdomain
-  value   = var.floating_ipv4
+  value   = var.nodes[0].ipv4_address
   type    = "A"
   ttl     = 300
 }
@@ -45,7 +58,7 @@ resource "hetznerdns_record" "root_ipv4" {
 resource "hetznerdns_record" "root_ipv6" {
   zone_id = var.hdns_zone_id
   name    = local.root_subdomain == "" ? "@" : local.root_subdomain
-  value   = var.floating_ipv6
+  value   = var.nodes[0].ipv6_address
   type    = "AAAA"
   ttl     = 300
 }
@@ -79,7 +92,7 @@ resource "hetznerdns_record" "mx" {
 resource "hetznerdns_record" "spf" {
   zone_id = var.hdns_zone_id
   name    = local.root_subdomain == "" ? "@" : local.root_subdomain
-  value   = "v=spf1 mx ~all"
+  value   = "v=spf1 ${local.spf_record} ~all"
   type    = "TXT"
   ttl     = 300
 }

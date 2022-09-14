@@ -31,11 +31,11 @@ resource "hcloud_server" "node" {
 resource "hcloud_rdns" "rdns_ipv4" {
   server_id  = hcloud_server.node.id
   ip_address = hcloud_server.node.ipv4_address
-  dns_ptr    = "${var.subdomains.mailserver}.${var.domain}"
+  dns_ptr    = "${var.name}.${var.domain}"
 }
 
 resource "hcloud_rdns" "rdns_ipv6" {
   server_id  = hcloud_server.node.id
   ip_address = hcloud_server.node.ipv6_address
-  dns_ptr    = "${var.subdomains.mailserver}.${var.domain}"
+  dns_ptr    = "${var.name}.${var.domain}"
 }

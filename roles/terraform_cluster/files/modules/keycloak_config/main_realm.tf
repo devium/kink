@@ -23,10 +23,10 @@ resource "keycloak_realm" "realm" {
     from              = "${var.mail_account}@${var.domain}"
     port              = 587
     starttls          = true
-    from_display_name = "${title(var.project_name)} Account"
+    from_display_name = title(var.project_name)
 
     auth {
-      username = var.mail_account
+      username = "${var.mail_account}@${var.domain}"
       password = var.mail_password
     }
   }

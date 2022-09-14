@@ -62,24 +62,12 @@ module "worker" {
   ]
 }
 
-resource "hcloud_floating_ip_assignment" "master_ipv4" {
-  floating_ip_id = module.network.floating_ipv4_id
-  server_id      = module.master.id
-}
-
-resource "hcloud_floating_ip_assignment" "master_ipv6" {
-  floating_ip_id = module.network.floating_ipv6_id
-  server_id      = module.master.id
-}
-
 module "domain" {
-  dkim_file     = var.dkim_file
-  domain        = var.domain
-  floating_ipv4 = module.network.floating_ipv4
-  floating_ipv6 = module.network.floating_ipv6
-  hdns_token    = var.hdns_token
-  hdns_zone_id  = var.hdns_zone_id
-  nodes         = concat([module.master], module.worker)
-  source        = "./domain"
-  subdomains    = var.subdomains
+  dkim_file    = var.dkim_file
+  domain       = var.domain
+  hdns_token   = var.hdns_token
+  hdns_zone_id = var.hdns_zone_id
+  nodes        = concat([module.master], module.worker)
+  source       = "./domain"
+  subdomains   = var.subdomains
 }
