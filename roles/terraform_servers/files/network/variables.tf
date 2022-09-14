@@ -1,11 +1,19 @@
+variable "domain" {
+  type = string
+}
+
 variable "ip_range" {
   type = string
 }
 
-variable "zone" {
+variable "location" {
   type = string
 }
 
-variable "location" {
+variable "subdomains" {
+  type = map(string)
+}
+
+variable "zone" {
   type = string
 }

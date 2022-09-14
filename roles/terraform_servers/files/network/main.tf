@@ -29,3 +29,15 @@ resource "hcloud_floating_ip" "floating_ipv6" {
   type          = "ipv6"
   home_location = var.location
 }
+
+resource "hcloud_rdns" "rdns_ipv4" {
+  floating_ip_id = hcloud_floating_ip.floating_ipv4.id
+  ip_address     = hcloud_floating_ip.floating_ipv4.ip_address
+  dns_ptr        = "${var.subdomains.mailserver}.${var.domain}"
+}
+
+resource "hcloud_rdns" "rdns_ipv6" {
+  floating_ip_id = hcloud_floating_ip.floating_ipv6.id
+  ip_address     = hcloud_floating_ip.floating_ipv6.ip_address
+  dns_ptr        = "${var.subdomains.mailserver}.${var.domain}"
+}

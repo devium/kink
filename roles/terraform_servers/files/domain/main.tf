@@ -67,3 +67,27 @@ resource "hetznerdns_record" "dkim" {
   type    = "TXT"
   ttl     = 300
 }
+
+resource "hetznerdns_record" "mx" {
+  zone_id = var.hdns_zone_id
+  name    = local.root_subdomain == "" ? "@" : local.root_subdomain
+  value   = "1 ${var.subdomains.mailserver}.${var.domain}."
+  type    = "MX"
+  ttl     = 300
+}
+
+resource "hetznerdns_record" "spf" {
+  zone_id = var.hdns_zone_id
+  name    = local.root_subdomain == "" ? "@" : local.root_subdomain
+  value   = "v=spf1 mx ~all"
+  type    = "TXT"
+  ttl     = 300
+}
+
+resource "hetznerdns_record" "dmarc" {
+  zone_id = var.hdns_zone_id
+  name    = local.root_subdomain == "" ? "_dmarc" : "_dmarc.${local.root_subdomain}"
+  value   = "v=DMARC1; p=quarantine; rua=mailto:dmarc.report@${var.domain}; ruf=mailto:dmarc.report@${var.domain}; sp=quarantine; ri=86400"
+  type    = "TXT"
+  ttl     = 300
+}
