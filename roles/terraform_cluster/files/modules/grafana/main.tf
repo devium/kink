@@ -73,6 +73,15 @@ resource "helm_release" "grafana" {
           name_attribute_path: preferred_username
           role_attribute_path: contains(groups[*], 'admin') && 'Admin' || contains(groups[*], 'grafana_editor') && 'Editor' || 'Viewer'
 
+        smtp:
+          enabled: true
+          host: ${var.subdomains.mailserver}.${var.domain}
+          user: ${var.mail_account}@${var.domain}
+          password: ${var.mail_password}
+          from_address: ${var.mail_account}@${var.domain}
+          from_name: ${title(var.project_name)}
+          startTLS_policy: MandatoryStartTLS
+
     alertmanager:
       alertmanagerSpec:
         resources:

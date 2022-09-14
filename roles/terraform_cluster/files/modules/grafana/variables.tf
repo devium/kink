@@ -24,10 +24,6 @@ variable "domain" {
   type = string
 }
 
-variable "resources" {
-  type = map(map(string))
-}
-
 variable "keycloak_clients" {
   type = map(string)
 }
@@ -41,12 +37,29 @@ variable "keycloak_secrets" {
   sensitive = true
 }
 
+variable "mail_account" {
+  type = string
+}
+
+variable "mail_password" {
+  type      = string
+  sensitive = true
+}
+
 variable "namespaces" {
   type = map(string)
 }
 
+variable "project_name" {
+  type = string
+}
+
 variable "release_name" {
   type = string
+}
+
+variable "resources" {
+  type = map(map(string))
 }
 
 variable "versions" {
