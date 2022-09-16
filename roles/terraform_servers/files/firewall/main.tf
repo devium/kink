@@ -96,6 +96,17 @@ resource "hcloud_firewall" "firewall" {
     description = "Jitsi JVB"
   }
 
+  rule {
+    direction = "in"
+    protocol  = "tcp"
+    port      = "30001"
+    source_ips = [
+      "0.0.0.0/0",
+      "::/0"
+    ]
+    description = "Minecraft"
+  }
+
   # Mail stuff
 
   rule {

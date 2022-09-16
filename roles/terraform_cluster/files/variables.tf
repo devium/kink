@@ -80,6 +80,14 @@ variable "mail_secrets_files" {
   type = map(string)
 }
 
+variable "minecraft_admins" {
+  type = string
+}
+
+variable "minecraft_world" {
+  type = string
+}
+
 variable "namespaces" {
   type = map(string)
 }

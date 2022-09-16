@@ -330,3 +330,14 @@ module "mailserver" {
   subdomains    = var.subdomains
   versions      = var.versions
 }
+
+module "minecraft" {
+  source = "./modules/minecraft"
+
+  minecraft_admins = var.minecraft_admins
+  minecraft_world  = var.minecraft_world
+  namespaces       = module.namespaces.namespaces
+  pvcs             = module.volumes.pvcs
+  release_name     = var.release_name
+  versions         = var.versions
+}

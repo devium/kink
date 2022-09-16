@@ -10,6 +10,8 @@ terraform_cluster_home_site_image:
 terraform_cluster_kubeconf_file:
 terraform_cluster_mail_account:
 terraform_cluster_mail_password:
+terraform_cluster_minecraft_admins:
+terraform_cluster_minecraft_world:
 terraform_cluster_namespaces_override:
 terraform_cluster_project_name:
 terraform_cluster_resources_override:
@@ -172,6 +174,9 @@ terraform_cluster_versions_default:
   loki_helm: 2.6.1
   mailserver: 11.0.0
   mailserver_helm: 1.0.1
+  minecraft: latest
+  minecraft_game: 1.19.2
+  minecraft_helm: 4.2.0
   nextcloud: 24.0.1-apache
   nextcloud_helm: 2.14.4
   nginx: 1.23.0
@@ -206,6 +211,8 @@ terraform_cluster_variables:
   mail_account: "{{ terraform_cluster_mail_account }}"
   mail_password: "{{ terraform_cluster_mail_password }}"
   mail_secrets_files: "{{ terraform_cluster_mail_secrets_files | to_json }}"
+  minecraft_admins: "{{ terraform_cluster_minecraft_admins }}"
+  minecraft_world: "{{ terraform_cluster_minecraft_world }}"
   namespaces: "{{ terraform_cluster_namespaces | to_json }}"
   project_name: "{{ terraform_cluster_project_name }}"
   release_name: "{{ terraform_cluster_helm_release_name }}"

@@ -18,6 +18,7 @@ namespaces_base:
   jitsi: jitsi
   keycloak: keycloak
   mailserver: mail
+  minecraft: minecraft
   nextcloud: nextcloud
   postgres: postgres
   pretix: pretix
@@ -81,6 +82,8 @@ terraform_cluster_keycloak_secrets: "{{ keycloak_secrets }}"
 terraform_cluster_kubeconf_file: "{{ rke2_download_kubeconf_path }}/{{ rke2_download_kubeconf_file_name }}"
 terraform_cluster_mail_account: "{{ mail_account }}"
 terraform_cluster_mail_password: "{{ mail_password }}"
+terraform_cluster_minecraft_admins: "{{ minecraft_admins }}"
+terraform_cluster_minecraft_world: "{{ minecraft_world }}"
 terraform_cluster_namespaces_override: "{{ namespaces }}"
 terraform_cluster_nextcloud_volume_handle: "{{ nextcloud_volume_handle }}"
 terraform_cluster_project_name: "{{ project_name }}"
