@@ -27,35 +27,20 @@ module "firewall" {
   source   = "./firewall"
 }
 
-module "master" {
+module "node" {
+  count = length(var.nodes)
+
   domain      = var.domain
   firewall_id = module.firewall.firewall_id
-  image       = var.image
+  image       = var.nodes[count.index].image
   location    = var.location
-  name        = "master"
+  name        = var.nodes[count.index].name
   network_id  = module.network.network_id
-  server_type = var.master_server_type
+  server_type = var.nodes[count.index].type
   source      = "./node"
   ssh_keys    = var.ssh_keys
   subdomains  = var.subdomains
-
-  depends_on = [
-    module.network
-  ]
-}
-
-module "worker" {
-  count       = var.num_workers
-  domain      = var.domain
-  firewall_id = module.firewall.firewall_id
-  image       = var.image
-  location    = var.location
-  name        = "worker${count.index}"
-  network_id  = module.network.network_id
-  server_type = var.workers_server_type
-  source      = "./node"
-  ssh_keys    = var.ssh_keys
-  subdomains  = var.subdomains
+  taints      = var.nodes[count.index].taints
 
   depends_on = [
     module.network
@@ -67,7 +52,7 @@ module "domain" {
   domain       = var.domain
   hdns_token   = var.hdns_token
   hdns_zone_id = var.hdns_zone_id
-  nodes        = concat([module.master], module.worker)
+  nodes        = module.node
   source       = "./domain"
   subdomains   = var.subdomains
 }

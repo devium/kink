@@ -42,6 +42,32 @@ terraform_servers_ssh_key: "{{ ssh_key }}"
 terraform_servers_stage: "{{ stage }}"
 terraform_servers_subdomains_override: "{{ subdomains_override }}"
 
+terraform_servers_nodes:
+  - name: master
+    type: cx21
+    image: ubuntu-20.04
+    taints: "[CriticalAddonsOnly=true:NoSchedule]"
+  - name: worker0
+    type: cx21
+    image: ubuntu-20.04
+    taints: "[]"
+  - name: worker1
+    type: cx21
+    image: ubuntu-20.04
+    taints: "[]"
+  - name: worker2
+    type: cx21
+    image: ubuntu-20.04
+    taints: "[]"
+  - name: worker3
+    type: cx21
+    image: ubuntu-20.04
+    taints: "[]"
+  - name: gaming
+    type: cpx31
+    image: ubuntu-20.04
+    taints: "[CriticalAddonsOnly=true:NoSchedule]"
+
 
 netplan_config_file: /etc/netplan/60-floating-ip.yaml
 netplan_remove_existing: false
@@ -60,7 +86,7 @@ netplan_configuration:
 rke2_download_kubeconf: true
 rke2_download_kubeconf_file_name: rke2.yaml
 rke2_download_kubeconf_path: "{{ ansible_inventory_sources[0] | dirname }}"
-rke2_version: v1.23.4+rke2r1
+rke2_version: v1.25.0+rke2r1
 
 
 terraform_cluster_admin_passwords: "{{ admin_passwords }}"
@@ -97,7 +123,6 @@ terraform_cluster_workadventure_start_map: "{{ workadventure_start_map }}"
 
 terraform_cluster_versions_override:
   jitsi: stable-7577-2
-  loki: 2.4.2
 
 config_kubeconf_file: "{{ rke2_download_kubeconf_path }}/{{ rke2_download_kubeconf_file_name }}"
 config_domain: "{{ domain }}"

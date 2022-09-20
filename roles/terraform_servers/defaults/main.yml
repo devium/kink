@@ -2,6 +2,7 @@ terraform_servers_domain:
 terraform_servers_hcloud_token:
 terraform_servers_hdns_token:
 terraform_servers_hdns_zone_id:
+terraform_servers_nodes:
 terraform_servers_ssh_key:
 terraform_servers_stage:
 terraform_servers_subdomains_override:
@@ -24,6 +25,7 @@ terraform_servers_subdomains_default:
   jitsi_keycloak: auth.jitsi
   keycloak: auth
   mailserver: mail
+  minecraft: minecraft
   nextcloud: next
   pretix: tickets
   shlink: shlink
@@ -40,6 +42,7 @@ terraform_servers_variables:
   hcloud_token: "{{ terraform_servers_hcloud_token }}"
   hdns_token: "{{ terraform_servers_hdns_token }}"
   hdns_zone_id: "{{ terraform_servers_hdns_zone_id }}"
+  nodes: "{{ terraform_servers_nodes | to_json }}"
   ssh_keys: "{{ [terraform_servers_ssh_key] | to_json }}"
   domain: "{{ terraform_servers_domain }}"
   subdomains: "{{ terraform_servers_subdomains | to_json }}"

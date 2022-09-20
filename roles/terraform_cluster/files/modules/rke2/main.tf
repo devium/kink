@@ -4,6 +4,8 @@ locals {
 
 # Make flannel use the private subnet interface
 # Using args instead of the iface value enforces a new pod rollout
+# See https://docs.hetzner.com/cloud/networks/server-configuration/
+# for default network names on Hetzner servers.
 resource "kubernetes_manifest" "flannel_iface_patch" {
   manifest = {
     apiVersion = "helm.cattle.io/v1"
@@ -21,6 +23,7 @@ resource "kubernetes_manifest" "flannel_iface_patch" {
             - --ip-masq
             - --kube-subnet-mgr
             - --iface=ens10
+            - --iface=enp7s0
       YAML
     }
   }

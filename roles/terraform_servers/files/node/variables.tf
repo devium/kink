@@ -33,3 +33,7 @@ variable "network_id" {
 variable "subdomains" {
   type = map(string)
 }
+
+variable "taints" {
+  type = string
+}

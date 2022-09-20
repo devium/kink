@@ -17,3 +17,7 @@ output "ipv6_address" {
 output "id" {
   value = hcloud_server.node.id
 }
+
+output "taints" {
+  value = var.taints
+}

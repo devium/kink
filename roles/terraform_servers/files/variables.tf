@@ -32,12 +32,8 @@ variable "image" {
   default = "ubuntu-20.04"
 }
 
-variable "master_server_type" {
-  default = "cx21"
-}
-
-variable "workers_server_type" {
-  default = "cx21"
+variable "nodes" {
+  type = list(map(string))
 }
 
 variable "zone" {
@@ -46,10 +42,6 @@ variable "zone" {
 
 variable "location" {
   default = "nbg1"
-}
-
-variable "num_workers" {
-  default = 4
 }
 
 variable "ip_range" {
