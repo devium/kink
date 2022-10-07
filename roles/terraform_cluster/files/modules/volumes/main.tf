@@ -12,7 +12,7 @@ resource "kubernetes_persistent_volume_v1" "volumes" {
   for_each = var.volume_handles
 
   metadata {
-    name = each.key
+    name = replace(each.key, "_", "-")
   }
 
   spec {
@@ -38,8 +38,9 @@ resource "kubernetes_persistent_volume_claim_v1" "pvcs" {
   for_each = var.volume_handles
 
   metadata {
-    name      = "${each.key}-pvc"
-    namespace = var.namespaces[each.key]
+    name = "${replace(each.key, "_", "-")}-pvc"
+    # Hacky way to get minecraft_backup and minecraft PVCs into the same namespace.
+    namespace = var.namespaces[split("_", each.key)[0]]
   }
 
   spec {

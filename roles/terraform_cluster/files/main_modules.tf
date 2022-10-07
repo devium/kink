@@ -334,14 +334,16 @@ module "mailserver" {
 module "minecraft" {
   source = "./modules/minecraft"
 
-  cert_issuer      = module.cert_manager.issuer
-  default_csp      = local.default_csp
-  domain           = var.domain
-  minecraft_admins = var.minecraft_admins
-  minecraft_world  = var.minecraft_world
-  namespaces       = module.namespaces.namespaces
-  pvcs             = module.volumes.pvcs
-  release_name     = var.release_name
-  subdomains       = var.subdomains
-  versions         = var.versions
+  cert_issuer                 = module.cert_manager.issuer
+  default_csp                 = local.default_csp
+  domain                      = var.domain
+  minecraft_admins            = var.minecraft_admins
+  minecraft_world             = var.minecraft_world
+  minecraft_rcon_password     = var.minecraft_rcon_password
+  minecraft_rcon_web_password = var.minecraft_rcon_web_password
+  namespaces                  = module.namespaces.namespaces
+  pvcs                        = module.volumes.pvcs
+  release_name                = var.release_name
+  subdomains                  = var.subdomains
+  versions                    = var.versions
 }

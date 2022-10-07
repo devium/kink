@@ -84,6 +84,16 @@ variable "minecraft_admins" {
   type = string
 }
 
+variable "minecraft_rcon_password" {
+  type      = string
+  sensitive = true
+}
+
+variable "minecraft_rcon_web_password" {
+  type      = string
+  sensitive = true
+}
+
 variable "minecraft_world" {
   type = string
 }

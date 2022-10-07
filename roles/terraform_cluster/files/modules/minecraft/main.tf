@@ -1,8 +1,10 @@
 locals {
-  fqdn = "${var.subdomains.minecraft}.${var.domain}"
+  fqdn      = "${var.subdomains.minecraft}.${var.domain}"
+  fqdn_rcon = "${var.subdomains.minecraft_rcon}.${var.domain}"
 
   csp = merge(var.default_csp, {
     "script-src" = "'self' 'unsafe-inline'"
+    "style-src"  = "'self' 'unsafe-inline' https://fonts.googleapis.com"
   })
 }
 
@@ -27,11 +29,14 @@ resource "helm_release" "minecraft" {
       ops: ${var.minecraft_admins}
       type: "PAPER"
       worldSaveName: ${var.minecraft_world}
+      levelSeed: "8624896"
+      memory: 4096M
 
       spigetResources:
         - 274 # DynMap
         - 390 # Multiverse-Core
         - 74429 # Fast Chunk Pregenerator
+        - 57242 # Spark
 
       extraPorts:
         - name: dynmap
@@ -61,6 +66,12 @@ resource "helm_release" "minecraft" {
                 hosts:
                   - ${local.fqdn}
 
+      rcon:
+        enabled: true
+        serviceType: NodePort
+        nodePort: 30002
+        password: ${var.minecraft_rcon_password}
+
     persistence:
       dataDir:
         enabled: true
@@ -68,7 +79,7 @@ resource "helm_release" "minecraft" {
 
     resources:
       requests:
-        memory: 2Gi
+        memory: 4Gi
 
     nodeSelector:
       kubernetes.io/hostname: gaming
@@ -76,6 +87,52 @@ resource "helm_release" "minecraft" {
     tolerations:
       - key: "CriticalAddonsOnly"
         operator: "Exists"
+
+    mcbackup:
+      enabled: true
+      backupInterval: 12h
+      pruneBackupsDays: 5
+
+      persistence:
+        backupDir:
+          enabled: true
+          existingClaim: ${var.pvcs.minecraft_backup}
+  YAML
+  ]
+}
+
+resource "helm_release" "rcon_web" {
+  name       = "${var.release_name}-rcon"
+  namespace  = var.namespaces.minecraft
+  repository = "https://itzg.github.io/minecraft-server-charts/"
+  chart      = "rcon-web-admin"
+  version    = var.versions.minecraft_rcon_web_helm
+
+  values = [<<-YAML
+    ingress:
+      enabled: true
+      ingressClassName: nginx
+      enabled: true
+      
+      annotations:
+        cert-manager.io/cluster-issuer: ${var.cert_issuer}
+        nginx.ingress.kubernetes.io/configuration-snippet: |
+          more_set_headers "Content-Security-Policy: ${join(";", [for key, value in local.csp : "${key} ${value}"])}";
+        
+      host: ${local.fqdn_rcon}
+
+      tls:
+        - secretName: ${local.fqdn_rcon}-tls
+          hosts:
+            - ${local.fqdn_rcon}
+
+    rconWeb:
+      rconHost: ${local.fqdn}
+      rconPort: 30002
+      rconPassword: ${var.minecraft_rcon_password}
+      isAdmin: true
+      username: admin
+      password: ${var.minecraft_rcon_web_password}
   YAML
   ]
 }

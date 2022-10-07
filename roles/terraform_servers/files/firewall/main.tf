@@ -107,6 +107,17 @@ resource "hcloud_firewall" "firewall" {
     description = "Minecraft"
   }
 
+  rule {
+    direction = "in"
+    protocol  = "tcp"
+    port      = "30002"
+    source_ips = [
+      "0.0.0.0/0",
+      "::/0"
+    ]
+    description = "Minecraft RCON"
+  }
+
   # Mail stuff
 
   rule {
