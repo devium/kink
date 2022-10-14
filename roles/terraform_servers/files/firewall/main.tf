@@ -118,6 +118,17 @@ resource "hcloud_firewall" "firewall" {
     description = "Minecraft RCON"
   }
 
+  rule {
+    direction = "in"
+    protocol  = "udp"
+    port      = "30003"
+    source_ips = [
+      "0.0.0.0/0",
+      "::/0"
+    ]
+    description = "Minecraft Bedrock"
+  }
+
   # Mail stuff
 
   rule {

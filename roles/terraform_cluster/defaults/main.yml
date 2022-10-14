@@ -179,6 +179,7 @@ terraform_cluster_versions_default:
   mailserver: 11.0.0
   mailserver_helm: 1.0.1
   minecraft: latest
+  minecraft_bedrock_helm: 2.0.0 
   minecraft_game: 1.19.2
   minecraft_helm: 4.3.0
   minecraft_rcon_web_helm: 1.0.0

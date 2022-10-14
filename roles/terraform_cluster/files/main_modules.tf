@@ -342,6 +342,7 @@ module "minecraft" {
   minecraft_rcon_password     = var.minecraft_rcon_password
   minecraft_rcon_web_password = var.minecraft_rcon_web_password
   namespaces                  = module.namespaces.namespaces
+  project_name                = var.project_name
   pvcs                        = module.volumes.pvcs
   release_name                = var.release_name
   subdomains                  = var.subdomains

@@ -136,3 +136,44 @@ resource "helm_release" "rcon_web" {
   YAML
   ]
 }
+
+resource "helm_release" "minecraft_bedrock" {
+  name       = "${var.release_name}-bedrock"
+  namespace  = var.namespaces.minecraft
+  repository = "https://itzg.github.io/minecraft-server-charts/"
+  chart      = "minecraft-bedrock"
+  version    = var.versions.minecraft_bedrock_helm
+
+  values = [<<-YAML
+    minecraftServer:
+      eula: "TRUE"
+      serviceType: NodePort
+      nodePort: 30003
+      maxPlayers: 8
+      pvp: true
+      ops: ${var.minecraft_admins}
+      levelSeed: "8624896"
+      serverName: "${title(var.project_name)}"
+      playerIdleTimeout: 0
+      cheats: true
+      tickDistance: 8
+      viewDistance: 20
+
+    persistence:
+      dataDir:
+        enabled: true
+        existingClaim: ${var.pvcs.minecraft_bedrock}
+
+    resources:
+      requests:
+        memory: 2Gi
+
+    nodeSelector:
+      kubernetes.io/hostname: gaming
+
+    tolerations:
+      - key: "CriticalAddonsOnly"
+        operator: "Exists"
+  YAML
+  ]
+}

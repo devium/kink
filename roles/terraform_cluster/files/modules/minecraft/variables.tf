@@ -32,6 +32,10 @@ variable "namespaces" {
   type = map(string)
 }
 
+variable "project_name" {
+  type = string
+}
+
 variable "pvcs" {
   type = map(string)
 }
