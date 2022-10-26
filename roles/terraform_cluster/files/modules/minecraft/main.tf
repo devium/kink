@@ -90,8 +90,8 @@ resource "helm_release" "minecraft" {
 
     mcbackup:
       enabled: true
-      backupInterval: 12h
-      pruneBackupsDays: 5
+      backupInterval: 3h
+      pruneBackupsDays: 1
 
       persistence:
         backupDir:
