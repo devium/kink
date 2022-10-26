@@ -297,6 +297,8 @@ module "pretix" {
   keycloak_clients = module.keycloak_config.clients
   keycloak_realm   = var.keycloak_realm
   keycloak_secrets = var.keycloak_secrets
+  mail_account     = var.mail_account
+  mail_password    = var.mail_password
   namespaces       = module.namespaces.namespaces
   pvcs             = module.volumes.pvcs
   resources        = var.resources

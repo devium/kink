@@ -18,11 +18,11 @@ resource "kubernetes_secret_v1" "config" {
       datadir=/data
 
       [mail]
-      from=
-      host=
-      user=
-      password=
-      port=2525
+      from=${var.mail_account}@${var.domain}
+      host=${var.subdomains.mailserver}.${var.domain}
+      user=${var.mail_account}@${var.domain}
+      password=${var.mail_password}
+      port=587
       tls=True
 
       [django]
