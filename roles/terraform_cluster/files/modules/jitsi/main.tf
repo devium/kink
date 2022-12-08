@@ -44,11 +44,6 @@ resource "kubernetes_config_map_v1" "web_config" {
         max: 30
       };
       JS
-      # Fix for newer Jitsi versions using variables in proxy_pass definition.
-      # A resolver has to be manually specified when using variables in proxy_pass.
-      cat <<CONF>>/config/nginx/meet.conf
-      resolver rke2-coredns-rke2-coredns.kube-system.svc.cluster.local valid=30s;
-      CONF
     BASH
   }
 }
@@ -89,6 +84,8 @@ resource "helm_release" "jitsi" {
           - secretName: ${local.fqdn}-tls
             hosts:
               - ${local.fqdn}
+
+      resolverIP: rke2-coredns-rke2-coredns.kube-system.svc.cluster.local
 
       extraVolumeMounts:
         - name: web-config
@@ -170,12 +167,6 @@ resource "helm_release" "jitsi" {
 
       persistence:
         enabled: false
-
-      # Full name of the service because NGINX doesn't use resolve.conf on proxy_pass with variables.
-      # See https://stackoverflow.com/questions/43326913/nginx-proxy-pass-directive-string-interpolation/43341304
-      # Fix for this change:
-      # https://github.com/jitsi/docker-jitsi-meet/compare/stable-7648-4...stable-7830#diff-6be78a80ec6e8b84679b39397e6f36559e299c14584f09ecc25355ac8eda3dc5R98
-      server: ${var.release_name}-prosody.${var.namespaces.jitsi}.svc.cluster.local
 
       extraEnvs:
         - name: XMPP_MODULES
