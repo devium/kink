@@ -21,7 +21,7 @@ resource "kubernetes_persistent_volume_v1" "volumes" {
     storage_class_name               = one(kubernetes_storage_class_v1.existing_volume.metadata).name
 
     capacity = {
-      storage = "10Gi"
+      storage = var.volume_sizes[each.key]
     }
 
     persistent_volume_source {

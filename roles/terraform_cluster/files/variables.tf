@@ -139,6 +139,10 @@ variable "volume_handles" {
   type = map(string)
 }
 
+variable "volume_sizes" {
+  type = map(string)
+}
+
 variable "workadventure_maps_image" {
   type = string
 }

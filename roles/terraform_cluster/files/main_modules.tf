@@ -30,6 +30,7 @@ module "volumes" {
   csi_driver     = module.hetzner.csi_driver
   namespaces     = module.namespaces.namespaces
   volume_handles = var.volume_handles
+  volume_sizes   = var.volume_sizes
 }
 
 module "cert_manager" {
