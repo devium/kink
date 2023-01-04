@@ -33,7 +33,6 @@ resource "helm_release" "minecraft" {
       memory: 4096M
 
       spigetResources:
-        - 274 # DynMap
         - 390 # Multiverse-Core
         - 74429 # Fast Chunk Pregenerator
         - 57242 # Spark
