@@ -55,6 +55,8 @@ resource "kubernetes_secret_v1" "backup_script" {
     "backup.sh" = <<-YAML
       mkdir -p /backup/db
       ${local.pg_dump_script}
+      # Workaround: kill leaking Shlink database connections.
+      export PGPASSWORD=${var.db_passwords.shlink}; psql -U shlink -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE usename = 'shlink' AND state = 'idle';"
     YAML
   }
 }
