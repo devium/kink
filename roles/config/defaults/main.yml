@@ -96,6 +96,9 @@ config_nextcloud_config:
   - app: sociallogin
     key: hide_default_login
     value: "1"
+  - app: dav
+    key: calendarSubscriptionRefreshRate
+    value: "P1H"
 
 config_nextcloud_disable_apps:
   - circles
