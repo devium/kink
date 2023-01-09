@@ -36,6 +36,11 @@ resource "helm_release" "minecraft" {
         - 390 # Multiverse-Core
         - 74429 # Fast Chunk Pregenerator
         - 57242 # Spark
+        - 28140 # LuckPerms
+        - 34315 # Vault
+      # Manual downloads:
+        # - 274 # Dynmap
+        # - 9089 # EssentialsX
 
       extraPorts:
         - name: dynmap
@@ -89,7 +94,7 @@ resource "helm_release" "minecraft" {
 
     mcbackup:
       enabled: true
-      backupInterval: 3h
+      backupInterval: 4h
       pruneBackupsDays: 1
 
       persistence:
@@ -144,6 +149,9 @@ resource "helm_release" "minecraft_bedrock" {
   version    = var.versions.minecraft_bedrock_helm
 
   values = [<<-YAML
+    image:
+      pullPolicy: Always
+
     minecraftServer:
       eula: "TRUE"
       serviceType: NodePort
