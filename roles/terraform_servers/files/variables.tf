@@ -29,7 +29,7 @@ variable "subdomains" {
 }
 
 variable "image" {
-  default = "ubuntu-20.04"
+  default = "ubuntu-22.04"
 }
 
 variable "nodes" {
@@ -42,10 +42,6 @@ variable "zone" {
 
 variable "location" {
   default = "nbg1"
-}
-
-variable "ip_range" {
-  default = "10.0.0.0/16"
 }
 
 variable "inventory_file" {

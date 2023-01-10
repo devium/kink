@@ -77,12 +77,56 @@ resource "hcloud_firewall" "firewall" {
   rule {
     direction = "in"
     protocol  = "tcp"
+    port      = "2379"
+    source_ips = [
+      "0.0.0.0/0",
+      "::/0"
+    ]
+    description = "etc client"
+  }
+
+  rule {
+    direction = "in"
+    protocol  = "tcp"
+    port      = "2380"
+    source_ips = [
+      "0.0.0.0/0",
+      "::/0"
+    ]
+    description = "etc peer"
+  }
+
+  rule {
+    direction = "in"
+    protocol  = "udp"
+    port      = "51820"
+    source_ips = [
+      "0.0.0.0/0",
+      "::/0"
+    ]
+    description = "Canal CNI with WireGuard IPv4"
+  }
+
+  rule {
+    direction = "in"
+    protocol  = "udp"
+    port      = "51821"
+    source_ips = [
+      "0.0.0.0/0",
+      "::/0"
+    ]
+    description = "Canal CNI with WireGuard IPv6/dual-stack"
+  }
+
+  rule {
+    direction = "in"
+    protocol  = "tcp"
     port      = "10250"
     source_ips = [
       "0.0.0.0/0",
       "::/0"
     ]
-    description = "RKE2 metrics server"
+    description = "Kubelet"
   }
 
   rule {

@@ -13,18 +13,8 @@ provider "hcloud" {
 }
 
 
-module "network" {
-  domain     = var.domain
-  ip_range   = var.ip_range
-  location   = var.location
-  source     = "./network"
-  subdomains = var.subdomains
-  zone       = var.zone
-}
-
 module "firewall" {
-  ip_range = var.ip_range
-  source   = "./firewall"
+  source = "./firewall"
 }
 
 module "node" {
@@ -35,16 +25,11 @@ module "node" {
   image       = var.nodes[count.index].image
   location    = var.location
   name        = var.nodes[count.index].name
-  network_id  = module.network.network_id
   server_type = var.nodes[count.index].type
   source      = "./node"
   ssh_keys    = var.ssh_keys
   subdomains  = var.subdomains
   taints      = var.nodes[count.index].taints
-
-  depends_on = [
-    module.network
-  ]
 }
 
 module "domain" {

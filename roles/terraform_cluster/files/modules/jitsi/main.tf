@@ -116,6 +116,8 @@ resource "helm_release" "jitsi" {
         type: NodePort
 
       UDPPort: 30000
+      nodePort: 30000
+      useNodeIP: true
 
       xmpp:
         password: ${var.jitsi_secrets.jvb}

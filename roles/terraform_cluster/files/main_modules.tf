@@ -112,7 +112,8 @@ module "jitsi" {
   versions         = var.versions
 
   depends_on = [
-    module.rke2
+    module.rke2,
+    module.grafana
   ]
 }
 

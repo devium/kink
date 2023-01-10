@@ -26,10 +26,6 @@ variable "ssh_keys" {
   type = list(string)
 }
 
-variable "network_id" {
-  type = number
-}
-
 variable "subdomains" {
   type = map(string)
 }

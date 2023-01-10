@@ -13,19 +13,9 @@ resource "hcloud_server" "node" {
   ssh_keys    = var.ssh_keys
   location    = var.location
 
-  network {
-    network_id = var.network_id
-  }
-
   firewall_ids = [
     var.firewall_id
   ]
-
-  lifecycle {
-    ignore_changes = [
-      network
-    ]
-  }
 }
 
 resource "hcloud_rdns" "rdns_ipv4" {
