@@ -4,6 +4,7 @@ locals {
 
   csp = merge(var.default_csp, {
     "script-src"      = "'self' 'unsafe-inline' 'unsafe-eval'"
+    "connect-src"     = "'self' https://${var.subdomains.keycloak}.${var.domain} wss: https://www.gravatar.com"
     "worker-src"      = "'self' blob:"
     "frame-ancestors" = "https://${var.subdomains.workadventure_front}.${var.domain} https://${var.subdomains.element}.${var.domain}"
   })
@@ -132,9 +133,6 @@ resource "helm_release" "jitsi" {
         requests:
           memory: ${var.resources.memory.jitsi_jvb}
 
-      websockets:
-        enabled: true
-
       readinessProbe:
         httpGet:
           path: /about/health
@@ -148,9 +146,6 @@ resource "helm_release" "jitsi" {
           port: 8080
 
         initialDelaySeconds: 45
-
-      extraEnvs:
-        ENABLE_MULTI_STREAM: "true"
 
     jicofo:
       image:
@@ -211,6 +206,13 @@ resource "helm_release" "jitsi" {
       resources:
         requests:
           memory: ${var.resources.memory.prosody}
+
+    websockets:
+      colibri:
+        enabled: true
+
+      xmpp:
+        enabled: true
   YAML
   ]
 }
