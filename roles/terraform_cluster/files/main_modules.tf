@@ -342,6 +342,7 @@ module "minecraft" {
   default_csp                 = local.default_csp
   domain                      = var.domain
   minecraft_admins            = var.minecraft_admins
+  minecraft_modpack_url       = var.minecraft_modpack_url
   minecraft_world             = var.minecraft_world
   minecraft_rcon_password     = var.minecraft_rcon_password
   minecraft_rcon_web_password = var.minecraft_rcon_web_password

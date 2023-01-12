@@ -31,16 +31,8 @@ resource "helm_release" "minecraft" {
       worldSaveName: ${var.minecraft_world}
       levelSeed: "8624896"
       memory: 4096M
-
-      spigetResources:
-        - 390 # Multiverse-Core
-        - 74429 # Fast Chunk Pregenerator
-        - 57242 # Spark
-        - 28140 # LuckPerms
-        - 34315 # Vault
-      # Manual downloads:
-        # - 274 # Dynmap
-        # - 9089 # EssentialsX
+      downloadModpackUrl: ${var.minecraft_modpack_url}
+      removeOldMods: true
 
       extraPorts:
         - name: dynmap

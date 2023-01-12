@@ -84,6 +84,10 @@ variable "minecraft_admins" {
   type = string
 }
 
+variable "minecraft_modpack_url" {
+  type = string
+}
+
 variable "minecraft_rcon_password" {
   type      = string
   sensitive = true

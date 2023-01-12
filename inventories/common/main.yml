@@ -109,6 +109,7 @@ terraform_cluster_kubeconf_file: "{{ rke2_download_kubeconf_path }}/{{ rke2_down
 terraform_cluster_mail_account: "{{ mail_account }}"
 terraform_cluster_mail_password: "{{ mail_password }}"
 terraform_cluster_minecraft_admins: "{{ minecraft_admins }}"
+terraform_cluster_minecraft_modpack_url: "{{ minecraft_modpack_url }}"
 terraform_cluster_minecraft_rcon_password: "{{ minecraft_rcon_password }}"
 terraform_cluster_minecraft_rcon_web_password: "{{ minecraft_rcon_web_password }}"
 terraform_cluster_minecraft_world: "{{ minecraft_world }}"
