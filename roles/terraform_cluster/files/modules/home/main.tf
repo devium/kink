@@ -94,6 +94,15 @@ resource "helm_release" "home" {
         volumeMounts:
           - name: html
             mountPath: /html_volume
+
+    metrics:
+      enabled: true
+
+      image:
+        tag: ${var.versions.nginx_prometheus_exporter}
+
+      serviceMonitor:
+        enabled: true
   YAML
   ]
 }

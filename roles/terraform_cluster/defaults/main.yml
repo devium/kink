@@ -172,7 +172,7 @@ terraform_cluster_versions_default:
   jitsi: stable-8138-1
   jitsi_helm: 1.3.1
   jitsi_keycloak: v0.2.1
-  jitsi_prometheus_exporter: 1.2.0
+  jitsi_prometheus_exporter: 1.2.1
   keycloak: 18.0.0
   keycloak_helm: 1.3.1
   keycloak_theme: v0.3.5
@@ -189,6 +189,7 @@ terraform_cluster_versions_default:
   nextcloud_helm: 2.14.4
   nginx: 1.23.0
   nginx_helm: 13.1.0
+  nginx_prometheus_exporter: 0.11.0
   postgres: 14.1.0-debian-10-r80
   pretix: 4.8.0
   shlink: 3.2.1
