@@ -169,7 +169,7 @@ terraform_cluster_versions_default:
   grafana_helm: 33.2.1
   hedgedoc: 1.9.3
   hedgedoc_helm: 1.1.0
-  jitsi: stable-8138-1
+  jitsi: stable-8252
   jitsi_helm: 1.3.1
   jitsi_keycloak: v0.2.1
   jitsi_prometheus_exporter: 1.2.1

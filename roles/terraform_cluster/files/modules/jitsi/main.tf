@@ -176,6 +176,8 @@ resource "helm_release" "jitsi" {
           value: ${var.jitsi_secrets.jwt}
         - name: JWT_ALLOW_EMPTY
           value: "true"
+        - name: ENABLE_END_CONFERENCE
+          value: "false"
 
       extraVolumeMounts:
         - name: prosody-plugins
