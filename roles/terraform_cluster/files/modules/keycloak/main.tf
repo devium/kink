@@ -43,11 +43,14 @@ resource "helm_release" "keycloak" {
       requests:
         memory: ${var.resources.memory.keycloak}
 
-    args:
-      - start
-      - --auto-build
-      - --hostname-strict=false
-      - --hostname-strict-https=false
+    command:
+      - "/opt/keycloak/bin/kc.sh"
+      - "start"
+      - "--http-enabled=true"
+      - "--http-port=8080"
+      - "--hostname-strict=false"
+      - "--hostname-strict-https=false"
+      - "--features=declarative-user-profile"
 
     postgresql:
       enabled: false
@@ -69,7 +72,7 @@ resource "helm_release" "keycloak" {
           KEYCLOAK_ADMIN_PASSWORD: ${var.admin_passwords.keycloak}
 
     http:
-      relativePath: ""
+      relativePath: "/"
 
     extraVolumeMounts: |
       - name: theme
@@ -78,24 +81,6 @@ resource "helm_release" "keycloak" {
     extraVolumes: |
       - name: theme
         emptyDir: {}
-
-    extraInitContainers: |
-      - name: keycloak-theme
-        image: ghcr.io/devium/kink-keycloak-theme:${var.versions.keycloak_theme}
-        imagePullPolicy: Always
-
-        command:
-          - sh
-
-        args:
-          - -c
-          - |
-            echo "Copying theme..."
-            cp -R /custom/* /theme
-
-        volumeMounts:
-          - name: theme
-            mountPath: /theme
 
     database:
       vendor: postgres
