@@ -31,6 +31,7 @@ resource "helm_release" "hedgedoc" {
       CMD_OAUTH2_AUTHORIZATION_URL: ${local.oidc_url}/auth
       CMD_OAUTH2_CLIENT_ID: ${var.keycloak_clients.hedgedoc}
       CMD_OAUTH2_PROVIDERNAME: Keycloak
+      CMD_OAUTH2_SCOPE: openid email private_profile
       CMD_EMAIL: "false"
       CMD_ALLOW_EMAIL_REGISTER: "false"
       CMD_ALLOW_ANONYMOUS: "false"
