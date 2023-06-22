@@ -1,6 +1,10 @@
 locals {
   fqdn     = "${var.subdomains.hedgedoc}.${var.domain}"
   oidc_url = "https://${var.subdomains.keycloak}.${var.domain}/realms/${var.keycloak_realm}/protocol/openid-connect"
+
+  csp = merge(var.default_csp, {
+    "frame-src" = "*"
+  })
 }
 
 resource "helm_release" "hedgedoc" {
@@ -42,6 +46,8 @@ resource "helm_release" "hedgedoc" {
       enabled: true
       annotations:
         cert-manager.io/cluster-issuer: ${var.cert_issuer}
+        nginx.ingress.kubernetes.io/configuration-snippet: |
+          more_set_headers "Content-Security-Policy: ${join(";", [for key, value in local.csp : "${key} ${value}"])}";
 
       hosts:
         - host: ${local.fqdn}

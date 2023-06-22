@@ -137,6 +137,7 @@ module "hedgedoc" {
   cert_issuer      = module.cert_manager.issuer
   db_host          = module.postgres.host
   db_passwords     = var.db_passwords
+  default_csp      = local.default_csp
   domain           = var.domain
   hedgedoc_secret  = var.hedgedoc_secret
   keycloak_clients = module.keycloak_config.clients
@@ -295,6 +296,7 @@ module "pretix" {
   cert_issuer      = module.cert_manager.issuer
   db_host          = module.postgres.host
   db_passwords     = var.db_passwords
+  default_csp      = local.default_csp
   domain           = var.domain
   keycloak_clients = module.keycloak_config.clients
   keycloak_realm   = var.keycloak_realm

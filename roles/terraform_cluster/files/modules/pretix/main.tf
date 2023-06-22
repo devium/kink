@@ -1,6 +1,10 @@
 locals {
   fqdn     = "${var.subdomains.pretix}.${var.domain}"
   oidc_url = "/realms/${var.keycloak_realm}/protocol/openid-connect"
+
+  csp = merge(var.default_csp, {
+    "script-src" = "'self' 'unsafe-eval'"
+  })
 }
 
 resource "kubernetes_secret_v1" "config" {
@@ -175,7 +179,11 @@ resource "kubernetes_ingress_v1" "pretix" {
     namespace = var.namespaces.pretix
 
     annotations = {
-      "cert-manager.io/cluster-issuer" = var.cert_issuer
+      "cert-manager.io/cluster-issuer"                    = var.cert_issuer
+      "nginx.ingress.kubernetes.io/proxy-body-size"       = "10M"
+      "nginx.ingress.kubernetes.io/configuration-snippet" = <<-CONF
+        more_set_headers "Content-Security-Policy: ${join(";", [for key, value in local.csp : "${key} ${value}"])}";
+      CONF
     }
   }
 

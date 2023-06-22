@@ -3,9 +3,10 @@ locals {
   fqdn_jitsi_keycloak = "${var.subdomains.jitsi_keycloak}.${var.domain}"
 
   csp = merge(var.default_csp, {
-    "script-src"      = "'self' 'unsafe-inline' 'unsafe-eval'"
+    "script-src"      = "'self' 'unsafe-inline' 'unsafe-eval' https://www.youtube.com"
     "connect-src"     = "'self' https://${var.subdomains.keycloak}.${var.domain} wss: https://www.gravatar.com"
     "worker-src"      = "'self' blob:"
+    "frame-src"       = "https://www.youtube.com"
     "frame-ancestors" = "https://${var.subdomains.workadventure_front}.${var.domain} https://${var.subdomains.element}.${var.domain}"
   })
   csp_jitsi_keycloak = merge(var.default_csp, {
