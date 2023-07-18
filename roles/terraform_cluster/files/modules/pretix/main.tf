@@ -3,7 +3,8 @@ locals {
   oidc_url = "/realms/${var.keycloak_realm}/protocol/openid-connect"
 
   csp = merge(var.default_csp, {
-    "script-src" = "'self' 'unsafe-eval'"
+    "script-src"      = "'self' 'unsafe-eval'"
+    "frame-ancestors" = "*"
   })
 }
 

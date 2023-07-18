@@ -35,6 +35,10 @@ resource "keycloak_realm" "realm" {
       default_default_client_scopes
     ]
   }
+
+  attributes = {
+    userProfileEnabled = true
+  }
 }
 
 # Add default groups
@@ -46,4 +50,54 @@ resource "keycloak_group" "admin" {
 resource "keycloak_group" "grafana_editor" {
   realm_id = keycloak_realm.realm.id
   name     = "grafana_editor"
+}
+
+# Remove first and last name from user profile
+resource "keycloak_realm_user_profile" "userprofile" {
+  realm_id = keycloak_realm.realm.id
+
+  attribute {
+    name         = "username"
+    display_name = "$${username}"
+
+    permissions {
+      view = ["admin", "user"]
+      edit = ["admin", "user"]
+    }
+
+    validator {
+      name = "length"
+      config = {
+        min = 3
+        max = 31
+      }
+    }
+
+    validator {
+      name = "username-prohibited-characters"
+    }
+
+    validator {
+      name = "up-username-not-idn-homograph"
+    }
+  }
+
+  attribute {
+    name         = "email"
+    display_name = "$${email}"
+
+    required_for_roles = ["user"]
+
+    permissions {
+      view = ["admin", "user"]
+      edit = ["admin", "user"]
+    }
+
+    validator {
+      name = "length"
+      config = {
+        max = 127
+      }
+    }
+  }
 }
