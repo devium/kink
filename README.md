@@ -12,7 +12,7 @@ pip install kubernetes
 ```
 
 ### Manage secrets
-Create a `secrets.{dev|prod}.yml` in `secrets/` and fill in the following values:
+Use an existing vault or create a `secrets.{dev|prod}.yml` in `vault/` and fill in the following values:
 ```yaml
 # Email registered with the ACME SSL certificate server
 cert_email: 
@@ -65,49 +65,56 @@ subdomains_override:
   shlink_web: 
 
 # Random tokens and passwords that may be generated
-hedgedoc_secret: <generate>
-minecraft_rcon_password: <generate>
-minecraft_rcon_web_password: <generate>
-rke2_token: <generate>
-mail_password: <generate>
+hedgedoc_secret: 
+minecraft_rcon_password: 
+minecraft_rcon_web_password: 
+rke2_token: 
+mail_password: 
 
 admin_passwords:
-  collabora: <generate>
-  grafana: <generate>
-  keycloak: <generate>
-  nextcloud: <generate>
+  collabora: 
+  grafana: 
+  keycloak: 
+  nextcloud: 
 
 db_passwords:
-  grafana: <generate>
-  hedgedoc: <generate>
-  keycloak: <generate>
-  nextcloud: <generate>
-  postgres: <generate>
-  pretix: <generate>
-  shlink: <generate>
-  synapse: <generate>
+  grafana: 
+  hedgedoc: 
+  keycloak: 
+  nextcloud: 
+  postgres: 
+  pretix: 
+  shlink: 
+  synapse: 
 
 jitsi_secrets:
-  jicofo: <generate>
-  jvb: <generate>
-  jwt: <generate>
+  jicofo: 
+  jvb: 
+  jwt: 
 
 keycloak_secrets:
-  grafana: <generate>
-  hedgedoc: <generate>
-  jitsi: <generate>
-  nextcloud: <generate>
-  synapse: <generate>
+  grafana: 
+  hedgedoc: 
+  jitsi: 
+  nextcloud: 
+  synapse: 
 
 mail_accounts:
   - name: "{{ mail_account }}"
     password: "{{ mail_password }}"
 
 synapse_secrets:
-  registration: <generate>
-  macaroon: <generate>
+  registration: 
+  macaroon: 
 ```
-You can use `./generate-secrets.sh` to generate BIP39-like passwords for all variables set to `<generate>`.
+You can use `./generate-secrets.sh` to generate BIP39-like secrets.
+
+Encrypt the secrets file you just created using Ansible:
+```
+ansible-vault encrypt vault/secrets.{dev|prod}.yml
+```
+
+Note: All files in `vault/` should be encrypted using `ansible-vault`. Decrypted secrets temporarily appear during deployment in the `secrets/` directory.
 
 ## Deployment
 Set the Ansible stage:
@@ -118,14 +125,18 @@ Make sure the SSH keys can be found by Ansible:
 ```bash
 ssh-add <path-to-ssh-key>
 ```
+From now on, use `--ask-vault-pass` or password files on all Ansible commands. See https://docs.ansible.com/ansible/latest/vault_guide/vault_using_encrypted_content.html for more info.
+
 Run the Ansible playbook:
 ```bash
-ansible-playbook site.yml
+ansible-playbook site.yml --ask-vault-pass
 ```
 
 When creating a new cluster from scratch, you have to go slower:
 ```bash
-ansible-playbook mail.yml
+ansible-playbook mail.yml --ask-become-pass
+# Only do the following line if new mail secrets have been created
+ansible-vault encrypt secrets/*$ANSIBLE_STAGE* && mv secrets/*$ANSIBLE_STAGE* vault/
 ansible-playbook webservers.yml
 ansible-playbook setup.yml
 ansible-playbook cluster.yml --extra-vars "{'terraform_cluster_targets': ['module.namespaces']}"

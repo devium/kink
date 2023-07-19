@@ -1,13 +1,13 @@
 - name: Check if Postfix accounts already exist (does not check for changes!)
   stat:
-    path: "{{ mail_secrets_dir }}/postfix-accounts.{{ mail_stage }}.cf"
+    path: "{{ mail_vault_dir }}/postfix-accounts.{{ mail_stage }}.cf"
   register: postfix_stat_result
   tags:
     - config-mail
 
 - name: Check if DKIM keys already exist
   stat:
-    path: "{{ mail_secrets_dir }}/mail.{{ mail_stage }}.private"
+    path: "{{ mail_vault_dir }}/mail.{{ mail_stage }}.private"
   register: dkim_stat_result
   tags:
     - config-mail
@@ -30,7 +30,7 @@
       cmd: "{{ playbook_dir }}/.tmp/setup.sh email add {{ item.name }}@{{ mail_domain }} {{ item.password }}"
     with_items: "{{ mail_accounts }}"
     become: yes
-    # no_log: true
+    no_log: true
     when: not postfix_stat_result.stat.exists
 
   - name: Generate DKIM key and DNS entries
@@ -65,6 +65,10 @@
         dest: "mail.{{ mail_stage }}.txt"
         cond: "{{ not dkim_stat_result.stat.exists }}"
     when: item.cond
+
+  - name: Remind to encrypt the created files.
+    debug:
+      msg: "New mailserver config files created. Make sure to encrypt them using ansible-vault and store them in the vault directory."
 
   - name: Delete temporary mail config directory
     file:

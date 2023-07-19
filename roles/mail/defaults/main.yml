@@ -9,6 +9,7 @@ mail_accounts:
 mail_dkim_key_path: "{{ mail_secrets_dir }}/mail.{{ mail_stage }}.private"
 mail_dkim_dns_path: "{{ mail_secrets_dir }}/mail.{{ mail_stage }}.txt"
 mail_secrets_dir: "{{ playbook_dir }}/secrets"
+mail_vault_dir: "{{ playbook_dir }}/vault"
 mail_versions: "{{ mail_versions_default | combine(mail_versions_override, recursive=True) }}"
 
 mail_versions_default:

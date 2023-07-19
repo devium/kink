@@ -69,6 +69,7 @@ terraform_cluster_secrets_dir: "{{ playbook_dir }}/secrets"
 terraform_cluster_subdomains: "{{ terraform_cluster_subdomains_default | combine(terraform_cluster_subdomains_override, recursive=True) }}"
 terraform_cluster_targets: []
 terraform_cluster_use_production_cert: false
+terraform_cluster_vault_dir: "{{ playbook_dir }}/vault"
 terraform_cluster_versions: "{{ terraform_cluster_versions_default | combine(terraform_cluster_versions_override, recursive=True) }}"
 terraform_cluster_volume_sizes: "{{ terraform_cluster_volume_sizes_default }}"
 terraform_cluster_workadventure_start_map: /src/map.json
@@ -77,6 +78,10 @@ terraform_cluster_workspace: "{{ terraform_cluster_stage }}"
 terraform_cluster_mail_secrets_files:
   key: "{{ terraform_cluster_secrets_dir }}/mail.{{ terraform_cluster_stage }}.private"
   accounts: "{{ terraform_cluster_secrets_dir }}/postfix-accounts.{{ terraform_cluster_stage }}.cf"
+
+terraform_cluster_mail_secrets_files_vault:
+  key: "{{ terraform_cluster_vault_dir }}/mail.{{ terraform_cluster_stage }}.private"
+  accounts: "{{ terraform_cluster_vault_dir }}/postfix-accounts.{{ terraform_cluster_stage }}.cf"
 
 terraform_cluster_namespaces_default:
   backup: backup

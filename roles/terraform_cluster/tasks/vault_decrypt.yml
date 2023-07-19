@@ -1,0 +1,9 @@
+- name: Decrypt mail files.
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  with_items:
+    - src: "{{ terraform_cluster_mail_secrets_files_vault.key }}"
+      dest: "{{ terraform_cluster_mail_secrets_files.key }}"
+    - src: "{{ terraform_cluster_mail_secrets_files_vault.accounts }}"
+      dest: "{{ terraform_cluster_mail_secrets_files.accounts }}"
