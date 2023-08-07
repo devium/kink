@@ -7,6 +7,11 @@ terraform_servers_ssh_key:
 terraform_servers_stage:
 terraform_servers_subdomains_override:
 
+terraform_servers_backend:
+  hostname:
+  organization:
+  token:
+
 terraform_servers_dkim_file: "{{ terraform_servers_secrets_dir }}/mail.{{ terraform_servers_stage }}.txt"
 terraform_servers_dkim_file_vault: "{{ terraform_servers_vault_dir }}/mail.{{ terraform_servers_stage }}.txt"
 terraform_servers_inventory_file: "{{ ansible_inventory_sources[0] }}"
@@ -14,7 +19,7 @@ terraform_servers_plan_file: "{{ role_path }}/files/terraform.tfstate.d/{{ terra
 terraform_servers_secrets_dir: "{{ playbook_dir }}/secrets"
 terraform_servers_subdomains: "{{ terraform_servers_subdomains_default | combine(terraform_servers_subdomains_override, recursive=True) }}"
 terraform_servers_vault_dir: "{{ playbook_dir }}/vault"
-terraform_servers_workspace: "{{ terraform_servers_stage }}"
+terraform_servers_workspace: "servers-{{ terraform_servers_stage }}"
 
 terraform_servers_subdomains_default:
   buddy: buddy

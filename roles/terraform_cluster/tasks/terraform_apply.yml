@@ -1,12 +1,19 @@
 - name: Apply terraform project
   community.general.terraform:
     project_path: "{{ role_path }}/files"
-    workspace: "{{ terraform_cluster_workspace }}"
     variables: "{{ terraform_cluster_variables }}"
     state: present
     plan_file: "{{ terraform_cluster_plan_file }}"
     targets: "{{ terraform_cluster_targets }}"
     provider_upgrade: yes
+    workspace: "{{ terraform_cluster_workspace }}"
+  
+  environment: 
+    TF_CLOUD_HOSTNAME: "{{ terraform_cluster_backend.hostname }}"
+    TF_CLOUD_ORGANIZATION: "{{ terraform_cluster_backend.organization }}"
+    TF_WORKSPACE: "{{ terraform_cluster_workspace }}"
+    TF_TOKEN_app_terraform_io: "{{ terraform_cluster_backend.token }}"
+
   register: terraform_result
 
 - name: Print Terraform output

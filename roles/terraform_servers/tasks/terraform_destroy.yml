@@ -1,9 +1,16 @@
 - name: Destroy terraform project
   community.general.terraform:
     project_path: "{{ role_path }}/files"
-    workspace: "{{ terraform_servers_workspace }}"
     variables: "{{ terraform_servers_variables }}"
     state: absent
+    workspace: "{{ terraform_servers_workspace }}"
+  
+  environment: 
+    TF_CLOUD_HOSTNAME: "{{ terraform_servers_backend.hostname }}"
+    TF_CLOUD_ORGANIZATION: "{{ terraform_servers_backend.organization }}"
+    TF_WORKSPACE: "{{ terraform_servers_workspace }}"
+    TF_TOKEN_app_terraform_io: "{{ terraform_servers_backend.token }}"
+
   register: terraform_result
 
 - name: Print Terraform output

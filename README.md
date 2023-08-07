@@ -64,6 +64,12 @@ subdomains_override:
   shlink: 
   shlink_web: 
 
+# Terraform state backend configuration
+terraform_backend:
+  hostname:
+  organization:
+  token:
+
 # Random tokens and passwords that may be generated
 hedgedoc_secret: 
 minecraft_rcon_password: 

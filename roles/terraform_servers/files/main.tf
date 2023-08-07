@@ -1,6 +1,7 @@
 terraform {
-  backend "local" {
+  cloud {
   }
+
   required_providers {
     hcloud = {
       source = "hetznercloud/hcloud"

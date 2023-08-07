@@ -33,7 +33,7 @@ namespaces: "{{ namespaces_base | to_json | regex_replace(': \"(.+?)\"', namespa
 mail_domain: "{{ domain }}"
 mail_stage: "{{ stage }}"
 
-
+terraform_servers_backend: "{{ terraform_backend }}"
 terraform_servers_domain: "{{ domain }}"
 terraform_servers_hcloud_token: "{{ hcloud_token }}"
 terraform_servers_hdns_token: "{{ hdns_token }}"
@@ -90,6 +90,7 @@ rke2_version: v1.25.5+rke2r1
 
 
 terraform_cluster_admin_passwords: "{{ admin_passwords }}"
+terraform_cluster_backend: "{{ terraform_backend }}"
 terraform_cluster_backup_schedule: "0 0 * * *"
 terraform_cluster_cert_email: "{{ cert_email }}"
 terraform_cluster_db_passwords: "{{ db_passwords }}"
