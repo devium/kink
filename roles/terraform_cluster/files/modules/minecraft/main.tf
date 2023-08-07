@@ -29,7 +29,7 @@ resource "helm_release" "minecraft" {
       ops: ${var.minecraft_admins}
       type: "PAPER"
       worldSaveName: ${var.minecraft_world}
-      levelSeed: "8624896"
+      levelSeed: "809371870"
       memory: 4096M
       downloadModpackUrl: ${var.minecraft_modpack_url}
       removeOldMods: true
@@ -151,7 +151,7 @@ resource "helm_release" "minecraft_bedrock" {
       maxPlayers: 8
       pvp: true
       ops: ${var.minecraft_admins}
-      levelSeed: "8624896"
+      levelSeed: "809371870"
       serverName: "${title(var.project_name)}"
       playerIdleTimeout: 0
       cheats: true
