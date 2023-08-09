@@ -33,6 +33,8 @@ home_site_image:
 minecraft_admins: 
 # Link to zip file of Minecraft plugins
 minecraft_modpack_url: 
+# Minecraft world seed
+minecraft_seed: 
 # Minecraft world name
 minecraft_world: 
 # Project name used in user-facing applications

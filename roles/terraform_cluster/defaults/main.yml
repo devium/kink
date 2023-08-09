@@ -15,6 +15,7 @@ terraform_cluster_minecraft_modpack_url:
 terraform_cluster_minecraft_world:
 terraform_cluster_minecraft_rcon_password:
 terraform_cluster_minecraft_rcon_web_password:
+terraform_cluster_minecraft_seed:
 terraform_cluster_namespaces_override:
 terraform_cluster_project_name:
 terraform_cluster_resources_override:
@@ -245,6 +246,7 @@ terraform_cluster_variables:
   minecraft_modpack_url: "{{ terraform_cluster_minecraft_modpack_url }}"
   minecraft_rcon_password: "{{ terraform_cluster_minecraft_rcon_password }}"
   minecraft_rcon_web_password: "{{ terraform_cluster_minecraft_rcon_web_password }}"
+  minecraft_seed: "{{ terraform_cluster_minecraft_seed }}"
   minecraft_world: "{{ terraform_cluster_minecraft_world }}"
   namespaces: "{{ terraform_cluster_namespaces | to_json }}"
   project_name: "{{ terraform_cluster_project_name }}"

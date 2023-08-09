@@ -348,6 +348,7 @@ module "minecraft" {
   minecraft_world             = var.minecraft_world
   minecraft_rcon_password     = var.minecraft_rcon_password
   minecraft_rcon_web_password = var.minecraft_rcon_web_password
+  minecraft_seed              = var.minecraft_seed
   namespaces                  = module.namespaces.namespaces
   project_name                = var.project_name
   pvcs                        = module.volumes.pvcs

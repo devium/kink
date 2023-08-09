@@ -28,6 +28,10 @@ variable "minecraft_rcon_web_password" {
   sensitive = true
 }
 
+variable "minecraft_seed" {
+  type = string
+}
+
 variable "minecraft_world" {
   type = string
 }
