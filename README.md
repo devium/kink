@@ -133,7 +133,7 @@ Make sure the SSH keys can be found by Ansible:
 ```bash
 ssh-add <path-to-ssh-key>
 ```
-From now on, use `--ask-vault-pass` or password files on all Ansible commands. See https://docs.ansible.com/ansible/latest/vault_guide/vault_using_encrypted_content.html for more info.
+From now on, use `--ask-vault-pass` on all Ansible commands or store the vault password in `secrets/.vault_pass.txt`. See https://docs.ansible.com/ansible/latest/vault_guide/vault_using_encrypted_content.html for more info.
 
 Run the Ansible playbook:
 ```bash
