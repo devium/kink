@@ -26,7 +26,7 @@ resource "kubernetes_persistent_volume_v1" "volumes" {
 
     persistent_volume_source {
       csi {
-        driver        = var.csi_driver
+        driver        = "csi.hetzner.cloud"
         fs_type       = "ext4"
         volume_handle = each.value
       }

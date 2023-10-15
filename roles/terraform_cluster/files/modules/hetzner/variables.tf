@@ -7,6 +7,10 @@ variable "namespaces" {
   type = map(string)
 }
 
+variable "release_name" {
+  type = string
+}
+
 variable "versions" {
   type = map(string)
 }

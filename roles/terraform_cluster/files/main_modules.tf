@@ -17,6 +17,7 @@ module "hetzner" {
 
   hcloud_token = var.hcloud_token
   namespaces   = module.namespaces.namespaces
+  release_name = var.release_name
   versions     = var.versions
 
   depends_on = [
@@ -27,7 +28,6 @@ module "hetzner" {
 module "volumes" {
   source = "./modules/volumes"
 
-  csi_driver     = module.hetzner.csi_driver
   namespaces     = module.namespaces.namespaces
   volume_handles = var.volume_handles
   volume_sizes   = var.volume_sizes

@@ -11,16 +11,16 @@ data "http" "nginx_json" {
 }
 
 resource "grafana_dashboard" "jitsi_system" {
-  config_json = replace(data.http.jitsi_system_json.body, "\"$${DS_PROMETHEUS}\"", "\"prometheus\"")
+  config_json = replace(data.http.jitsi_system_json.response_body, "\"$${DS_PROMETHEUS}\"", "\"prometheus\"")
   overwrite   = true
 }
 
 resource "grafana_dashboard" "jitsi" {
-  config_json = replace(data.http.jitsi_json.body, "\"$${DS_PROMETHEUS}\"", "\"prometheus\"")
+  config_json = replace(data.http.jitsi_json.response_body, "\"$${DS_PROMETHEUS}\"", "\"prometheus\"")
   overwrite   = true
 }
 
 resource "grafana_dashboard" "nginx" {
-  config_json = replace(data.http.nginx_json.body, "\"$${DS_PROMETHEUS}\"", "\"prometheus\"")
+  config_json = replace(data.http.nginx_json.response_body, "\"$${DS_PROMETHEUS}\"", "\"prometheus\"")
   overwrite   = true
 }
