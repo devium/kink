@@ -172,8 +172,8 @@ terraform_cluster_versions_default:
   cert_manager_helm: v1.7.1
   collabora: 21.11.3.6.1
   collabora_helm: 2.5.1
-  element: v1.10.11
-  element_helm: 1.1.10
+  element: v1.11.46
+  element_helm: 1.3.3
   hcloud_csi: v2.5.1
   grafana: 8.4.2
   grafana_helm: 33.2.1
@@ -205,8 +205,8 @@ terraform_cluster_versions_default:
   shlink: 3.2.1
   shlink_helm: 5.1.2
   shlink_web: 3.7.2
-  synapse: v1.57.1
-  synapse_helm: 2.1.34
+  synapse: v1.94.0
+  synapse_helm: 3.7.8
   workadventure: v1.8.4
   workadventure_helm: 0.2.0
 
