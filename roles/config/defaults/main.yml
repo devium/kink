@@ -37,7 +37,7 @@ config_nextcloud_config:
     value: false
   - app: system
     key: hide_login_form
-    value: true
+    value: false
   - app: system
     key: skeletondirectory
     value: ""

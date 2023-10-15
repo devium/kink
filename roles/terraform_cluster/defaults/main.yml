@@ -195,8 +195,8 @@ terraform_cluster_versions_default:
   minecraft_game: 1.20.1
   minecraft_helm: 4.9.3
   minecraft_rcon_web_helm: 1.0.0
-  nextcloud: 26.0.0-apache
-  nextcloud_helm: 3.5.4
+  nextcloud: 27.1.2-apache
+  nextcloud_helm: 4.3.3
   nginx: 1.23.0
   nginx_helm: 13.1.0
   nginx_prometheus_exporter: 0.11.0
