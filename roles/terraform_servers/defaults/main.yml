@@ -37,6 +37,7 @@ terraform_servers_subdomains_default:
   nextcloud: next
   pretix: tickets
   shlink: shlink
+  sliding_sync: syncv3
   synapse: matrix
   workadventure_back: api.play
   workadventure_front: play

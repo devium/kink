@@ -93,6 +93,7 @@ db_passwords:
   postgres: 
   pretix: 
   shlink: 
+  sliding_sync: 
   synapse: 
 
 jitsi_secrets:

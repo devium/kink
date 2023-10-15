@@ -14,6 +14,8 @@ resource "kubernetes_secret_v1" "init" {
       CREATE DATABASE nextcloud WITH OWNER nextcloud;
       CREATE USER synapse WITH PASSWORD '${var.db_passwords.synapse}';
       CREATE DATABASE synapse WITH OWNER synapse LC_COLLATE 'C' LC_CTYPE 'C' TEMPLATE template0;
+      CREATE USER sliding_sync WITH PASSWORD '${var.db_passwords.sliding_sync}';
+      CREATE DATABASE sliding_sync WITH OWNER sliding_sync;
       CREATE USER grafana WITH PASSWORD '${var.db_passwords.grafana}';
       CREATE DATABASE grafana WITH OWNER grafana;
       CREATE USER shlink WITH PASSWORD '${var.db_passwords.shlink}';

@@ -1,7 +1,8 @@
 locals {
-  fqdn       = "${var.subdomains.synapse}.${var.domain}"
-  oidc_url   = "https://${var.subdomains.keycloak}.${var.domain}/realms/${var.keycloak_realm}"
-  max_upload = "20M"
+  fqdn              = "${var.subdomains.synapse}.${var.domain}"
+  fqdn_sliding_sync = "${var.subdomains.sliding_sync}.${var.domain}"
+  oidc_url          = "https://${var.subdomains.keycloak}.${var.domain}/realms/${var.keycloak_realm}"
+  max_upload        = "20M"
 }
 
 resource "helm_release" "synapse" {
@@ -25,6 +26,9 @@ resource "helm_release" "synapse" {
       client:
         m.homeserver:
           base_url: https://${local.fqdn}
+
+        org.matrix.msc3575.proxy:
+          url: https://${local.fqdn_sliding_sync}
 
         im.vector.riot.jitsi:
           preferredDomain: ${var.subdomains.jitsi}.${var.domain}
@@ -105,6 +109,53 @@ resource "helm_release" "synapse" {
         - secretName: ${var.domain}-tls
           hosts:
             - ${var.domain}
+  YAML
+  ]
+}
+
+resource "helm_release" "sliding_sync" {
+  name      = "${var.release_name}-sliding-sync"
+  namespace = var.namespaces.synapse
+
+  repository = "https://ananace.gitlab.io/charts"
+  chart      = "sliding-sync-proxy"
+  version    = var.versions.sliding_sync_helm
+
+  values = [<<-YAML
+    image:
+      tag: ${var.versions.sliding_sync}
+
+    matrixServer: https://${var.domain}
+
+    resources:
+      requests:
+        memory: ${var.resources.memory.sliding_sync}
+
+    ingress:
+      enabled: true
+      serveSimpleClient: true
+
+      hosts:
+        - ${local.fqdn_sliding_sync}
+
+      annotations:
+        cert-manager.io/cluster-issuer: ${var.cert_issuer}
+        nginx.ingress.kubernetes.io/enable-cors: "true"
+
+      tls:
+        - secretName: ${local.fqdn_sliding_sync}-tls
+          hosts:
+            - ${local.fqdn_sliding_sync}
+
+    postgresql:
+      enabled: false
+
+    externalPostgresql:
+      host: ${var.db_host}
+      sslmode: disable
+      database: sliding_sync
+      username: sliding_sync
+      password: ${var.db_passwords.sliding_sync}
   YAML
   ]
 }

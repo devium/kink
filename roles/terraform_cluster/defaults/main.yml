@@ -136,6 +136,7 @@ terraform_cluster_resources_default:
     prosody: 50Mi
     shlink: 100Mi
     shlink_web: 20Mi
+    sliding_sync: 200Mi
     synapse: 600Mi
     workadventure_front: 20Mi
     workadventure_back: 100Mi
@@ -160,6 +161,7 @@ terraform_cluster_subdomains_default:
   pretix: tickets
   shlink: api.shlink
   shlink_web: shlink
+  sliding_sync: syncv3
   synapse: matrix
   workadventure_back: api.play
   workadventure_front: play
@@ -205,6 +207,8 @@ terraform_cluster_versions_default:
   shlink: 3.2.1
   shlink_helm: 5.1.2
   shlink_web: 3.7.2
+  sliding_sync: v0.99.11
+  sliding_sync_helm: 0.2.5
   synapse: v1.94.0
   synapse_helm: 3.7.8
   workadventure: v1.8.4
