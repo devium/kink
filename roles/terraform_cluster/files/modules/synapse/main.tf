@@ -59,6 +59,7 @@ resource "helm_release" "synapse" {
           authorization_endpoint: ${local.oidc_url}/protocol/openid-connect/auth
           token_endpoint: ${local.oidc_url}/protocol/openid-connect/token
           userinfo_endpoint: ${local.oidc_url}/protocol/openid-connect/userinfo
+          backchannel_logout_enabled: true
 
           user_mapping_provider:
             config:

@@ -47,11 +47,13 @@ resource "keycloak_openid_client" "synapse" {
   access_type   = "CONFIDENTIAL"
   client_secret = var.keycloak_secrets.synapse
 
-  standard_flow_enabled = true
-  root_url              = "https://${var.subdomains.synapse}.${var.domain}"
-  web_origins           = ["+"]
-  valid_redirect_uris   = ["/*"]
-  admin_url             = "/"
+  standard_flow_enabled               = true
+  root_url                            = "https://${var.subdomains.synapse}.${var.domain}"
+  backchannel_logout_url              = "https://${var.subdomains.synapse}.${var.domain}/_synapse/client/oidc/backchannel_logout"
+  backchannel_logout_session_required = true
+  web_origins                         = ["+"]
+  valid_redirect_uris                 = ["/*"]
+  admin_url                           = "/"
 }
 
 resource "keycloak_openid_client" "grafana" {
