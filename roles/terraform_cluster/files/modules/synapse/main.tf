@@ -33,6 +33,10 @@ resource "helm_release" "synapse" {
         im.vector.riot.jitsi:
           preferredDomain: ${var.subdomains.jitsi}.${var.domain}
 
+        org.matrix.msc2965.authentication:
+          issuer: ${local.oidc_url}
+          account: ${local.oidc_url}/account
+
     config:
       enableRegistration: false
       registrationSharedSecret: ${var.synapse_secrets.registration}
