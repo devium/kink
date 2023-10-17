@@ -5,3 +5,4 @@
   with_items:
     - "{{ terraform_cluster_mail_secrets_files.key }}"
     - "{{ terraform_cluster_mail_secrets_files.accounts }}"
+    - "{{ terraform_cluster_mail_secrets_files.aliases }}"

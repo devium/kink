@@ -5,6 +5,13 @@
   tags:
     - config-mail
 
+- name: Check if aliases already exist (does not check for changes!)
+  stat:
+    path: "{{ mail_vault_dir }}/postfix-virtual.{{ mail_stage }}.cf"
+  register: aliases_stat_result
+  tags:
+    - config-mail
+
 - name: Check if DKIM keys already exist
   stat:
     path: "{{ mail_vault_dir }}/mail.{{ mail_stage }}.private"
@@ -28,10 +35,17 @@
   - name: Generate Postfix accounts (requires sudo, use --ask-become-pass)
     command:
       cmd: "{{ playbook_dir }}/.tmp/setup.sh email add {{ item.name }}@{{ mail_domain }} {{ item.password }}"
-    with_items: "{{ mail_accounts }}"
+    with_items: "{{ mail_mail_accounts }}"
     become: yes
     no_log: true
     when: not postfix_stat_result.stat.exists
+
+  - name: Create aliases
+    command:
+      cmd: "{{ playbook_dir }}/.tmp/setup.sh alias add {{ item.alias }}@{{ mail_domain }} {{ item.account }}@{{ mail_domain }}"
+    with_items: "{{ mail_mail_aliases }}"
+    become: yes
+    when: not aliases_stat_result.stat.exists
 
   - name: Generate DKIM key and DNS entries
     command:
@@ -58,6 +72,9 @@
       - src: "postfix-accounts.cf"
         dest: "postfix-accounts.{{ mail_stage }}.cf"
         cond: "{{ not postfix_stat_result.stat.exists }}"
+      - src: "postfix-virtual.cf"
+        dest: "postfix-virtual.{{ mail_stage }}.cf"
+        cond: "{{ not aliases_stat_result.stat.exists }}"
       - src: "opendkim/keys/{{ mail_domain }}/mail.private"
         dest: "mail.{{ mail_stage }}.private"
         cond: "{{ not dkim_stat_result.stat.exists }}"
@@ -76,4 +93,4 @@
       state: absent
     become: yes
 
-  when: not postfix_stat_result.stat.exists or not dkim_stat_result.stat.exists
+  when: not postfix_stat_result.stat.exists or not aliases_stat_result.stat.exists or not dkim_stat_result.stat.exists

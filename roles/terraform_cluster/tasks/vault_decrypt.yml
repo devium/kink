@@ -7,3 +7,5 @@
       dest: "{{ terraform_cluster_mail_secrets_files.key }}"
     - src: "{{ terraform_cluster_mail_secrets_files_vault.accounts }}"
       dest: "{{ terraform_cluster_mail_secrets_files.accounts }}"
+    - src: "{{ terraform_cluster_mail_secrets_files_vault.aliases }}"
+      dest: "{{ terraform_cluster_mail_secrets_files.aliases }}"

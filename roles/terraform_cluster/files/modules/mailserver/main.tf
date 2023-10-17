@@ -16,6 +16,7 @@ resource "kubernetes_config_map_v1" "config" {
 
   data = {
     "postfix-accounts.cf" = file(var.secrets_files.accounts)
+    "postfix-virtual.cf"  = file(var.secrets_files.aliases)
     "KeyTable"            = "mail._domainkey.${var.domain} ${var.domain}:mail:/etc/opendkim/keys/${var.domain}/mail.private"
     "SigningTable"        = "*@${var.domain} mail._domainkey.${var.domain}"
     "TrustedHosts"        = <<-HOSTS

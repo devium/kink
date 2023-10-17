@@ -1,10 +1,8 @@
 mail_domain:
+mail_mail_accounts:
+mail_mail_aliases:
 mail_stage:
 mail_versions_override:
-
-mail_accounts:
-  - name:
-    password:
 
 mail_dkim_key_path: "{{ mail_secrets_dir }}/mail.{{ mail_stage }}.private"
 mail_dkim_dns_path: "{{ mail_secrets_dir }}/mail.{{ mail_stage }}.txt"

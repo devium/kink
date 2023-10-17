@@ -112,6 +112,10 @@ mail_accounts:
   - name: "{{ mail_account }}"
     password: "{{ mail_password }}"
 
+mail_aliases:
+  - alias: 
+    account: 
+
 synapse_secrets:
   registration: 
   macaroon: 

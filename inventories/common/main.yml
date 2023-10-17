@@ -31,6 +31,8 @@ namespaces: "{{ namespaces_base | to_json | regex_replace(': \"(.+?)\"', namespa
 
 
 mail_domain: "{{ domain }}"
+mail_mail_aliases: "{{ mail_aliases }}"
+mail_mail_accounts: "{{ mail_accounts }}"
 mail_stage: "{{ stage }}"
 
 terraform_servers_backend: "{{ terraform_backend }}"
