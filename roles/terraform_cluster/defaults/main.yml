@@ -154,7 +154,6 @@ terraform_cluster_subdomains_default:
   hedgedoc: doc
   home: www
   jitsi: jitsi
-  jitsi_keycloak: auth.jitsi
   keycloak: auth
   mailserver: mail
   minecraft: minecraft
@@ -185,7 +184,7 @@ terraform_cluster_versions_default:
   hedgedoc_helm: 1.1.0
   jitsi: stable-8960-1
   jitsi_helm: 1.3.7
-  jitsi_keycloak: v0.2.1
+  jitsi_keycloak: v20230917
   jitsi_prometheus_exporter: 1.2.1
   keycloak: 22.0.4
   keycloak_helm: 2.3.0

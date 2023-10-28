@@ -25,7 +25,6 @@ resource "helm_release" "keycloak" {
       annotations:
         cert-manager.io/cluster-issuer: ${var.cert_issuer}
         nginx.ingress.kubernetes.io/proxy-buffer-size: "128k"
-        nginx.ingress.kubernetes.io/enable-cors: "true"
         nginx.ingress.kubernetes.io/configuration-snippet: |
           more_set_headers "Content-Security-Policy: ${join(";", [for key, value in local.csp : "${key} ${value}"])}";
 
@@ -51,7 +50,7 @@ resource "helm_release" "keycloak" {
       - "--http-port=8080"
       - "--hostname-strict=false"
       - "--hostname-strict-https=false"
-      - "--features=declarative-user-profile"
+      - "--features=declarative-user-profile,dynamic-scopes"
 
     postgresql:
       enabled: false

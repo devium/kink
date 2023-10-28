@@ -4,7 +4,7 @@ locals {
   csp = merge(var.default_csp, {
     "script-src"      = "'self' 'unsafe-inline'"
     "frame-src"       = "'self' https://${var.subdomains.collabora}.${var.domain}"
-    "frame-ancestors" = "'self'"
+    "frame-ancestors" = "https:"
   })
 }
 

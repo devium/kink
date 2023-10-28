@@ -29,7 +29,6 @@ terraform_servers_subdomains_default:
   hedgedoc: doc
   home: www
   jitsi: jitsi
-  jitsi_keycloak: auth.jitsi
   keycloak: auth
   mailserver: mail
   minecraft: minecraft

@@ -28,6 +28,22 @@ resource "kubernetes_config_map_v1" "prosody_plugins" {
   }
 }
 
+data "http" "web_keycloak_body_html" {
+  url = "https://raw.githubusercontent.com/nordeck/jitsi-keycloak-adapter/${var.versions.jitsi_keycloak}/templates/usr/share/jitsi-meet/body.html"
+}
+
+data "http" "web_keycloak_oidc_adapter_html" {
+  url = "https://raw.githubusercontent.com/nordeck/jitsi-keycloak-adapter/${var.versions.jitsi_keycloak}/templates/usr/share/jitsi-meet/static/oidc-adapter.html"
+}
+
+data "http" "web_keycloak_oidc_redirect_html" {
+  url = "https://raw.githubusercontent.com/nordeck/jitsi-keycloak-adapter/${var.versions.jitsi_keycloak}/templates/usr/share/jitsi-meet/static/oidc-redirect.html"
+}
+
+data "http" "web_keycloak_meet_conf" {
+  url = "https://raw.githubusercontent.com/nordeck/jitsi-keycloak-adapter/${var.versions.jitsi_keycloak}/templates/jitsi-web-container/defaults/meet.conf"
+}
+
 resource "kubernetes_config_map_v1" "web_config" {
   metadata {
     name      = "web-config"
@@ -47,6 +63,22 @@ resource "kubernetes_config_map_v1" "web_config" {
       };
       JS
     BASH
+
+    "body.html" = <<-HTML
+      ${data.http.web_keycloak_body_html.response_body}
+    HTML
+
+    "oidc-adapter.html" = <<-HTML
+      ${data.http.web_keycloak_oidc_adapter_html.response_body}
+    HTML
+
+    "oidc-redirect.html" = <<-HTML
+      ${data.http.web_keycloak_oidc_redirect_html.response_body}
+    HTML
+
+    "meet.conf" = <<-CONF
+      ${data.http.web_keycloak_meet_conf.response_body}
+    CONF
   }
 }
 
@@ -93,6 +125,18 @@ resource "helm_release" "jitsi" {
         - name: web-config
           mountPath: /etc/cont-init.d/20-config-manual
           subPath: 20-config-manual
+        - name: web-config
+          mountPath: /usr/share/jitsi-meet/body.html
+          subPath: body.html
+        - name: web-config
+          mountPath: /usr/share/jitsi-meet/static/oidc-adapter.html
+          subPath: oidc-adapter.html
+        - name: web-config
+          mountPath: /usr/share/jitsi-meet/static/oidc-redirect.html
+          subPath: oidc-redirect.html
+        - name: web-config
+          mountPath: /defaults/meet.conf
+          subPath: meet.conf
 
       extraVolumes:
         - name: web-config
@@ -101,7 +145,7 @@ resource "helm_release" "jitsi" {
             defaultMode: 0777
 
       extraEnvs:
-        TOKEN_AUTH_URL: https://${local.fqdn_jitsi_keycloak}/{room}
+        ADAPTER_INTERNAL_URL: "http://jitsi-keycloak"
         ENABLE_P2P: "false"
 
       resources:
@@ -158,6 +202,10 @@ resource "helm_release" "jitsi" {
       resources:
         requests:
           memory: ${var.resources.memory.jitsi_jicofo}
+
+      extraEnvs:
+        JICOFO_AUTH_TYPE: internal
+        JICOFO_AUTH_LIFETIME: 100 milliseconds
 
     prosody:
       image:
@@ -220,29 +268,6 @@ resource "helm_release" "jitsi" {
   ]
 }
 
-resource "kubernetes_secret_v1" "jitsi_keycloak_config" {
-  metadata {
-    name      = "jitsi-keycloak-config"
-    namespace = var.namespaces.jitsi
-  }
-
-  data = {
-    "keycloak.json" = <<-JSON
-      {
-        "realm": "${var.keycloak_realm}",
-        "auth-server-url": "https://${var.subdomains.keycloak}.${var.domain}/",
-        "ssl-required": "external",
-        "resource": "${var.keycloak_clients.jitsi}",
-        "public-client": true,
-        "credentials": {
-          "secret": "${var.keycloak_secrets.jitsi}"
-        },
-        "confidential-port": 0
-      }
-    JSON
-  }
-}
-
 resource "kubernetes_deployment_v1" "jitsi_keycloak" {
   metadata {
     name      = "jitsi-keycloak"
@@ -271,47 +296,42 @@ resource "kubernetes_deployment_v1" "jitsi_keycloak" {
 
       spec {
         container {
-          image = "ghcr.io/devium/jitsi-keycloak:${var.versions.jitsi_keycloak}"
+          image = "ghcr.io/nordeck/jitsi-keycloak-adapter:${var.versions.jitsi_keycloak}"
           name  = "jitsi-keycloak"
 
           port {
-            container_port = 3000
+            container_port = 9000
           }
 
           env {
-            name  = "JITSI_SECRET"
+            name  = "KEYCLOAK_ORIGIN"
+            value = "https://${var.subdomains.keycloak}.${var.domain}"
+          }
+          env {
+            name  = "KEYCLOAK_REALM"
+            value = var.keycloak_realm
+          }
+          env {
+            name  = "KEYCLOAK_CLIENT_ID"
+            value = "jitsi"
+          }
+          env {
+            name  = "JWT_APP_ID"
+            value = "jitsi"
+          }
+          env {
+            name  = "JWT_APP_SECRET"
             value = var.jitsi_secrets.jwt
           }
           env {
-            name  = "DEFAULT_ROOM"
-            value = "meeting"
-          }
-          env {
-            name  = "JITSI_URL"
-            value = "https://${local.fqdn}/"
-          }
-          env {
-            name  = "JITSI_SUB"
-            value = "meet.jitsi"
-          }
-
-          volume_mount {
-            name       = "keycloak-config"
-            mount_path = "/config/keycloak.json"
-            sub_path   = "keycloak.json"
+            name  = "ALLOW_UNSECURE_CERT"
+            value = "true"
           }
 
           resources {
             requests = {
               memory = var.resources.memory.jitsi_keycloak
             }
-          }
-        }
-
-        volume {
-          name = "keycloak-config"
-          secret {
-            secret_name = one(kubernetes_secret_v1.jitsi_keycloak_config.metadata).name
           }
         }
       }
@@ -334,52 +354,7 @@ resource "kubernetes_service_v1" "jitsi_keycloak" {
       name        = "http"
       protocol    = "TCP"
       port        = 80
-      target_port = 3000
-    }
-  }
-}
-
-resource "kubernetes_ingress_v1" "jitsi_keycloak" {
-  metadata {
-    name      = "jitsi-keycloak"
-    namespace = var.namespaces.jitsi
-
-    annotations = {
-      "cert-manager.io/cluster-issuer"                    = var.cert_issuer
-      "nginx.ingress.kubernetes.io/configuration-snippet" = <<-CONF
-        more_set_headers "Content-Security-Policy: ${join(";", [for key, value in local.csp_jitsi_keycloak : "${key} ${value}"])}";
-      CONF
-    }
-  }
-
-  spec {
-    rule {
-      host = local.fqdn_jitsi_keycloak
-
-      http {
-        path {
-          path      = "/"
-          path_type = "Prefix"
-
-          backend {
-            service {
-              name = one(kubernetes_service_v1.jitsi_keycloak.metadata).name
-
-              port {
-                number = 80
-              }
-            }
-          }
-        }
-      }
-    }
-
-    tls {
-      secret_name = "${local.fqdn_jitsi_keycloak}-tls"
-
-      hosts = [
-        local.fqdn_jitsi_keycloak
-      ]
+      target_port = 9000
     }
   }
 }
