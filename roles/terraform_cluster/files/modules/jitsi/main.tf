@@ -1,6 +1,5 @@
 locals {
-  fqdn                = "${var.subdomains.jitsi}.${var.domain}"
-  fqdn_jitsi_keycloak = "${var.subdomains.jitsi_keycloak}.${var.domain}"
+  fqdn = "${var.subdomains.jitsi}.${var.domain}"
 
   csp = merge(var.default_csp, {
     "script-src"      = "'self' 'unsafe-inline' 'unsafe-eval' https://www.youtube.com"
