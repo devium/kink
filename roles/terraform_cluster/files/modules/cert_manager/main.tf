@@ -29,9 +29,9 @@ resource "helm_release" "cert_manager" {
   ]
 }
 
-resource "kubernetes_secret_v1" "hetzner-secret" {
+resource "kubernetes_secret_v1" "hetzner_secret" {
   metadata {
-    name      = "jitsi-keycloak-config"
+    name      = "hetzner-secret"
     namespace = var.namespaces.cert_manager
   }
 
@@ -78,7 +78,7 @@ resource "kubectl_manifest" "issuer" {
                 groupName: acme.${var.domain}
                 solverName: hetzner
                 config:
-                  secretName: hetzner-secret
+                  secretName: hetzner_secret
                   zoneName: ${var.domain}
                   apiUrl: https://dns.hetzner.com/api/v1
   YAML

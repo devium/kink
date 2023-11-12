@@ -1,4 +1,4 @@
-resource "helm_release" "grafana" {
+resource "helm_release" "hcloud_csi" {
   name       = var.release_name
   namespace  = "kube-system"
   repository = "https://charts.hetzner.cloud"
