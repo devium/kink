@@ -1,58 +1,50 @@
 resource "kubernetes_secret_v1" "init" {
   metadata {
     name      = "init"
-    namespace = var.namespaces.postgres
+    namespace = var.config.namespace
   }
 
   data = {
-    "init.sql" = <<-YAML
-      CREATE USER keycloak WITH PASSWORD '${var.db_passwords.keycloak}';
-      CREATE DATABASE keycloak WITH OWNER keycloak;
-      CREATE USER hedgedoc WITH PASSWORD '${var.db_passwords.hedgedoc}';
-      CREATE DATABASE hedgedoc WITH OWNER hedgedoc;
-      CREATE USER nextcloud WITH PASSWORD '${var.db_passwords.nextcloud}';
-      CREATE DATABASE nextcloud WITH OWNER nextcloud;
-      CREATE USER synapse WITH PASSWORD '${var.db_passwords.synapse}';
-      CREATE DATABASE synapse WITH OWNER synapse LC_COLLATE 'C' LC_CTYPE 'C' TEMPLATE template0;
-      CREATE USER sliding_sync WITH PASSWORD '${var.db_passwords.sliding_sync}';
-      CREATE DATABASE sliding_sync WITH OWNER sliding_sync;
-      CREATE USER grafana WITH PASSWORD '${var.db_passwords.grafana}';
-      CREATE DATABASE grafana WITH OWNER grafana;
-      CREATE USER shlink WITH PASSWORD '${var.db_passwords.shlink}';
-      CREATE DATABASE shlink WITH OWNER shlink;
-      CREATE USER pretix WITH PASSWORD '${var.db_passwords.pretix}';
-      CREATE DATABASE pretix WITH OWNER pretix;
-    YAML
+    "init.sql" = join("\n", concat(
+      [
+        for db_spec_key, db_spec in var.cluster_vars.db_specs :
+        "CREATE USER ${db_spec.username} WITH PASSWORD ${db_spec.password};"
+      ],
+      [
+        for db_spec_key, db_spec in var.cluster_vars.db_specs :
+        "CREATE DATABASE ${db_spec.database} WITH OWNER ${db_spec.username} ${db_spec.params};"
+      ]
+    ))
   }
 }
 
 resource "helm_release" "postgres" {
-  name       = var.release_name
-  namespace  = var.namespaces.postgres
+  name       = var.cluster_vars.release_name
+  namespace  = var.config.namespace
   repository = "https://charts.bitnami.com/bitnami"
   chart      = "postgresql"
 
   values = [<<-YAML
     image:
-      tag: ${var.versions.postgres}
+      tag: ${var.config.version}
 
     global:
       postgresql:
         auth:
-          postgresPassword: ${var.db_passwords.postgres}
+          postgresPassword: ${var.config.password}
 
     primary:
       persistence:
-        existingClaim: ${var.pvcs.postgres}
+        existingClaim: postgres-pvc
 
       initdb:
         scriptsSecret: ${one(kubernetes_secret_v1.init.metadata).name}
         user: postgres
-        password: ${var.db_passwords.postgres}
+        password: ${var.config.password}
 
     resources:
       requests:
-        memory: ${var.resources.memory.postgres}
+        memory: ${var.config.memory}
     YAML
   ]
 }

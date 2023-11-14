@@ -1,23 +1,22 @@
 locals {
-  fqdn              = "${var.subdomains.synapse}.${var.domain}"
-  fqdn_sliding_sync = "${var.subdomains.sliding_sync}.${var.domain}"
-  oidc_url          = "https://${var.subdomains.keycloak}.${var.domain}/realms/${var.keycloak_realm}"
-  max_upload        = "20M"
+  fqdn       = "${var.config.subdomain}.${var.cluster_vars.domains.domain}"
+  oidc_url   = "https://${var.cluster_vars.domains.keycloak}/realms/${var.cluster_vars.keycloak_realm}"
+  max_upload = "20M"
 }
 
 resource "helm_release" "synapse" {
-  name      = var.release_name
-  namespace = var.namespaces.synapse
+  name      = var.cluster_vars.release_name
+  namespace = var.config.namespace
 
   repository = "https://ananace.gitlab.io/charts"
   chart      = "matrix-synapse"
-  version    = var.versions.synapse_helm
+  version    = var.config.version_helm
 
   values = [<<-YAML
     image:
-      tag: ${var.versions.synapse}
+      tag: ${var.config.version}
 
-    serverName: ${var.domain}
+    serverName: ${var.cluster_vars.domains.domain}
     publicServerName: ${local.fqdn}
 
     wellknown:
@@ -28,10 +27,10 @@ resource "helm_release" "synapse" {
           base_url: https://${local.fqdn}
 
         org.matrix.msc3575.proxy:
-          url: https://${local.fqdn_sliding_sync}
+          url: https://${var.cluster_vars.domains.sliding_sync}
 
         im.vector.riot.jitsi:
-          preferredDomain: ${var.subdomains.jitsi}.${var.domain}
+          preferredDomain: ${var.cluster_vars.domains.jitsi}
 
         org.matrix.msc2965.authentication:
           issuer: ${local.oidc_url}
@@ -39,16 +38,16 @@ resource "helm_release" "synapse" {
 
     config:
       enableRegistration: false
-      registrationSharedSecret: ${var.synapse_secrets.registration}
-      macaroonSecretKey: ${var.synapse_secrets.macaroon}
+      registrationSharedSecret: ${var.config.secrets.registration}
+      macaroonSecretKey: ${var.config.secrets.macaroon}
 
     extraConfig:
       default_room_version: "9"
-      web_client_location: https://${var.subdomains.element}.${var.domain}
+      web_client_location: https://${var.cluster_vars.domains.element}
       autocreate_auto_join_rooms: false
       max_upload_size: ${local.max_upload}
       auto_join_rooms:
-        - "#lobby:${var.domain}"
+        - "#lobby:${var.cluster_vars.domains.domain}"
 
       password_config:
         enabled: false
@@ -57,8 +56,8 @@ resource "helm_release" "synapse" {
         - idp_id: keycloak
           idp_name: Keycloak
           issuer: ${local.oidc_url}
-          client_id: ${var.keycloak_clients.synapse}
-          client_secret: ${var.keycloak_secrets.synapse}
+          client_id: ${var.config.keycloak.client}
+          client_secret: ${var.config.keycloak.secret}
           scopes: ["openid", "private_profile"]
           authorization_endpoint: ${local.oidc_url}/protocol/openid-connect/auth
           token_endpoint: ${local.oidc_url}/protocol/openid-connect/token
@@ -79,7 +78,7 @@ resource "helm_release" "synapse" {
 
       resources:
         requests:
-          memory: ${var.resources.memory.synapse}
+          memory: ${var.config.memory}
 
       strategy:
         type: Recreate
@@ -89,21 +88,21 @@ resource "helm_release" "synapse" {
       enabled: false
 
     externalPostgresql:
-      host: ${var.db_host}
+      host: ${var.cluster_vars.db_host}
       port: 5432
-      database: synapse
-      username: synapse
-      password: ${var.db_passwords.synapse}
+      database: ${var.config.db.database}
+      username: ${var.config.db.username}
+      password: ${var.config.db.password}
 
     persistence:
       enabled: true
-      existingClaim: ${var.pvcs.synapse}
+      existingClaim: synapse-pvc
 
     ingress:
       enabled: true
 
       annotations:
-        cert-manager.io/cluster-issuer: ${var.cert_issuer}
+        cert-manager.io/cluster-issuer: leysencrypt
         nginx.ingress.kubernetes.io/enable-cors: "true"
         nginx.ingress.kubernetes.io/proxy-body-size: ${local.max_upload}
 
@@ -111,56 +110,9 @@ resource "helm_release" "synapse" {
         - secretName: ${local.fqdn}-tls
           hosts:
             - ${local.fqdn}
-        - secretName: ${var.domain}-tls
+        - secretName: ${var.cluster_vars.domains.domain}-tls
           hosts:
-            - ${var.domain}
-  YAML
-  ]
-}
-
-resource "helm_release" "sliding_sync" {
-  name      = "${var.release_name}-sliding-sync"
-  namespace = var.namespaces.synapse
-
-  repository = "https://ananace.gitlab.io/charts"
-  chart      = "sliding-sync-proxy"
-  version    = var.versions.sliding_sync_helm
-
-  values = [<<-YAML
-    image:
-      tag: ${var.versions.sliding_sync}
-
-    matrixServer: https://${var.domain}
-
-    resources:
-      requests:
-        memory: ${var.resources.memory.sliding_sync}
-
-    ingress:
-      enabled: true
-      serveSimpleClient: true
-
-      hosts:
-        - ${local.fqdn_sliding_sync}
-
-      annotations:
-        cert-manager.io/cluster-issuer: ${var.cert_issuer}
-        nginx.ingress.kubernetes.io/enable-cors: "true"
-
-      tls:
-        - secretName: ${local.fqdn_sliding_sync}-tls
-          hosts:
-            - ${local.fqdn_sliding_sync}
-
-    postgresql:
-      enabled: false
-
-    externalPostgresql:
-      host: ${var.db_host}
-      sslmode: disable
-      database: sliding_sync
-      username: sliding_sync
-      password: ${var.db_passwords.sliding_sync}
+            - ${var.cluster_vars.domains.domain}
   YAML
   ]
 }

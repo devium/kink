@@ -2,18 +2,18 @@ locals {
   fqdn = "${var.config.subdomain}.${var.cluster_vars.domains.domain}"
 
   csp = merge(var.cluster_vars.default_csp, {
-    "script-src"  = "'self' 'unsafe-eval'"
-    "connect-src" = "'self' data:"
+    "script-src"  = "'self' 'unsafe-inline' 'unsafe-eval'"
+    "connect-src" = "'self' https://${var.cluster_vars.domains.shlink} wss:"
   })
 }
 
-resource "kubernetes_deployment_v1" "buddy" {
+resource "kubernetes_deployment_v1" "web" {
   metadata {
-    name      = "buddy"
+    name      = "shlink-web"
     namespace = var.config.namespace
 
     labels = {
-      app = "buddy"
+      app = "shlink-web"
     }
   }
 
@@ -22,21 +22,21 @@ resource "kubernetes_deployment_v1" "buddy" {
 
     selector {
       match_labels = {
-        app = "buddy"
+        app = "shlink-web"
       }
     }
 
     template {
       metadata {
         labels = {
-          app = "buddy"
+          app = "shlink-web"
         }
       }
 
       spec {
         container {
-          image = "ghcr.io/tobiasbeck/consumption_buddy:${var.config.version}"
-          name  = "buddy"
+          image = "shlinkio/shlink-web-client:${var.config.version}"
+          name  = "shlink-web"
 
           port {
             container_port = 80
@@ -53,15 +53,15 @@ resource "kubernetes_deployment_v1" "buddy" {
   }
 }
 
-resource "kubernetes_service_v1" "buddy" {
+resource "kubernetes_service_v1" "web" {
   metadata {
-    name      = "buddy"
+    name      = "shlink-web"
     namespace = var.config.namespace
   }
 
   spec {
     selector = {
-      app = one(kubernetes_deployment_v1.buddy.metadata).labels.app
+      app = one(kubernetes_deployment_v1.web.metadata).labels.app
     }
 
     port {
@@ -73,15 +73,15 @@ resource "kubernetes_service_v1" "buddy" {
   }
 }
 
-resource "kubernetes_ingress_v1" "buddy" {
+resource "kubernetes_ingress_v1" "web" {
   metadata {
-    name      = "buddy"
+    name      = "shlink-web"
     namespace = var.config.namespace
 
     annotations = {
       "cert-manager.io/cluster-issuer"                = var.cluster_vars.issuer
       "nginx.ingress.kubernetes.io/enable-cors"       = "true"
-      "nginx.ingress.kubernetes.io/cors-allow-origin" = "https://${local.fqdn}"
+      "nginx.ingress.kubernetes.io/cors-allow-origin" = "https://${var.cluster_vars.domains.shlink}"
 
       "nginx.ingress.kubernetes.io/configuration-snippet" = <<-CONF
         more_set_headers "Content-Security-Policy: ${join(";", [for key, value in local.csp : "${key} ${value}"])}";
@@ -100,7 +100,7 @@ resource "kubernetes_ingress_v1" "buddy" {
 
           backend {
             service {
-              name = one(kubernetes_service_v1.buddy.metadata).name
+              name = one(kubernetes_service_v1.web.metadata).name
 
               port {
                 number = 80

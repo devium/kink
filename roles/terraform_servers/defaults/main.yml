@@ -5,7 +5,6 @@ terraform_servers_hdns_zone_id:
 terraform_servers_nodes:
 terraform_servers_ssh_key:
 terraform_servers_stage:
-terraform_servers_subdomains_override:
 
 terraform_servers_backend:
   hostname:
@@ -17,32 +16,11 @@ terraform_servers_dkim_file_vault: "{{ terraform_servers_vault_dir }}/mail.{{ te
 terraform_servers_inventory_file: "{{ ansible_inventory_sources[0] }}"
 terraform_servers_plan_file: "{{ role_path }}/files/terraform.tfstate.d/{{ terraform_servers_workspace }}/tfplan"
 terraform_servers_secrets_dir: "{{ playbook_dir }}/secrets"
-terraform_servers_subdomains: "{{ terraform_servers_subdomains_default | combine(terraform_servers_subdomains_override, recursive=True) }}"
 terraform_servers_vault_dir: "{{ playbook_dir }}/vault"
 terraform_servers_workspace: "servers-{{ terraform_servers_stage }}"
 
-terraform_servers_subdomains_default:
-  buddy: buddy
-  collabora: office.next
-  element: element
-  grafana: grafana
-  hedgedoc: doc
-  home: www
-  jitsi: jitsi
-  keycloak: auth
-  mailserver: mail
-  minecraft: minecraft
-  minecraft_rcon: rcon.minecraft
-  nextcloud: next
-  pretix: tickets
-  shlink: shlink
-  sliding_sync: syncv3
-  synapse: matrix
-  workadventure_back: api.play
-  workadventure_front: play
-  workadventure_maps: maps.play
-  workadventure_pusher: pusher.play
-  workadventure_uploader: uploader.play
+terraform_servers_subdomains:
+  mailserver:
 
 terraform_servers_variables:
   dkim_file: "{{ terraform_servers_dkim_file }}"

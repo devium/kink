@@ -1,46 +1,9 @@
 locals {
-  backup_databases = [
-    {
-      username = "keycloak"
-      database = "keycloak"
-      password = var.db_passwords.keycloak
-    },
-    {
-      username = "grafana"
-      database = "grafana"
-      password = var.db_passwords.grafana
-    },
-    {
-      username = "hedgedoc"
-      database = "hedgedoc"
-      password = var.db_passwords.hedgedoc
-    },
-    {
-      username = "nextcloud"
-      database = "nextcloud"
-      password = var.db_passwords.nextcloud
-    },
-    {
-      username = "pretix"
-      database = "pretix"
-      password = var.db_passwords.pretix
-    },
-    {
-      username = "synapse"
-      database = "synapse"
-      password = var.db_passwords.synapse
-    },
-    {
-      username = "shlink"
-      database = "shlink"
-      password = var.db_passwords.shlink
-    }
-  ]
   pg_dump_script = join(
     "\n",
     [
-      for db in local.backup_databases :
-      "export PGPASSWORD=${db.password}; pg_dump -h ${var.db_host} -U ${db.username} ${db.database} > /backup/db/${db.database}_$(date +%Y%m%dT%H%M%S).sql"
+      for db in var.cluster_vars.db_specs :
+      "export PGPASSWORD=${db.password}; pg_dump -h ${var.cluster_vars.db_host} -U ${db.username} ${db.database} > /backup/db/${db.database}_$(date +%Y%m%dT%H%M%S).sql"
     ]
   )
 }
@@ -48,14 +11,14 @@ locals {
 resource "kubernetes_secret_v1" "backup_script" {
   metadata {
     name      = "script"
-    namespace = var.namespaces.backup
+    namespace = var.config.namespace
   }
 
   data = {
     "backup.sh" = <<-BASH
       set -x
       # Workaround: kill leaking Shlink database connections.
-      export PGPASSWORD=${var.db_passwords.shlink}; psql -h ${var.db_host} -U shlink -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE usename = 'shlink' AND state = 'idle';"
+      export PGPASSWORD=${var.cluster_vars.db_specs.shlink.password}; psql -h ${var.cluster_vars.db_host} -U ${var.cluster_vars.db_specs.shlink.username} -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE usename = 'shlink' AND state = 'idle';"
       mkdir -p /backup/db
       ${local.pg_dump_script}
     BASH
@@ -65,11 +28,11 @@ resource "kubernetes_secret_v1" "backup_script" {
 resource "kubernetes_cron_job_v1" "backup" {
   metadata {
     name      = "backup"
-    namespace = var.namespaces.backup
+    namespace = var.config.namespace
   }
 
   spec {
-    schedule = var.backup_schedule
+    schedule = var.config.schedule
 
     job_template {
       metadata {
@@ -85,7 +48,7 @@ resource "kubernetes_cron_job_v1" "backup" {
           spec {
             container {
               name  = "postgres-backup"
-              image = "bitnami/postgresql:${var.versions.postgres}"
+              image = "bitnami/postgresql"
 
               command = [
                 "/bin/bash",
@@ -105,7 +68,7 @@ resource "kubernetes_cron_job_v1" "backup" {
 
               resources {
                 requests = {
-                  memory = var.resources.memory.backup
+                  memory = var.config.memory
                 }
               }
             }
@@ -114,7 +77,7 @@ resource "kubernetes_cron_job_v1" "backup" {
             volume {
               name = "backup-volume"
               persistent_volume_claim {
-                claim_name = var.pvcs.backup
+                claim_name = "backup-pvc"
               }
             }
 

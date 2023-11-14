@@ -1,34 +1,28 @@
 locals {
-  fqdn     = "${var.subdomains.shlink}.${var.domain}"
-  fqdn_web = "${var.subdomains.shlink_web}.${var.domain}"
-
-  csp = merge(var.default_csp, {
-    "script-src"  = "'self' 'unsafe-inline' 'unsafe-eval'"
-    "connect-src" = "'self' https://${var.subdomains.shlink}.${var.domain} wss:"
-  })
+  fqdn = "${var.config.subdomain}.${var.cluster_vars.domains.domain}"
 }
 
 resource "helm_release" "shlink" {
-  name      = var.release_name
-  namespace = var.namespaces.shlink
+  name      = var.cluster_vars.release_name
+  namespace = var.config.namespace
 
   repository = "https://k8s-at-home.com/charts/"
   chart      = "shlink"
-  version    = var.versions.shlink_helm
+  version    = var.config.version_helm
 
   values = [<<-YAML
     image:
-      tag: ${var.versions.shlink}
+      tag: ${var.config.version}
 
     ingress:
       main:
         enabled: true
 
         annotations:
-          cert-manager.io/cluster-issuer: ${var.cert_issuer}
+          cert-manager.io/cluster-issuer: ${var.cluster_vars.issuer}
 
         hosts:
-          - host: ${var.domain}
+          - host: ${var.cluster_vars.domains.domain}
             paths:
               - path: /
                 pathType: Prefix
@@ -38,146 +32,32 @@ resource "helm_release" "shlink" {
                 pathType: Prefix
 
         tls:
-          - secretName: ${var.domain}-tls
+          - secretName: ${var.cluster_vars.domains.domain}-tls
             hosts:
-              - ${var.domain}
+              - ${var.cluster_vars.domains.domain}
           - secretName: ${local.fqdn}-tls
             hosts:
               - ${local.fqdn}
 
     resources:
       requests:
-        memory: ${var.resources.memory.shlink}
+        memory: ${var.config.memory}
 
     secret:
-      DB_PASSWORD: ${var.db_passwords.shlink}
+      DB_PASSWORD: ${var.config.db.password}
 
     env:
-      DEFAULT_DOMAIN: "${var.domain}"
+      DEFAULT_DOMAIN: "${var.cluster_vars.domains.domain}"
       SHORT_DOMAIN_SCHEMA: https
       DB_PASSWORD:
         valueFrom:
           secretKeyRef:
-            name: ${var.release_name}-shlink
+            name: ${var.cluster_vars.release_name}-shlink
             key: DB_PASSWORD
       DB_DRIVER: postgres
-      DB_NAME: shlink
-      DB_USER: shlink
-      DB_HOST: ${var.db_host}
+      DB_NAME: ${var.config.db.database}
+      DB_USER: ${var.config.db.username}
+      DB_HOST: ${var.cluster_vars.db_host}
   YAML
   ]
-}
-
-resource "kubernetes_deployment_v1" "web" {
-  metadata {
-    name      = "shlink-web"
-    namespace = var.namespaces.shlink
-
-    labels = {
-      app = "shlink-web"
-    }
-  }
-
-  spec {
-    replicas = 1
-
-    selector {
-      match_labels = {
-        app = "shlink-web"
-      }
-    }
-
-    template {
-      metadata {
-        labels = {
-          app = "shlink-web"
-        }
-      }
-
-      spec {
-        container {
-          image = "shlinkio/shlink-web-client:${var.versions.shlink_web}"
-          name  = "shlink-web"
-
-          port {
-            container_port = 80
-          }
-
-          resources {
-            requests = {
-              memory = var.resources.memory.shlink_web
-            }
-          }
-        }
-      }
-    }
-  }
-}
-
-resource "kubernetes_service_v1" "web" {
-  metadata {
-    name      = "shlink-web"
-    namespace = var.namespaces.shlink
-  }
-
-  spec {
-    selector = {
-      app = one(kubernetes_deployment_v1.web.metadata).labels.app
-    }
-
-    port {
-      name        = "http"
-      protocol    = "TCP"
-      port        = 80
-      target_port = 80
-    }
-  }
-}
-
-resource "kubernetes_ingress_v1" "web" {
-  metadata {
-    name      = "shlink-web"
-    namespace = var.namespaces.shlink
-
-    annotations = {
-      "cert-manager.io/cluster-issuer"                = var.cert_issuer
-      "nginx.ingress.kubernetes.io/enable-cors"       = "true"
-      "nginx.ingress.kubernetes.io/cors-allow-origin" = "https://${local.fqdn}"
-
-      "nginx.ingress.kubernetes.io/configuration-snippet" = <<-CONF
-        more_set_headers "Content-Security-Policy: ${join(";", [for key, value in local.csp : "${key} ${value}"])}";
-      CONF
-    }
-  }
-
-  spec {
-    rule {
-      host = local.fqdn_web
-
-      http {
-        path {
-          path      = "/"
-          path_type = "Prefix"
-
-          backend {
-            service {
-              name = one(kubernetes_service_v1.web.metadata).name
-
-              port {
-                number = 80
-              }
-            }
-          }
-        }
-      }
-    }
-
-    tls {
-      secret_name = "${local.fqdn_web}-tls"
-
-      hosts = [
-        local.fqdn_web
-      ]
-    }
-  }
 }

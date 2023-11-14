@@ -1,37 +1,36 @@
 locals {
-  fqdn      = "${var.subdomains.minecraft}.${var.domain}"
-  fqdn_rcon = "${var.subdomains.minecraft_rcon}.${var.domain}"
+  fqdn = "${var.config.subdomain}.${var.cluster_vars.domains.domain}"
 
-  csp = merge(var.default_csp, {
+  csp = merge(var.cluster_vars.default_csp, {
     "script-src" = "'self' 'unsafe-inline'"
     "style-src"  = "'self' 'unsafe-inline' https://fonts.googleapis.com"
   })
 }
 
 resource "helm_release" "minecraft" {
-  name       = var.release_name
-  namespace  = var.namespaces.minecraft
+  name       = var.cluster_vars.release_name
+  namespace  = var.config.namespace
   repository = "https://itzg.github.io/minecraft-server-charts/"
   chart      = "minecraft"
-  version    = var.versions.minecraft_helm
+  version    = var.config.version_helm
 
   values = [<<-YAML
     image:
-      tag: ${var.versions.minecraft}
+      tag: ${var.config.version}
 
     minecraftServer:
       eula: "TRUE"
-      version: ${var.versions.minecraft_game}
+      version: ${var.config.version_game}
       serviceType: NodePort
       nodePort: 30001
       maxPlayers: 8
       pvp: true
-      ops: ${var.minecraft_admins}
+      ops: ${var.config.admins}
       type: "PAPER"
-      worldSaveName: ${var.minecraft_world}
-      levelSeed: "${var.minecraft_seed}"
+      worldSaveName: ${var.config.world}
+      levelSeed: "${var.config.seed}"
       memory: 4096M
-      downloadModpackUrl: ${var.minecraft_modpack_url}
+      downloadModpackUrl: ${var.config.modpack_url}
       removeOldMods: true
 
       extraPorts:
@@ -49,7 +48,7 @@ resource "helm_release" "minecraft" {
             enabled: true
             
             annotations:
-              cert-manager.io/cluster-issuer: ${var.cert_issuer}
+              cert-manager.io/cluster-issuer: ${var.cluster_vars.issuer}
               nginx.ingress.kubernetes.io/configuration-snippet: |
                 more_set_headers "Content-Security-Policy: ${join(";", [for key, value in local.csp : "${key} ${value}"])}";
               
@@ -66,12 +65,12 @@ resource "helm_release" "minecraft" {
         enabled: true
         serviceType: NodePort
         nodePort: 30002
-        password: ${var.minecraft_rcon_password}
+        password: ${var.config.rcon_password}
 
     persistence:
       dataDir:
         enabled: true
-        existingClaim: ${var.pvcs.minecraft}
+        existingClaim: minecraft-pvc
 
     resources:
       requests:
@@ -92,87 +91,7 @@ resource "helm_release" "minecraft" {
       persistence:
         backupDir:
           enabled: true
-          existingClaim: ${var.pvcs.minecraft_backup}
-  YAML
-  ]
-}
-
-resource "helm_release" "rcon_web" {
-  name       = "${var.release_name}-rcon"
-  namespace  = var.namespaces.minecraft
-  repository = "https://itzg.github.io/minecraft-server-charts/"
-  chart      = "rcon-web-admin"
-  version    = var.versions.minecraft_rcon_web_helm
-
-  values = [<<-YAML
-    ingress:
-      enabled: true
-      ingressClassName: nginx
-      enabled: true
-      
-      annotations:
-        cert-manager.io/cluster-issuer: ${var.cert_issuer}
-        nginx.ingress.kubernetes.io/configuration-snippet: |
-          more_set_headers "Content-Security-Policy: ${join(";", [for key, value in local.csp : "${key} ${value}"])}";
-        
-      host: ${local.fqdn_rcon}
-
-      tls:
-        - secretName: ${local.fqdn_rcon}-tls
-          hosts:
-            - ${local.fqdn_rcon}
-
-    rconWeb:
-      rconHost: ${local.fqdn}
-      rconPort: 30002
-      rconPassword: ${var.minecraft_rcon_password}
-      isAdmin: true
-      username: admin
-      password: ${var.minecraft_rcon_web_password}
-  YAML
-  ]
-}
-
-resource "helm_release" "minecraft_bedrock" {
-  name       = "${var.release_name}-bedrock"
-  namespace  = var.namespaces.minecraft
-  repository = "https://itzg.github.io/minecraft-server-charts/"
-  chart      = "minecraft-bedrock"
-  version    = var.versions.minecraft_bedrock_helm
-
-  values = [<<-YAML
-    image:
-      pullPolicy: Always
-
-    minecraftServer:
-      eula: "TRUE"
-      serviceType: NodePort
-      nodePort: 30003
-      maxPlayers: 8
-      pvp: true
-      ops: ${var.minecraft_admins}
-      levelSeed: "${var.minecraft_seed}"
-      serverName: "${title(var.project_name)}"
-      playerIdleTimeout: 0
-      cheats: true
-      tickDistance: 8
-      viewDistance: 20
-
-    persistence:
-      dataDir:
-        enabled: true
-        existingClaim: ${var.pvcs.minecraft_bedrock}
-
-    resources:
-      requests:
-        memory: 2Gi
-
-    nodeSelector:
-      kubernetes.io/hostname: gaming
-
-    tolerations:
-      - key: "CriticalAddonsOnly"
-        operator: "Exists"
+          existingClaim: minecraft-backup-pvc
   YAML
   ]
 }

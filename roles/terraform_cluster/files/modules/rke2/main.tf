@@ -1,7 +1,3 @@
-locals {
-  mailserver_service = "${var.namespaces.mailserver}/${var.release_name}-docker-mailserver"
-}
-
 # Make flannel use Wireguard instead of VXLAN. This might require a full server restart.
 resource "kubernetes_manifest" "flannel_iface_patch" {
   manifest = {
@@ -48,10 +44,10 @@ resource "kubernetes_manifest" "ingress_patch" {
             Referrer-Policy: same-origin
 
         tcp:
-          25: "${local.mailserver_service}:25"
-          143: "${local.mailserver_service}:143"
-          587: "${local.mailserver_service}:587"
-          993: "${local.mailserver_service}:993"
+          25: "${var.mailserver_service}:25"
+          143: "${var.mailserver_service}:143"
+          587: "${var.mailserver_service}:587"
+          993: "${var.mailserver_service}:993"
       YAML
     }
   }

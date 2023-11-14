@@ -1,27 +1,27 @@
 locals {
-  fqdn     = "${var.subdomains.hedgedoc}.${var.domain}"
-  oidc_url = "https://${var.subdomains.keycloak}.${var.domain}/realms/${var.keycloak_realm}/protocol/openid-connect"
+  fqdn     = "${var.config.subdomain}.${var.cluster_vars.domains.domain}"
+  oidc_url = "https://${var.cluster_vars.domains.keycloak}/realms/${var.cluster_vars.keycloak_realm}/protocol/openid-connect"
 
-  csp = merge(var.default_csp, {
+  csp = merge(var.cluster_vars.default_csp, {
     "frame-src" = "*"
   })
 }
 
 resource "helm_release" "hedgedoc" {
-  name       = var.release_name
-  namespace  = var.namespaces.hedgedoc
+  name       = var.cluster_vars.release_name
+  namespace  = var.config.namespace
   repository = "https://nicholaswilde.github.io/helm-charts/"
   chart      = "hedgedoc"
-  version    = var.versions.hedgedoc_helm
+  version    = var.config.version_helm
 
   values = [<<-YAML
     image:
-      tag: ${var.versions.hedgedoc}
+      tag: ${var.config.version}
 
     secret:
-      CMD_DB_URL: postgres://hedgedoc:${var.db_passwords.hedgedoc}@${var.db_host}:5432/hedgedoc
-      CMD_SESSION_SECRET: ${var.hedgedoc_secret}
-      CMD_OAUTH2_CLIENT_SECRET: ${var.keycloak_secrets.hedgedoc}
+      CMD_DB_URL: postgres://${var.config.db.username}:${var.config.db.password}@${var.cluster_vars.db_host}:5432/${var.config.db.database}
+      CMD_SESSION_SECRET: ${var.config.secret}
+      CMD_OAUTH2_CLIENT_SECRET: ${var.config.keycloak.secret}
 
     env:
       CMD_PROTOCOL_USESSL: "true"
@@ -33,7 +33,7 @@ resource "helm_release" "hedgedoc" {
       CMD_OAUTH2_USER_PROFILE_EMAIL_ATTR: email
       CMD_OAUTH2_TOKEN_URL: ${local.oidc_url}/token
       CMD_OAUTH2_AUTHORIZATION_URL: ${local.oidc_url}/auth
-      CMD_OAUTH2_CLIENT_ID: ${var.keycloak_clients.hedgedoc}
+      CMD_OAUTH2_CLIENT_ID: ${var.config.keycloak.client}
       CMD_OAUTH2_PROVIDERNAME: Keycloak
       CMD_OAUTH2_SCOPE: openid email private_profile
       CMD_EMAIL: "false"
@@ -45,7 +45,7 @@ resource "helm_release" "hedgedoc" {
     ingress:
       enabled: true
       annotations:
-        cert-manager.io/cluster-issuer: ${var.cert_issuer}
+        cert-manager.io/cluster-issuer: ${var.cluster_vars.issuer}
         nginx.ingress.kubernetes.io/configuration-snippet: |
           more_set_headers "Content-Security-Policy: ${join(";", [for key, value in local.csp : "${key} ${value}"])}";
 
@@ -62,11 +62,11 @@ resource "helm_release" "hedgedoc" {
     persistence:
       config:
         enabled: true
-        existingClaim: ${var.pvcs.hedgedoc}
+        existingClaim: hedgedoc-pvc
 
     resources:
       requests:
-        memory: ${var.resources.memory.hedgedoc}
+        memory: ${var.config.memory}
 
     strategy:
       type: Recreate

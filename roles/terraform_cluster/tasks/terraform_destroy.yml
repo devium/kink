@@ -6,11 +6,11 @@
     targets: "{{ terraform_cluster_targets }}"
     workspace: "{{ terraform_cluster_workspace }}"
   
-  # environment: 
-  #   TF_CLOUD_HOSTNAME: "{{ terraform_cluster_backend.hostname }}"
-  #   TF_CLOUD_ORGANIZATION: "{{ terraform_cluster_backend.organization }}"
-  #   TF_WORKSPACE: "{{ terraform_cluster_workspace }}"
-  #   TF_TOKEN_app_terraform_io: "{{ terraform_cluster_backend.token }}"
+  environment: 
+    TF_CLOUD_HOSTNAME: "{{ terraform_cluster_backend.hostname }}"
+    TF_CLOUD_ORGANIZATION: "{{ terraform_cluster_backend.organization }}"
+    TF_WORKSPACE: "{{ terraform_cluster_workspace }}"
+    TF_TOKEN_app_terraform_io: "{{ terraform_cluster_backend.token }}"
 
   register: terraform_result
   when: terraform_cluster_kubeconf_file is file

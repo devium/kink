@@ -1,15 +1,15 @@
 locals {
-  fqdn = "${var.subdomains.home}.${var.domain}"
+  fqdn = "${var.config.subdomain}.${var.cluster_vars.domains.domain}"
 
-  csp = merge(var.default_csp, {
-    "connect-src" = "https://${var.subdomains.jitsi}.${var.domain} https://${var.subdomains.nextcloud}.${var.domain} wss:"
+  csp = merge(var.cluster_vars.default_csp, {
+    "connect-src" = "https://${var.cluster_vars.domains.jitsi} https://${var.cluster_vars.domains.nextcloud} wss:"
   })
 }
 
 resource "kubernetes_config_map_v1" "service_worker" {
   metadata {
     name      = "service-worker"
-    namespace = var.namespaces.home
+    namespace = var.config.namespace
   }
 
   data = {
@@ -32,16 +32,16 @@ resource "kubernetes_config_map_v1" "service_worker" {
 }
 
 resource "helm_release" "home" {
-  name      = var.release_name
-  namespace = var.namespaces.home
+  name      = var.cluster_vars.release_name
+  namespace = var.config.namespace
 
   repository = "https://charts.bitnami.com/bitnami"
   chart      = "nginx"
-  version    = var.versions.nginx_helm
+  version    = var.config.version_nginx_helm
 
   values = [<<-YAML
     image:
-      tag: ${var.versions.nginx}
+      tag: ${var.config.version_nginx}
 
     ingress:
       enabled: true
@@ -54,13 +54,13 @@ resource "helm_release" "home" {
       hostname: ${local.fqdn}
 
       annotations:
-        cert-manager.io/cluster-issuer: ${var.cert_issuer}
+        cert-manager.io/cluster-issuer: ${var.cluster_vars.issuer}
         nginx.ingress.kubernetes.io/configuration-snippet: |
           more_set_headers "Content-Security-Policy: ${join(";", [for key, value in local.csp : "${key} ${value}"])}";
 
     resources:
       requests:
-        memory: ${var.resources.memory.home}
+        memory: ${var.config.memory}
 
     service:
       type: ClusterIP
@@ -81,7 +81,7 @@ resource "helm_release" "home" {
 
     initContainers:
       - name: site
-        image: ${var.home_site_image}
+        image: ${var.config.site_image}
         imagePullPolicy: IfNotPresent
 
         command:
@@ -99,7 +99,7 @@ resource "helm_release" "home" {
       enabled: true
 
       image:
-        tag: ${var.versions.nginx_prometheus_exporter}
+        tag: ${var.config.version_nginx_prometheus_exporter}
 
       serviceMonitor:
         enabled: true
@@ -107,64 +107,20 @@ resource "helm_release" "home" {
   ]
 }
 
-resource "kubernetes_ingress_v1" "service_worker" {
-  # Making the self-destructing service worker available directly on www and
-  # the root domain is crucial to delete legacy service workers on both domains.
-  metadata {
-    name      = "service-worker"
-    namespace = var.namespaces.home
-
-    annotations = {
-      "cert-manager.io/cluster-issuer" = var.cert_issuer
-    }
-  }
-
-  spec {
-    rule {
-      host = var.domain
-
-      http {
-        path {
-          path      = "/service-worker.js"
-          path_type = "Exact"
-
-          backend {
-            service {
-              name = "${helm_release.home.name}-nginx"
-
-              port {
-                number = 80
-              }
-            }
-          }
-        }
-      }
-    }
-
-    tls {
-      secret_name = "${var.domain}-tls"
-
-      hosts = [
-        var.domain
-      ]
-    }
-  }
-}
-
 resource "kubernetes_ingress_v1" "home_redirect" {
   metadata {
     name      = "home-redirect"
-    namespace = var.namespaces.home
+    namespace = var.config.namespace
 
     annotations = {
-      "cert-manager.io/cluster-issuer"                 = var.cert_issuer
+      "cert-manager.io/cluster-issuer"                 = var.cluster_vars.issuer
       "nginx.ingress.kubernetes.io/permanent-redirect" = "https://${local.fqdn}$uri"
     }
   }
 
   spec {
     rule {
-      host = var.domain
+      host = var.cluster_vars.domains.domain
 
       http {
         path {
@@ -186,10 +142,10 @@ resource "kubernetes_ingress_v1" "home_redirect" {
     }
 
     tls {
-      secret_name = "${var.domain}-tls"
+      secret_name = "${var.cluster_vars.domains.domain}-tls"
 
       hosts = [
-        var.domain
+        var.cluster_vars.domains.domain
       ]
     }
   }

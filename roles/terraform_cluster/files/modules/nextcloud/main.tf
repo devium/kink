@@ -1,28 +1,28 @@
 locals {
-  fqdn = "${var.subdomains.nextcloud}.${var.domain}"
+  fqdn = "${var.config.subdomain}.${var.cluster_vars.domains.domain}"
 
-  csp = merge(var.default_csp, {
+  csp = merge(var.cluster_vars.default_csp, {
     "script-src"      = "'self' 'unsafe-inline'"
-    "frame-src"       = "'self' https://${var.subdomains.collabora}.${var.domain}"
+    "frame-src"       = "'self' https://${var.cluster_vars.domains.collabora}"
     "frame-ancestors" = "https:"
   })
 }
 
 resource "helm_release" "nextcloud" {
-  name       = var.release_name
-  namespace  = var.namespaces.nextcloud
+  name       = var.cluster_vars.release_name
+  namespace  = var.config.namespace
   repository = "https://nextcloud.github.io/helm/"
   chart      = "nextcloud"
-  version    = var.versions.nextcloud_helm
+  version    = var.config.version_helm
 
   values = [<<-YAML
     image:
-      tag: ${var.versions.nextcloud}
+      tag: ${var.config.version}
 
     ingress:
       enabled: true
       annotations:
-        cert-manager.io/cluster-issuer: ${var.cert_issuer}
+        cert-manager.io/cluster-issuer: ${var.cluster_vars.issuer}
         nginx.ingress.kubernetes.io/enable-cors: "true"
         nginx.ingress.kubernetes.io/proxy-body-size: 500m
         nginx.ingress.kubernetes.io/configuration-snippet: |
@@ -40,19 +40,19 @@ resource "helm_release" "nextcloud" {
 
     resources:
       requests:
-        memory: ${var.resources.memory.nextcloud}
+        memory: ${var.config.memory}
 
     nextcloud:
       host: ${local.fqdn}
       username: admin_temp
-      password: ${var.admin_passwords.nextcloud}
+      password: ${var.config.admin_password}
 
       extraEnv:
         - name: OVERWRITEPROTOCOL
           value: https
         # Env values with NC_ prefix override config values, just in case they become outdated
         - name: NC_dbhost
-          value: ${var.db_host}
+          value: ${var.cluster_vars.db_host}
         - name: NC_dbport
           value: "5432"
         - name: NC_dbname
@@ -60,12 +60,12 @@ resource "helm_release" "nextcloud" {
         - name: NC_dbuser
           valueFrom:
             secretKeyRef:
-              name: ${var.release_name}-db
+              name: ${var.cluster_vars.release_name}-db
               key: db-username
         - name: NC_dbpassword
           valueFrom:
             secretKeyRef:
-              name: ${var.release_name}-db
+              name: ${var.cluster_vars.release_name}-db
               key: db-password
 
     internalDatabase:
@@ -74,14 +74,14 @@ resource "helm_release" "nextcloud" {
     externalDatabase:
       enabled: true
       type: postgresql
-      host: ${var.db_host}
-      user: nextcloud
-      password: ${var.db_passwords.nextcloud}
-      database: nextcloud
+      host: ${var.cluster_vars.db_host}
+      user: ${var.config.db.username}
+      password: ${var.config.db.password}
+      database: ${var.config.db.database}
 
     persistence:
       enabled: true
-      existingClaim: ${var.pvcs.nextcloud}
+      existingClaim: nextcloud-pvc
   YAML
   ]
 }

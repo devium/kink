@@ -9,7 +9,7 @@ resource "kubernetes_storage_class_v1" "existing_volume" {
 }
 
 resource "kubernetes_persistent_volume_v1" "volumes" {
-  for_each = var.volume_handles
+  for_each = var.volume_config
 
   metadata {
     name = replace(each.key, "_", "-")
@@ -21,26 +21,25 @@ resource "kubernetes_persistent_volume_v1" "volumes" {
     storage_class_name               = one(kubernetes_storage_class_v1.existing_volume.metadata).name
 
     capacity = {
-      storage = var.volume_sizes[each.key]
+      storage = each.value.size
     }
 
     persistent_volume_source {
       csi {
         driver        = "csi.hetzner.cloud"
         fs_type       = "ext4"
-        volume_handle = each.value
+        volume_handle = each.value.handle
       }
     }
   }
 }
 
 resource "kubernetes_persistent_volume_claim_v1" "pvcs" {
-  for_each = var.volume_handles
+  for_each = var.volume_config
 
   metadata {
-    name = "${replace(each.key, "_", "-")}-pvc"
-    # Hacky way to get minecraft_backup and minecraft PVCs into the same namespace.
-    namespace = var.namespaces[split("_", each.key)[0]]
+    name      = "${replace(each.key, "_", "-")}-pvc"
+    namespace = each.value.namespace
   }
 
   spec {

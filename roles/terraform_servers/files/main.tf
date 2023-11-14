@@ -1,12 +1,6 @@
 terraform {
   cloud {
   }
-
-  required_providers {
-    hcloud = {
-      source = "hetznercloud/hcloud"
-    }
-  }
 }
 
 provider "hcloud" {

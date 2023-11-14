@@ -1,8 +1,8 @@
 # Google identity provider for SSO
 resource "keycloak_oidc_google_identity_provider" "google" {
   realm         = keycloak_realm.realm.id
-  client_id     = var.google_identity_provider_client_id
-  client_secret = var.google_identity_provider_client_secret
+  client_id     = var.config.google_identity_provider.client_id
+  client_secret = var.config.google_identity_provider.client_secret
   trust_email   = true
 }
 # Map Google first and last name to empty string so no hidden personal data is transferred

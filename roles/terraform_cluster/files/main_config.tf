@@ -1,5 +1,5 @@
 terraform {
-  backend "local" {
+  cloud {
   }
 }
 
@@ -18,20 +18,20 @@ provider "helm" {
 }
 
 provider "keycloak" {
-  url       = "https://${var.subdomains.keycloak}.${var.domain}"
+  url       = "https://${var.app_config.keycloak.subdomain}.${var.domain}"
   client_id = "admin-cli"
   base_path = ""
 
   username = "admin"
-  password = var.admin_passwords.keycloak
+  password = var.app_config.keycloak.admin_password
 
   tls_insecure_skip_verify = true
   initial_login            = false
 }
 
 provider "grafana" {
-  url                  = "https://${var.subdomains.grafana}.${var.domain}"
-  auth                 = "admin:${var.admin_passwords.grafana}"
+  url                  = "https://${var.app_config.grafana.subdomain}.${var.domain}"
+  auth                 = "admin:${var.app_config.grafana.admin_password}"
   insecure_skip_verify = true
 }
 
@@ -39,7 +39,7 @@ locals {
   default_csp = {
     "default-src"     = "'none'"
     "script-src"      = "'self'"
-    "connect-src"     = "'self' https://${var.subdomains.keycloak}.${var.domain} wss:"
+    "connect-src"     = "'self' https://${var.app_config.keycloak.subdomain}.${var.domain} wss:"
     "style-src"       = "'self' 'unsafe-inline'"
     "img-src"         = "* blob: data:"
     "font-src"        = "* blob: data:"

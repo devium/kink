@@ -1,23 +1,24 @@
 locals {
-  fqdn = "${var.subdomains.jitsi}.${var.domain}"
+  fqdn                 = "${var.config.subdomain}.${var.cluster_vars.domains.domain}"
+  keycloak_adapter_url = "https://raw.githubusercontent.com/nordeck/jitsi-keycloak-adapter/${var.config.version_keycloak_adapter}"
 
-  csp = merge(var.default_csp, {
+  csp = merge(var.cluster_vars.default_csp, {
     "script-src"      = "'self' 'unsafe-inline' 'unsafe-eval' https://www.youtube.com"
-    "connect-src"     = "'self' https://${var.subdomains.keycloak}.${var.domain} wss: https://www.gravatar.com"
+    "connect-src"     = "'self' https://${var.cluster_vars.domains.keycloak} wss: https://www.gravatar.com"
     "worker-src"      = "'self' blob:"
     "frame-src"       = "https://www.youtube.com"
-    "frame-ancestors" = "https://${var.subdomains.workadventure_front}.${var.domain} https://${var.subdomains.element}.${var.domain}"
+    "frame-ancestors" = "https://${var.cluster_vars.domains.element}"
   })
-  csp_jitsi_keycloak = merge(var.default_csp, {
+  csp_jitsi_keycloak = merge(var.cluster_vars, {
     "style-src"       = "'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net"
-    "frame-ancestors" = "https://${var.subdomains.element}.${var.domain}"
+    "frame-ancestors" = "https://${var.cluster_vars.domains.element}"
   })
 }
 
 resource "kubernetes_config_map_v1" "prosody_plugins" {
   metadata {
     name      = "prosody-plguins"
-    namespace = var.namespaces.jitsi
+    namespace = var.config.namespace
   }
 
   data = {
@@ -28,25 +29,25 @@ resource "kubernetes_config_map_v1" "prosody_plugins" {
 }
 
 data "http" "web_keycloak_body_html" {
-  url = "https://raw.githubusercontent.com/nordeck/jitsi-keycloak-adapter/${var.versions.jitsi_keycloak}/templates/usr/share/jitsi-meet/body.html"
+  url = "${local.keycloak_adapter_url}/templates/usr/share/jitsi-meet/body.html"
 }
 
 data "http" "web_keycloak_oidc_adapter_html" {
-  url = "https://raw.githubusercontent.com/nordeck/jitsi-keycloak-adapter/${var.versions.jitsi_keycloak}/templates/usr/share/jitsi-meet/static/oidc-adapter.html"
+  url = "${local.keycloak_adapter_url}/templates/usr/share/jitsi-meet/static/oidc-adapter.html"
 }
 
 data "http" "web_keycloak_oidc_redirect_html" {
-  url = "https://raw.githubusercontent.com/nordeck/jitsi-keycloak-adapter/${var.versions.jitsi_keycloak}/templates/usr/share/jitsi-meet/static/oidc-redirect.html"
+  url = "${local.keycloak_adapter_url}/templates/usr/share/jitsi-meet/static/oidc-redirect.html"
 }
 
 data "http" "web_keycloak_meet_conf" {
-  url = "https://raw.githubusercontent.com/nordeck/jitsi-keycloak-adapter/${var.versions.jitsi_keycloak}/templates/jitsi-web-container/defaults/meet.conf"
+  url = "${local.keycloak_adapter_url}/templates/jitsi-web-container/defaults/meet.conf"
 }
 
 resource "kubernetes_config_map_v1" "web_config" {
   metadata {
     name      = "web-config"
-    namespace = var.namespaces.jitsi
+    namespace = var.config.namespace
   }
 
   data = {
@@ -82,11 +83,11 @@ resource "kubernetes_config_map_v1" "web_config" {
 }
 
 resource "helm_release" "jitsi" {
-  name       = var.release_name
-  namespace  = var.namespaces.jitsi
+  name       = var.cluster_vars.release_name
+  namespace  = var.config.namespace
   repository = "https://jitsi-contrib.github.io/jitsi-helm/"
   chart      = "jitsi-meet"
-  version    = var.versions.jitsi_helm
+  version    = var.config.version_helm
 
   values = [<<-YAML
     publicURL: https://${local.fqdn}
@@ -94,15 +95,15 @@ resource "helm_release" "jitsi" {
 
     web:
       image:
-        tag: ${var.versions.jitsi}
+        tag: ${var.config.version}
 
       ingress:
         annotations:
           kubernetes.io/ingress.class: nginx
-          cert-manager.io/cluster-issuer: ${var.cert_issuer}
+          cert-manager.io/cluster-issuer: ${var.cluster_vars.issuer}
           nginx.ingress.kubernetes.io/enable-cors: "true"
           # TODO: This wildcard does not actually work. Instead it defaults to *. Should be fixed in a newer Ingress version.
-          nginx.ingress.kubernetes.io/cors-allow-origin: https://*.${var.domain}
+          nginx.ingress.kubernetes.io/cors-allow-origin: https://*.${var.cluster_vars.domains.domain}
           nginx.ingress.kubernetes.io/configuration-snippet: |
             more_set_headers "Content-Security-Policy: ${join(";", [for key, value in local.csp : "${key} ${value}"])}";
 
@@ -149,11 +150,11 @@ resource "helm_release" "jitsi" {
 
       resources:
         requests:
-          memory: ${var.resources.memory.jitsi_web}
+          memory: ${var.config.memory_web}
 
     jvb:
       image:
-        tag: ${var.versions.jitsi}
+        tag: ${var.config.version}
 
       service:
         enabled: true
@@ -165,17 +166,17 @@ resource "helm_release" "jitsi" {
       useNodeIP: true
 
       xmpp:
-        password: ${var.jitsi_secrets.jvb}
+        password: ${var.config.secrets.jvb}
 
       metrics:
         enabled: true
 
         image:
-          tag: ${var.versions.jitsi_prometheus_exporter}
+          tag: ${var.config.version_prometheus_exporter}
 
       resources:
         requests:
-          memory: ${var.resources.memory.jitsi_jvb}
+          memory: ${var.config.memory_jvb}
 
       readinessProbe:
         httpGet:
@@ -193,14 +194,14 @@ resource "helm_release" "jitsi" {
 
     jicofo:
       image:
-        tag: ${var.versions.jitsi}
+        tag: ${var.config.version}
 
       xmpp:
-        password: ${var.jitsi_secrets.jicofo}
+        password: ${var.config.secrets.jicofo}
 
       resources:
         requests:
-          memory: ${var.resources.memory.jitsi_jicofo}
+          memory: ${var.config.memory_jicofo}
 
       extraEnvs:
         JICOFO_AUTH_TYPE: internal
@@ -208,7 +209,7 @@ resource "helm_release" "jitsi" {
 
     prosody:
       image:
-        tag: ${var.versions.jitsi}
+        tag: ${var.config.version}
 
       persistence:
         enabled: false
@@ -221,7 +222,7 @@ resource "helm_release" "jitsi" {
         - name: JWT_APP_ID
           value: jitsi
         - name: JWT_APP_SECRET
-          value: ${var.jitsi_secrets.jwt}
+          value: ${var.config.secrets.jwt}
         - name: JWT_ALLOW_EMPTY
           value: "true"
         - name: ENABLE_END_CONFERENCE
@@ -239,7 +240,7 @@ resource "helm_release" "jitsi" {
       ingress:
         annotations:
           kubernetes.io/ingress.class: nginx
-          cert-manager.io/cluster-issuer: ${var.cert_issuer}
+          cert-manager.io/cluster-issuer: ${var.cluster_vars.issuer}
 
         enabled: true
 
@@ -255,7 +256,7 @@ resource "helm_release" "jitsi" {
 
       resources:
         requests:
-          memory: ${var.resources.memory.prosody}
+          memory: ${var.config.memory_prosody}
 
     websockets:
       colibri:
@@ -270,7 +271,7 @@ resource "helm_release" "jitsi" {
 resource "kubernetes_deployment_v1" "jitsi_keycloak" {
   metadata {
     name      = "jitsi-keycloak"
-    namespace = var.namespaces.jitsi
+    namespace = var.config.namespace
 
     labels = {
       app = "jitsi-keycloak"
@@ -295,7 +296,7 @@ resource "kubernetes_deployment_v1" "jitsi_keycloak" {
 
       spec {
         container {
-          image = "ghcr.io/nordeck/jitsi-keycloak-adapter:${var.versions.jitsi_keycloak}"
+          image = "ghcr.io/nordeck/jitsi-keycloak-adapter:${var.config.version_keycloak_adapter}"
           name  = "jitsi-keycloak"
 
           port {
@@ -304,15 +305,15 @@ resource "kubernetes_deployment_v1" "jitsi_keycloak" {
 
           env {
             name  = "KEYCLOAK_ORIGIN"
-            value = "https://${var.subdomains.keycloak}.${var.domain}"
+            value = "https://${var.cluster_vars.domains.keycloak}"
           }
           env {
             name  = "KEYCLOAK_REALM"
-            value = var.keycloak_realm
+            value = var.cluster_vars.keycloak_realm
           }
           env {
             name  = "KEYCLOAK_CLIENT_ID"
-            value = "jitsi"
+            value = var.config.keycloak.client
           }
           env {
             name  = "JWT_APP_ID"
@@ -320,7 +321,7 @@ resource "kubernetes_deployment_v1" "jitsi_keycloak" {
           }
           env {
             name  = "JWT_APP_SECRET"
-            value = var.jitsi_secrets.jwt
+            value = var.config.secrets.jwt
           }
           env {
             name  = "ALLOW_UNSECURE_CERT"
@@ -329,7 +330,7 @@ resource "kubernetes_deployment_v1" "jitsi_keycloak" {
 
           resources {
             requests = {
-              memory = var.resources.memory.jitsi_keycloak
+              memory = var.config.memory_keycloak_adapter
             }
           }
         }
@@ -341,7 +342,7 @@ resource "kubernetes_deployment_v1" "jitsi_keycloak" {
 resource "kubernetes_service_v1" "jitsi_keycloak" {
   metadata {
     name      = "jitsi-keycloak"
-    namespace = var.namespaces.jitsi
+    namespace = var.config.namespace
   }
 
   spec {

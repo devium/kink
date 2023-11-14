@@ -1,28 +1,28 @@
 locals {
-  fqdn = "${var.subdomains.element}.${var.domain}"
+  fqdn = "${var.config.subdomain}.${var.cluster_vars.domains.domain}"
 
-  csp = merge(var.default_csp, {
+  csp = merge(var.cluster_vars.default_csp, {
     "script-src"      = "'self' 'unsafe-eval'",
-    "connect-src"     = "'self' https://${var.subdomains.keycloak}.${var.domain} https://${var.subdomains.synapse}.${var.domain} https://${var.domain} https://vector.im https://pingback.giphy.com https://scalar.vector.im wss:"
-    "frame-src"       = "'self' https://${var.subdomains.jitsi}.${var.domain} https://${var.subdomains.keycloak}.${var.domain} https://${var.subdomains.nextcloud}.${var.domain} https://scalar.vector.im"
+    "connect-src"     = "'self' https://${var.cluster_vars.domains.keycloak} https://${var.cluster_vars.domains.synapse} https://${var.cluster_vars.domains.domain} https://vector.im https://pingback.giphy.com https://scalar.vector.im wss:"
+    "frame-src"       = "'self' https://${var.cluster_vars.domains.jitsi} https://${var.cluster_vars.domains.keycloak} https://${var.cluster_vars.domains.nextcloud} https://scalar.vector.im"
     "frame-ancestors" = "'self'"
   })
 }
 
 resource "helm_release" "element" {
-  name       = var.release_name
-  namespace  = var.namespaces.element
+  name       = var.cluster_vars.release_name
+  namespace  = var.config.namespace
   repository = "https://ananace.gitlab.io/charts"
   chart      = "element-web"
-  version    = var.versions.element_helm
+  version    = var.config.version_helm
 
   values = [<<-YAML
     image:
-      tag: ${var.versions.element}
+      tag: ${var.config.version}
 
     defaultServer:
-      url: https://${var.domain}
-      name: ${var.domain}
+      url: https://${var.cluster_vars.domains.domain}
+      name: ${var.cluster_vars.domains.domain}
 
     config:
       default_theme: dark
@@ -36,7 +36,7 @@ resource "helm_release" "element" {
       enabled: true
 
       annotations:
-        cert-manager.io/cluster-issuer: ${var.cert_issuer}
+        cert-manager.io/cluster-issuer: ${var.cluster_vars.issuer}
 
         nginx.ingress.kubernetes.io/configuration-snippet: |
           more_set_headers "Content-Security-Policy: ${join(";", [for key, value in local.csp : "${key} ${value}"])}";
@@ -51,7 +51,7 @@ resource "helm_release" "element" {
 
     resources:
       requests:
-        memory: ${var.resources.memory.element}
+        memory: ${var.config.memory}
   YAML
   ]
 }

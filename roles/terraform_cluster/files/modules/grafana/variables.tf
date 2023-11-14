@@ -1,71 +1,7 @@
-variable "admin_passwords" {
-  type      = map(string)
-  sensitive = true
+variable "cluster_vars" {
+  type = any
 }
 
-variable "cert_issuer" {
-  type = string
-}
-
-variable "db_host" {
-  type = string
-}
-
-variable "db_passwords" {
-  type      = map(string)
-  sensitive = true
-}
-
-variable "default_csp" {
-  type = map(string)
-}
-
-variable "domain" {
-  type = string
-}
-
-variable "keycloak_clients" {
-  type = map(string)
-}
-
-variable "keycloak_realm" {
-  type = string
-}
-
-variable "keycloak_secrets" {
-  type      = map(string)
-  sensitive = true
-}
-
-variable "mail_account" {
-  type = string
-}
-
-variable "mail_password" {
-  type      = string
-  sensitive = true
-}
-
-variable "namespaces" {
-  type = map(string)
-}
-
-variable "project_name" {
-  type = string
-}
-
-variable "release_name" {
-  type = string
-}
-
-variable "resources" {
-  type = map(map(string))
-}
-
-variable "versions" {
-  type = map(string)
-}
-
-variable "subdomains" {
-  type = map(string)
+variable "config" {
+  type = any
 }

@@ -3,12 +3,12 @@ resource "helm_release" "hcloud_csi" {
   namespace  = "kube-system"
   repository = "https://charts.hetzner.cloud"
   chart      = "hcloud-csi"
-  version    = var.versions.hcloud_csi
+  version    = var.config.version
 
   values = [<<-YAML
     controller:
       hcloudToken:
-        value: "${var.hcloud_token}"
+        value: "${var.config.hcloud_token}"
   YAML
   ]
 }

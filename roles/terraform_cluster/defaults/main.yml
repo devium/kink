@@ -1,266 +1,323 @@
-terraform_cluster_cert_email:
+terraform_cluster_app_config: "{{ terraform_cluster_app_config_default | combine(terraform_cluster_app_config_override, recursive=True) }}"
+terraform_cluster_app_config_override:
 terraform_cluster_domain:
-terraform_cluster_google_identity_provider_client_id:
-terraform_cluster_google_identity_provider_client_secret:
-terraform_cluster_hcloud_token:
-terraform_cluster_hdns_token:
-terraform_cluster_hdns_zone_id:
-terraform_cluster_hedgedoc_secret:
-terraform_cluster_home_site_image:
 terraform_cluster_kubeconf_file:
-terraform_cluster_mail_account:
-terraform_cluster_mail_password:
-terraform_cluster_minecraft_admins:
-terraform_cluster_minecraft_modpack_url:
-terraform_cluster_minecraft_world:
-terraform_cluster_minecraft_rcon_password:
-terraform_cluster_minecraft_rcon_web_password:
-terraform_cluster_minecraft_seed:
-terraform_cluster_namespaces_override:
-terraform_cluster_project_name:
-terraform_cluster_resources_override:
 terraform_cluster_stage:
-terraform_cluster_subdomains_override:
-terraform_cluster_versions_override:
-terraform_cluster_workadventure_maps_image:
+terraform_cluster_helm_release_name: main
+terraform_cluster_plan_file: "{{ role_path }}/files/terraform.tfstate.d/{{ terraform_cluster_workspace }}/tfplan"
+terraform_cluster_secrets_dir: "{{ playbook_dir }}/secrets"
+terraform_cluster_targets: []
+terraform_cluster_vault_dir: "{{ playbook_dir }}/vault"
+terraform_cluster_workspace: "cluster-{{ terraform_cluster_stage }}"
 
-terraform_cluster_admin_passwords:
+terraform_cluster_app_config_default:
+  backup:
+    namespace: backup
+    schedule: "0 0 * * *"
+    memory: 100Mi
+
+    volume:
+      handle:
+      size: 10Gi
+
+  buddy:
+    namespace: buddy
+    memory: 20Mi
+    subdomain:
+    version: 0.2.0
+
+  cert_manager:
+    email:
+    hdns_token:
+    namespace: cert-manager
+    memory: 150Mi
+    memory_cainjector: 150Mi
+    memory_webhook: 50Mi
+    use_production_cert: true
+    version_helm: v1.7.1
+
   collabora:
+    admin_password:
+    memory: 600Mi
+    namespace: collabora
+    subdomain:
+    version: 21.11.3.6.1
+    version_helm: 2.5.1
+
+  element:
+    memory: 20Mi
+    namespace: element
+    version: v1.11.46
+    version_helm: 1.3.3
+    subdomain:
+
   grafana:
+    admin_password:
+    memory: 300Mi
+    memory_alertmanager: 50Mi
+    memory_loki: 100Mi
+    memory_prometheus: 600Mi
+    memory_promtail: 100Mi
+    namespace: grafana
+    subdomain:
+    version: 8.4.2
+    version_helm: 33.2.1
+    version_loki: 2.6.1
+    version_loki_helm: 2.8.2
+
+    db:
+      database: grafana
+      username: grafana
+      password:
+
+    keycloak:
+      client: grafana
+      secret:
+
+    mail:
+      account: noreply
+      display_name: Grafana
+      password:
+
+  hetzner:
+    hcloud_token:
+    version: v2.5.1
+
+  hedgedoc:
+    memory: 300Mi
+    namespace: hedgedoc
+    secret:
+    subdomain:
+    version: 1.9.8
+    version_helm: 1.1.0
+
+    db:
+      database: hedgedoc
+      username: hedgedoc
+      password:
+
+    keycloak:
+      client: hedgedoc
+      secret:
+
+    volume:
+      handle:
+      size: 10Gi
+
+  home:
+    memory: 20Mi
+    namespace: home
+    site_image:
+    subdomain:
+    version_nginx: 1.23.0
+    version_nginx_helm: 13.1.0
+    version_nginx_prometheus_exporter: 0.11.0
+
+  jitsi:
+    memory_jicofo: 300Mi
+    memory_jvb: 1500Mi
+    memory_keycloak_adapter: 30Mi
+    memory_prosody: 50Mi
+    memory_web: 30Mi
+    namespace: jitsi
+    subdomain:
+    version: stable-8960-1
+    version_helm: 1.3.7
+    version_keycloak_adapter: v20231029
+    version_prometheus_exporter: 1.2.1
+
+    keycloak:
+      client: jitsi
+
+    secrets:
+      jicofo:
+      jvb:
+      jwt:
+
   keycloak:
+    admin_password:
+    mail_from_display_name: Keycloak
+    memory: 800Mi
+    namespace: keycloak
+    realm: primary
+    subdomain:
+    version: 22.0.4
+    version_helm: 2.3.0
+
+    db:
+      database: keycloak
+      username: keycloak
+      password:
+
+    google_identity_provider:
+      client_id:
+      client_secret:
+
+    mail:
+      account: noreply
+      display_name: Keycloak
+      password:
+
+  mailserver:
+    namespace: mailserver
+    subdomain:
+    version: 11.0.0
+    version_helm: 1.0.1
+
+    secrets_files:
+      key: "{{ terraform_cluster_secrets_dir }}/mail.{{ terraform_cluster_stage }}.private"
+      accounts: "{{ terraform_cluster_secrets_dir }}/postfix-accounts.{{ terraform_cluster_stage }}.cf"
+      aliases: "{{ terraform_cluster_secrets_dir }}/postfix-virtual.{{ terraform_cluster_stage }}.cf"
+
+    secrets_files_vault:
+      key: "{{ terraform_cluster_vault_dir }}/mail.{{ terraform_cluster_stage }}.private"
+      accounts: "{{ terraform_cluster_vault_dir }}/postfix-accounts.{{ terraform_cluster_stage }}.cf"
+      aliases: "{{ terraform_cluster_vault_dir }}/postfix-virtual.{{ terraform_cluster_stage }}.cf"
+
+    volume:
+      handle:
+      size: 10Gi
+
+  minecraft:
+    admins:
+    memory: 4Gi
+    namespace: minecraft
+    modpack_url:
+    world: world
+    rcon_password:
+    seed: 0
+    subdomain:
+    version: latest
+    version_game: 1.20.1
+    version_helm: 4.9.3
+
+    volume:
+      handle:
+      size: 10Gi
+
+  minecraft_backup:
+    namespace: minecraft
+
+    volume:
+      handle:
+      size: 50Gi
+
   nextcloud:
+    admin_password:
+    memory: 600Mi
+    namespace: nextcloud
+    subdomain:
+    version: 27.1.2-apache
+    version_helm: 4.3.3
+
+    db:
+      database: nextcloud
+      username: nextcloud
+      password:
+
+    keycloak:
+      client: nextcloud
+      secret:
+
+    volume:
+      handle:
+      size: 10Gi
+
+  postgres:
+    memory: 100Mi
+    namespace: postgres
+    password:
+    version: 14.1.0-debian-10-r80
+
+    volume:
+      handle:
+      size: 10Gi
+  
+  pretix:
+    memory: 1300Mi
+    memory_redis: 200Mi
+    namespace: pretix
+    subdomain:
+    version: 4.8.0
+
+    db:
+      database: pretix
+      username: pretix
+      password:
+
+    volume:
+      handle:
+      size: 10Gi
+
+    mail:
+      account: noreply
+      display_name: Pretix
+      password:
+
+  shlink:
+    memory: 100Mi
+    memory_web: 20Mi
+    namespace: shlink
+    subdomain:
+    version: 3.2.1
+    version_helm: 5.1.2
+
+    db:
+      database: shlink
+      username: shlink
+      password:
+
+  shlink_web:
+    memory: 20Mi
+    namespace: shlink
+    subdomain:
+    version: 3.7.2
+
+  sliding_sync:
+    memory: 200Mi
+    namespace: synapse
+    subdomain:
+    version: v0.99.11
+    version_helm: 0.2.5
+
+    db:
+      database: sliding_sync
+      username: sliding_sync
+      password:
+
+  synapse:
+    memory: 600Mi
+    memory_sliding_sync: 200Mi
+    namespace: synapse
+    subdomain:
+    version: v1.94.0
+    version_helm: 3.7.8
+
+    db:
+      database: synapse
+      username: synapse
+      password:
+      params: "LC_COLLATE 'C' LC_CTYPE 'C' TEMPLATE template0"
+
+    keycloak:
+      client: synapse
+      secret:
+
+    secrets:
+      registration:
+      macaroon:
+
+    volume:
+      handle:
+      size: 10Gi
 
 terraform_cluster_backend:
   hostname:
   organization:
   token:
 
-terraform_cluster_db_passwords:
-  grafana:
-  hedgedoc:
-  keycloak:
-  nextcloud:
-  shlink:
-  synapse:
-
-terraform_cluster_jitsi_secrets:
-  jicofo:
-  jvb:
-  jwt:
-
-terraform_cluster_keycloak_secrets:
-  grafana:
-  hedgedoc:
-  jitsi:
-  nextcloud:
-
-terraform_cluster_synapse_secrets:
-  registration:
-  macaroon:
-
-terraform_cluster_volume_handles:
-  hedgedoc:
-  nextcloud:
-  postgres:
-  synapse:
-
-terraform_cluster_backup_schedule: "0 0 * * *"
-terraform_cluster_helm_release_name: primary
-terraform_cluster_keycloak_realm: primary
-terraform_cluster_namespaces: "{{ terraform_cluster_namespaces_default | combine(terraform_cluster_namespaces_override, recursive=True) }}"
-terraform_cluster_plan_file: "{{ role_path }}/files/terraform.tfstate.d/{{ terraform_cluster_workspace }}/tfplan"
-terraform_cluster_resources: "{{ terraform_cluster_resources_default | combine(terraform_cluster_resources_override, recursive=True) }}"
-terraform_cluster_secrets_dir: "{{ playbook_dir }}/secrets"
-terraform_cluster_subdomains: "{{ terraform_cluster_subdomains_default | combine(terraform_cluster_subdomains_override, recursive=True) }}"
-terraform_cluster_targets: []
-terraform_cluster_use_production_cert: false
-terraform_cluster_vault_dir: "{{ playbook_dir }}/vault"
-terraform_cluster_versions: "{{ terraform_cluster_versions_default | combine(terraform_cluster_versions_override, recursive=True) }}"
-terraform_cluster_volume_sizes: "{{ terraform_cluster_volume_sizes_default }}"
-terraform_cluster_workadventure_start_map: /src/map.json
-terraform_cluster_workspace: "cluster-{{ terraform_cluster_stage }}"
-
-terraform_cluster_mail_secrets_files:
-  key: "{{ terraform_cluster_secrets_dir }}/mail.{{ terraform_cluster_stage }}.private"
-  accounts: "{{ terraform_cluster_secrets_dir }}/postfix-accounts.{{ terraform_cluster_stage }}.cf"
-  aliases: "{{ terraform_cluster_secrets_dir }}/postfix-virtual.{{ terraform_cluster_stage }}.cf"
-
-terraform_cluster_mail_secrets_files_vault:
-  key: "{{ terraform_cluster_vault_dir }}/mail.{{ terraform_cluster_stage }}.private"
-  accounts: "{{ terraform_cluster_vault_dir }}/postfix-accounts.{{ terraform_cluster_stage }}.cf"
-  aliases: "{{ terraform_cluster_vault_dir }}/postfix-virtual.{{ terraform_cluster_stage }}.cf"
-
-terraform_cluster_namespaces_default:
-  backup: backup
-  cert_manager: cert-manager
-  collabora: collabora
-  element: element
-  grafana: grafana
-  hedgedoc: hedgedoc
-  hetzner: hetzner
-  home: home
-  jitsi: jitsi
-  keycloak: keycloak
-  mailserver: mail
-  nextcloud: nextcloud
-  postgres: postgres
-  pretix: pretix
-  shlink: shlink
-  synapse: synapse
-  workadventure: workadventure
-
-terraform_cluster_resources_default:
-  memory:
-    alertmanager: 50Mi
-    backup: 100Mi
-    buddy: 20Mi
-    canal: 150Mi
-    cert_manager: 150Mi
-    cert_manager_cainjector: 150Mi
-    cert_manager_webhook: 50Mi
-    collabora: 600Mi
-    element: 20Mi
-    grafana: 300Mi
-    hedgedoc: 300Mi
-    home: 20Mi
-    jitsi_jicofo: 300Mi
-    jitsi_jvb: 1500Mi
-    jitsi_keycloak: 30Mi
-    jitsi_web: 30Mi
-    keycloak: 800Mi
-    loki: 100Mi
-    loki_promtail: 100Mi
-    nextcloud: 600Mi
-    postgres: 100Mi
-    pretix: 1300Mi
-    pretix_redis: 200Mi
-    prometheus: 600Mi
-    prosody: 50Mi
-    shlink: 100Mi
-    shlink_web: 20Mi
-    sliding_sync: 200Mi
-    synapse: 600Mi
-    workadventure_front: 20Mi
-    workadventure_back: 100Mi
-    workadventure_pusher: 100Mi
-    workadventure_uploader: 80Mi
-    workadventure_maps: 30Mi
-
-terraform_cluster_subdomains_default:
-  buddy: buddy
-  collabora: office.next
-  element: element
-  grafana: grafana
-  hedgedoc: doc
-  home: www
-  jitsi: jitsi
-  keycloak: auth
-  mailserver: mail
-  minecraft: minecraft
-  minecraft_rcon: rcon.minecraft
-  nextcloud: next
-  pretix: tickets
-  shlink: api.shlink
-  shlink_web: shlink
-  sliding_sync: syncv3
-  synapse: matrix
-  workadventure_back: api.play
-  workadventure_front: play
-  workadventure_maps: maps.play
-  workadventure_pusher: pusher.play
-  workadventure_uploader: uploader.play
-
-terraform_cluster_versions_default:
-  buddy: 0.2.0
-  cert_manager_helm: v1.7.1
-  collabora: 21.11.3.6.1
-  collabora_helm: 2.5.1
-  element: v1.11.46
-  element_helm: 1.3.3
-  hcloud_csi: v2.5.1
-  grafana: 8.4.2
-  grafana_helm: 33.2.1
-  hedgedoc: 1.9.8
-  hedgedoc_helm: 1.1.0
-  jitsi: stable-8960-1
-  jitsi_helm: 1.3.7
-  jitsi_keycloak: v20231029
-  jitsi_prometheus_exporter: 1.2.1
-  keycloak: 22.0.4
-  keycloak_helm: 2.3.0
-  loki: 2.6.1
-  loki_helm: 2.8.2
-  mailserver: 11.0.0
-  mailserver_helm: 1.0.1
-  minecraft: latest
-  minecraft_bedrock_helm: 2.0.1
-  minecraft_game: 1.20.1
-  minecraft_helm: 4.9.3
-  minecraft_rcon_web_helm: 1.0.0
-  nextcloud: 27.1.2-apache
-  nextcloud_helm: 4.3.3
-  nginx: 1.23.0
-  nginx_helm: 13.1.0
-  nginx_prometheus_exporter: 0.11.0
-  postgres: 14.1.0-debian-10-r80
-  pretix: 4.8.0
-  shlink: 3.2.1
-  shlink_helm: 5.1.2
-  shlink_web: 3.7.2
-  sliding_sync: v0.99.11
-  sliding_sync_helm: 0.2.5
-  synapse: v1.94.0
-  synapse_helm: 3.7.8
-  workadventure: v1.8.4
-  workadventure_helm: 0.2.0
-
-terraform_cluster_volume_sizes_default:
-  backup: 10Gi
-  hedgedoc: 10Gi
-  mailserver: 10Gi
-  minecraft: 10Gi
-  minecraft_backup: 50Gi
-  minecraft_bedrock: 10Gi
-  nextcloud: 10Gi
-  postgres: 10Gi
-  pretix: 10Gi
-  synapse: 10Gi
-
 terraform_cluster_variables:
-  admin_passwords: "{{ terraform_cluster_admin_passwords | to_json }}"
-  backup_schedule: "{{ terraform_cluster_backup_schedule }}"
-  cert_email: "{{ terraform_cluster_cert_email }}"
-  db_passwords: "{{ terraform_cluster_db_passwords | to_json }}"
+  app_config: "{{ terraform_cluster_app_config | to_json }}"
   domain: "{{ terraform_cluster_domain }}"
-  google_identity_provider_client_id: "{{ terraform_cluster_google_identity_provider_client_id }}"
-  google_identity_provider_client_secret: "{{ terraform_cluster_google_identity_provider_client_secret }}"
-  hcloud_token: "{{ terraform_cluster_hcloud_token }}"
-  hdns_token: "{{ terraform_cluster_hdns_token }}"
-  hdns_zone_id: "{{ terraform_cluster_hdns_zone_id }}"
-  hedgedoc_secret: "{{ terraform_cluster_hedgedoc_secret }}"
-  home_site_image: "{{ terraform_cluster_home_site_image }}"
-  jitsi_secrets: "{{ terraform_cluster_jitsi_secrets | to_json }}"
-  keycloak_realm: "{{ terraform_cluster_keycloak_realm }}"
-  keycloak_secrets: "{{ terraform_cluster_keycloak_secrets | to_json }}"
   kubeconf_file: "{{ terraform_cluster_kubeconf_file }}"
-  mail_account: "{{ terraform_cluster_mail_account }}"
-  mail_password: "{{ terraform_cluster_mail_password }}"
-  mail_secrets_files: "{{ terraform_cluster_mail_secrets_files | to_json }}"
-  minecraft_admins: "{{ terraform_cluster_minecraft_admins }}"
-  minecraft_modpack_url: "{{ terraform_cluster_minecraft_modpack_url }}"
-  minecraft_rcon_password: "{{ terraform_cluster_minecraft_rcon_password }}"
-  minecraft_rcon_web_password: "{{ terraform_cluster_minecraft_rcon_web_password }}"
-  minecraft_seed: "{{ terraform_cluster_minecraft_seed }}"
-  minecraft_world: "{{ terraform_cluster_minecraft_world }}"
-  namespaces: "{{ terraform_cluster_namespaces | to_json }}"
-  project_name: "{{ terraform_cluster_project_name }}"
   release_name: "{{ terraform_cluster_helm_release_name }}"
-  resources: "{{ terraform_cluster_resources | to_json }}"
-  subdomains: "{{ terraform_cluster_subdomains | to_json }}"
-  synapse_secrets: "{{ terraform_cluster_synapse_secrets | to_json }}"
-  use_production_cert: "{{ terraform_cluster_use_production_cert | to_json }}"
-  versions: "{{ terraform_cluster_versions | to_json }}"
-  volume_handles: "{{ terraform_cluster_volume_handles | to_json }}"
-  volume_sizes: "{{ terraform_cluster_volume_sizes | to_json }}"
-  workadventure_maps_image: "{{ terraform_cluster_workadventure_maps_image }}"
-  workadventure_start_map: "{{ terraform_cluster_workadventure_start_map }}"

@@ -1,30 +1,30 @@
 locals {
-  acme_server = "https://acme${var.use_production_cert ? "" : "-staging"}-v02.api.letsencrypt.org/directory"
+  acme_server = "https://acme${var.config.use_production_cert ? "" : "-staging"}-v02.api.letsencrypt.org/directory"
 }
 
 resource "helm_release" "cert_manager" {
-  name       = var.release_name
-  namespace  = var.namespaces.cert_manager
+  name       = var.cluster_vars.release_name
+  namespace  = var.config.namespace
   repository = "https://charts.jetstack.io"
   chart      = "cert-manager"
-  version    = var.versions.cert_manager_helm
+  version    = var.config.version_helm
 
   values = [<<-YAML
     installCRDs: true
 
     resources:
       requests:
-        memory: ${var.resources.memory.cert_manager}
+        memory: ${var.config.memory}
 
     webhook:
       resources:
         requests:
-          memory: ${var.resources.memory.cert_manager_webhook}
+          memory: ${var.config.memory_webhook}
 
     cainjector:
       resources:
         requests:
-          memory: ${var.resources.memory.cert_manager_cainjector}
+          memory: ${var.config.memory_cainjector}
   YAML
   ]
 }
@@ -32,22 +32,22 @@ resource "helm_release" "cert_manager" {
 resource "kubernetes_secret_v1" "hetzner_secret" {
   metadata {
     name      = "hetzner-secret"
-    namespace = var.namespaces.cert_manager
+    namespace = var.config.namespace
   }
 
   data = {
-    api-key = var.hdns_token
+    api-key = var.config.hdns_token
   }
 }
 
 resource "helm_release" "hetzner_webhook" {
-  name       = "${var.release_name}-hetzner"
-  namespace  = var.namespaces.cert_manager
+  name       = "${var.cluster_vars.release_name}-hetzner"
+  namespace  = var.config.namespace
   repository = "https://vadimkim.github.io/cert-manager-webhook-hetzner"
   chart      = "cert-manager-webhook-hetzner"
 
   values = [<<-YAML
-    groupName: acme.${var.domain}
+    groupName: acme.${var.cluster_vars.domains.domain}
   YAML
   ]
 }
@@ -58,12 +58,12 @@ resource "kubectl_manifest" "issuer" {
     kind: ClusterIssuer
 
     metadata:
-      name: letsencrypt
+      name: ${var.cluster_vars.issuer}
 
     spec:
       acme:
         server: ${local.acme_server}
-        email: ${var.cert_email}
+        email: ${var.config.email}
 
         privateKeySecretRef:
           name: acme-account-key
@@ -75,11 +75,11 @@ resource "kubectl_manifest" "issuer" {
 
           - dns01:
               webhook:
-                groupName: acme.${var.domain}
+                groupName: acme.${var.cluster_vars.domains.domain}
                 solverName: hetzner
                 config:
                   secretName: hetzner_secret
-                  zoneName: ${var.domain}
+                  zoneName: ${var.cluster_vars.domains.domain}
                   apiUrl: https://dns.hetzner.com/api/v1
   YAML
 

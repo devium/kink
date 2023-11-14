@@ -1,3 +1,3 @@
 variable "namespaces" {
-  type = map(string)
+  type = list(string)
 }

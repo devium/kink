@@ -1,29 +1,29 @@
 locals {
-  fqdn = "${var.subdomains.keycloak}.${var.domain}"
+  fqdn = "${var.config.subdomain}.${var.cluster_vars.domains.domain}"
 
-  csp = merge(var.default_csp, {
+  csp = merge(var.cluster_vars.default_csp, {
     "script-src"      = "'self' 'unsafe-inline' 'unsafe-eval'"
     "frame-src"       = "'self'"
-    "frame-ancestors" = "'self' https://${var.subdomains.element}.${var.domain}"
+    "frame-ancestors" = "'self' https://${var.cluster_vars.domains.element}"
   })
 }
 
 resource "helm_release" "keycloak" {
-  name       = var.release_name
-  namespace  = var.namespaces.keycloak
+  name       = var.cluster_vars.release_name
+  namespace  = var.config.namespace
   repository = "https://codecentric.github.io/helm-charts"
   chart      = "keycloakx"
-  version    = var.versions.keycloak_helm
+  version    = var.config.version_helm
 
   values = [<<-YAML
     image:
-      tag: ${var.versions.keycloak}
+      tag: ${var.config.version}
 
     ingress:
       enabled: true
 
       annotations:
-        cert-manager.io/cluster-issuer: ${var.cert_issuer}
+        cert-manager.io/cluster-issuer: ${var.cluster_vars.issuer}
         nginx.ingress.kubernetes.io/proxy-buffer-size: "128k"
         nginx.ingress.kubernetes.io/configuration-snippet: |
           more_set_headers "Content-Security-Policy: ${join(";", [for key, value in local.csp : "${key} ${value}"])}";
@@ -41,7 +41,7 @@ resource "helm_release" "keycloak" {
 
     resources:
       requests:
-        memory: ${var.resources.memory.keycloak}
+        memory: ${var.config.memory}
 
     command:
       - "/opt/keycloak/bin/kc.sh"
@@ -69,26 +69,18 @@ resource "helm_release" "keycloak" {
     secrets:
       admin-password:
         stringData:
-          KEYCLOAK_ADMIN_PASSWORD: ${var.admin_passwords.keycloak}
+          KEYCLOAK_ADMIN_PASSWORD: ${var.config.admin_password}
 
     http:
       relativePath: "/"
 
-    extraVolumeMounts: |
-      - name: theme
-        mountPath: /opt/keycloak/themes/custom
-
-    extraVolumes: |
-      - name: theme
-        emptyDir: {}
-
     database:
       vendor: postgres
-      hostname: ${var.db_host}
+      hostname: ${var.cluster_vars.db_host}
       port: 5432
-      database: keycloak
-      username: keycloak
-      password: ${var.db_passwords.keycloak}
+      database: ${var.config.db.database}
+      username: ${var.config.db.username}
+      password: ${var.config.db.password}
   YAML
   ]
 }

@@ -1,29 +1,29 @@
 locals {
-  fqdn     = "${var.subdomains.grafana}.${var.domain}"
-  oidc_url = "https://${var.subdomains.keycloak}.${var.domain}/realms/${var.keycloak_realm}"
+  fqdn     = "${var.config.subdomain}.${var.cluster_vars.domains.domain}"
+  oidc_url = "https://${var.cluster_vars.domains.keycloak}/realms/${var.cluster_vars.keycloak_realm}"
 
-  csp = merge(var.default_csp, {
+  csp = merge(var.cluster_vars.default_csp, {
     "script-src" = "'self' 'unsafe-inline' 'unsafe-eval'"
   })
 }
 
 resource "helm_release" "grafana" {
-  name       = var.release_name
-  namespace  = var.namespaces.grafana
+  name       = var.cluster_vars.release_name
+  namespace  = var.config.namespace
   repository = "https://prometheus-community.github.io/helm-charts"
   chart      = "kube-prometheus-stack"
-  version    = var.versions.grafana_helm
+  version    = var.config.version_helm
 
   values = [<<-YAML
     grafana:
       image:
-        tag: ${var.versions.grafana}
+        tag: ${var.config.version}
 
       ingress:
         enabled: true
 
         annotations:
-          cert-manager.io/cluster-issuer: ${var.cert_issuer}
+          cert-manager.io/cluster-issuer: ${var.cluster_vars.issuer}
           nginx.ingress.kubernetes.io/configuration-snippet: |
             more_set_headers "Content-Security-Policy: ${join(";", [for key, value in local.csp : "${key} ${value}"])}";
 
@@ -37,9 +37,9 @@ resource "helm_release" "grafana" {
 
       resources:
         requests:
-          memory: ${var.resources.memory.grafana}
+          memory: ${var.config.memory}
 
-      adminPassword: ${var.admin_passwords.grafana}
+      adminPassword: ${var.config.admin_password}
 
       grafana.ini:
         server:
@@ -47,10 +47,10 @@ resource "helm_release" "grafana" {
 
         database:
           type: postgres
-          host: ${var.db_host}
-          name: grafana
-          user: grafana
-          password: ${var.db_passwords.grafana}
+          host: ${var.cluster_vars.db_host}
+          name: ${var.config.db.database}
+          user: ${var.config.db.username}
+          password: ${var.config.db.password}
 
         auth:
           disable_login_form: true
@@ -59,8 +59,8 @@ resource "helm_release" "grafana" {
           name: Keycloak
           icon: signin
           enabled: true
-          client_id: ${var.keycloak_clients.grafana}
-          client_secret: ${var.keycloak_secrets.grafana}
+          client_id: ${var.config.keycloak.client}
+          client_secret: ${var.config.keycloak.secret}
           scopes: openid private_profile
           empty_scopes: false
           auth_url: ${local.oidc_url}/protocol/openid-connect/auth
@@ -75,18 +75,18 @@ resource "helm_release" "grafana" {
 
         smtp:
           enabled: true
-          host: ${var.subdomains.mailserver}.${var.domain}
-          user: ${var.mail_account}@${var.domain}
-          password: ${var.mail_password}
-          from_address: ${var.mail_account}@${var.domain}
-          from_name: ${title(var.project_name)}
+          host: ${var.cluster_vars.mail_server}
+          user: ${var.config.mail.account}@${var.cluster_vars.domains.domain}
+          password: ${var.config.mail.password}
+          from_address: ${var.config.mail.account}@${var.cluster_vars.domains.domain}
+          from_name: ${var.config.mail.display_name}
           startTLS_policy: MandatoryStartTLS
 
     alertmanager:
       alertmanagerSpec:
         resources:
           requests:
-            memory: ${var.resources.memory.alertmanager}
+            memory: ${var.config.memory_alertmanager}
 
     prometheus:
       prometheusSpec:
@@ -98,26 +98,26 @@ resource "helm_release" "grafana" {
 
         resources:
           requests:
-            memory: ${var.resources.memory.prometheus}
+            memory: ${var.config.memory_prometheus}
   YAML
   ]
 }
 
 resource "helm_release" "loki" {
-  name       = "${var.release_name}-loki"
-  namespace  = var.namespaces.grafana
+  name       = "${var.cluster_vars.release_name}-loki"
+  namespace  = var.config.namespace
   repository = "https://grafana.github.io/helm-charts"
   chart      = "loki-stack"
-  version    = var.versions.loki_helm
+  version    = var.config.version_loki_helm
 
   values = [<<-YAML
     loki:
       image:
-        tag: ${var.versions.loki}
+        tag: ${var.config.version_loki}
 
       resources:
         requests:
-          memory: ${var.resources.memory.loki}
+          memory: ${var.config.memory_loki}
 
       config:
         query_scheduler:
@@ -130,7 +130,7 @@ resource "helm_release" "loki" {
     promtail:
       resources:
         requests:
-          memory: ${var.resources.memory.loki_promtail}
+          memory: ${var.config.memory_promtail}
   YAML
   ]
 }

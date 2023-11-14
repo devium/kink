@@ -1,16 +1,7 @@
-variable "hcloud_token" {
-  type      = string
-  sensitive = true
-}
-
-variable "namespaces" {
-  type = map(string)
+variable "config" {
+  type = any
 }
 
 variable "release_name" {
   type = string
-}
-
-variable "versions" {
-  type = map(string)
 }

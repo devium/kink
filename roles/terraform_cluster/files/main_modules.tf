@@ -1,24 +1,62 @@
+locals {
+  cluster_vars = {
+    db_host        = "${var.release_name}-postgresql.${var.app_config.postgres.namespace}.svc.cluster.local"
+    default_csp    = local.default_csp
+    issuer         = "letsencrypt"
+    keycloak_realm = var.app_config.keycloak.realm
+    mail_server    = "${var.app_config.mailserver.subdomain}.${var.domain}"
+    release_name   = var.release_name
+
+    db_specs = {
+      for app_config_key, app_config_entry in var.app_config :
+      app_config_key => {
+        database : app_config_entry.db.database
+        username : app_config_entry.db.username
+        password : app_config_entry.db.password
+        params : contains(keys(app_config_entry.db), "params") ? app_config_entry.db.params : ""
+      }
+      if contains(keys(app_config_entry), "db")
+    }
+
+    domains = merge(
+      {
+        for app_config_key, app_config_entry in var.app_config :
+        app_config_key => "${app_config_entry.subdomain}.${var.domain}"
+        if contains(keys(app_config_entry), "subdomain")
+      },
+      {
+        domain = var.domain
+      }
+    )
+  }
+}
+
 module "namespaces" {
   source = "./modules/namespaces"
 
-  namespaces = var.namespaces
+  namespaces = [
+    for app_config_key, app_config_entry in var.app_config :
+    app_config_entry.namespace
+    if contains(keys(app_config_entry), "namespace")
+  ]
 }
 
 module "rke2" {
   source = "./modules/rke2"
 
-  default_csp  = local.default_csp
-  namespaces   = module.namespaces.namespaces
-  release_name = var.release_name
+  default_csp        = local.default_csp
+  mailserver_service = "${var.app_config.mailserver.namespace}/${var.release_name}-docker-mailserver"
+
+  depends_on = [
+    module.namespaces
+  ]
 }
 
 module "hetzner" {
   source = "./modules/hetzner"
 
-  hcloud_token = var.hcloud_token
-  namespaces   = module.namespaces.namespaces
+  config       = var.app_config.hetzner
   release_name = var.release_name
-  versions     = var.versions
 
   depends_on = [
     module.rke2
@@ -28,331 +66,261 @@ module "hetzner" {
 module "volumes" {
   source = "./modules/volumes"
 
-  namespaces     = module.namespaces.namespaces
-  volume_handles = var.volume_handles
-  volume_sizes   = var.volume_sizes
+  volume_config = {
+    for app_config_key, app_config_entry in var.app_config :
+    app_config_key => {
+      handle : app_config_entry.volume.handle
+      namespace : app_config_entry.namespace
+      size : app_config_entry.volume.size
+    }
+    if contains(keys(app_config_entry), "volume")
+  }
+
+  depends_on = [
+    module.hetzner
+  ]
+}
+
+
+module "backup" {
+  source = "./modules/backup"
+
+  cluster_vars = local.cluster_vars
+  config       = var.app_config.backup
+
+  depends_on = [
+    module.namespaces
+  ]
+}
+
+module "buddy" {
+  source = "./modules/buddy"
+
+  cluster_vars = local.cluster_vars
+  config       = var.app_config.buddy
+
+  depends_on = [
+    module.namespaces
+  ]
 }
 
 module "cert_manager" {
   source = "./modules/cert_manager"
 
-  cert_email          = var.cert_email
-  domain              = var.domain
-  hdns_token          = var.hdns_token
-  hdns_zone_id        = var.hdns_zone_id
-  namespaces          = module.namespaces.namespaces
-  release_name        = var.release_name
-  resources           = var.resources
-  use_production_cert = var.use_production_cert
-  versions            = var.versions
-}
-
-module "postgres" {
-  source = "./modules/postgres"
-
-  db_passwords = var.db_passwords
-  namespaces   = module.namespaces.namespaces
-  release_name = var.release_name
-  resources    = var.resources
-  pvcs         = module.volumes.pvcs
-  versions     = var.versions
-}
-
-module "keycloak" {
-  # Note on module folder name:
-  # https://github.com/hashicorp/terraform-provider-helm/issues/735
-  source = "./modules/keycloak"
-
-  admin_passwords = var.admin_passwords
-  cert_issuer     = module.cert_manager.issuer
-  db_host         = module.postgres.host
-  db_passwords    = var.db_passwords
-  default_csp     = local.default_csp
-  domain          = var.domain
-  namespaces      = module.namespaces.namespaces
-  release_name    = var.release_name
-  resources       = var.resources
-  subdomains      = var.subdomains
-  versions        = var.versions
-}
-
-module "keycloak_config" {
-  source = "./modules/keycloak_config"
-
-  domain           = var.domain
-  keycloak_realm   = var.keycloak_realm
-  keycloak_secrets = var.keycloak_secrets
-  mail_account     = var.mail_account
-  mail_password    = var.mail_password
-  project_name     = var.project_name
-  subdomains       = var.subdomains
-
-  google_identity_provider_client_id     = var.google_identity_provider_client_id
-  google_identity_provider_client_secret = var.google_identity_provider_client_secret
+  cluster_vars = local.cluster_vars
+  config       = var.app_config.cert_manager
 
   depends_on = [
-    module.keycloak
+    module.namespaces
   ]
 }
 
-module "jitsi" {
-  source = "./modules/jitsi"
+module "collabora" {
+  source = "./modules/collabora"
 
-  cert_issuer      = module.cert_manager.issuer
-  default_csp      = local.default_csp
-  domain           = var.domain
-  jitsi_secrets    = var.jitsi_secrets
-  keycloak_clients = module.keycloak_config.clients
-  keycloak_realm   = var.keycloak_realm
-  keycloak_secrets = var.keycloak_secrets
-  namespaces       = module.namespaces.namespaces
-  release_name     = var.release_name
-  resources        = var.resources
-  subdomains       = var.subdomains
-  versions         = var.versions
+  cluster_vars = local.cluster_vars
+  config       = var.app_config.collabora
 
   depends_on = [
-    module.rke2,
-    module.grafana
+    module.namespaces
+  ]
+}
+
+module "element" {
+  source = "./modules/element"
+
+  cluster_vars = local.cluster_vars
+  config       = var.app_config.element
+
+  depends_on = [
+    module.namespaces
+  ]
+}
+
+module "grafana" {
+  source = "./modules/grafana"
+
+  cluster_vars = local.cluster_vars
+  config       = var.app_config.grafana
+
+  depends_on = [
+    module.namespaces
+  ]
+}
+
+module "hedgedoc" {
+  source = "./modules/hedgedoc"
+
+  cluster_vars = local.cluster_vars
+  config       = var.app_config.hedgedoc
+
+  depends_on = [
+    module.namespaces
   ]
 }
 
 module "home" {
   source = "./modules/home"
 
-  cert_issuer     = module.cert_manager.issuer
-  default_csp     = local.default_csp
-  domain          = var.domain
-  home_site_image = var.home_site_image
-  namespaces      = module.namespaces.namespaces
-  release_name    = var.release_name
-  resources       = var.resources
-  subdomains      = var.subdomains
-  versions        = var.versions
-}
-
-module "hedgedoc" {
-  source = "./modules/hedgedoc"
-
-  cert_issuer      = module.cert_manager.issuer
-  db_host          = module.postgres.host
-  db_passwords     = var.db_passwords
-  default_csp      = local.default_csp
-  domain           = var.domain
-  hedgedoc_secret  = var.hedgedoc_secret
-  keycloak_clients = module.keycloak_config.clients
-  keycloak_realm   = var.keycloak_realm
-  keycloak_secrets = var.keycloak_secrets
-  namespaces       = module.namespaces.namespaces
-  pvcs             = module.volumes.pvcs
-  release_name     = var.release_name
-  resources        = var.resources
-  subdomains       = var.subdomains
-  versions         = var.versions
-}
-
-module "nextcloud" {
-  source = "./modules/nextcloud"
-
-  admin_passwords = var.admin_passwords
-  cert_issuer     = module.cert_manager.issuer
-  db_host         = module.postgres.host
-  db_passwords    = var.db_passwords
-  default_csp     = local.default_csp
-  domain          = var.domain
-  namespaces      = module.namespaces.namespaces
-  pvcs            = module.volumes.pvcs
-  release_name    = var.release_name
-  resources       = var.resources
-  subdomains      = var.subdomains
-  versions        = var.versions
-}
-
-module "collabora" {
-  source = "./modules/collabora"
-
-  admin_passwords = var.admin_passwords
-  cert_issuer     = module.cert_manager.issuer
-  default_csp     = local.default_csp
-  domain          = var.domain
-  namespaces      = module.namespaces.namespaces
-  release_name    = var.release_name
-  resources       = var.resources
-  subdomains      = var.subdomains
-  versions        = var.versions
-}
-
-module "synapse" {
-  source = "./modules/synapse"
-
-  cert_issuer      = module.cert_manager.issuer
-  db_host          = module.postgres.host
-  db_passwords     = var.db_passwords
-  domain           = var.domain
-  keycloak_clients = module.keycloak_config.clients
-  keycloak_realm   = var.keycloak_realm
-  keycloak_secrets = var.keycloak_secrets
-  namespaces       = module.namespaces.namespaces
-  pvcs             = module.volumes.pvcs
-  release_name     = var.release_name
-  resources        = var.resources
-  subdomains       = var.subdomains
-  synapse_secrets  = var.synapse_secrets
-  versions         = var.versions
-}
-
-module "element" {
-  source = "./modules/element"
-
-  cert_issuer  = module.cert_manager.issuer
-  default_csp  = local.default_csp
-  domain       = var.domain
-  namespaces   = module.namespaces.namespaces
-  release_name = var.release_name
-  resources    = var.resources
-  subdomains   = var.subdomains
-  versions     = var.versions
-}
-
-module "backup" {
-  source = "./modules/backup"
-
-  backup_schedule = var.backup_schedule
-  db_host         = module.postgres.host
-  db_passwords    = var.db_passwords
-  namespaces      = module.namespaces.namespaces
-  pvcs            = module.volumes.pvcs
-  release_name    = var.release_name
-  resources       = var.resources
-  versions        = var.versions
-}
-
-module "grafana" {
-  source = "./modules/grafana"
-
-  admin_passwords  = var.admin_passwords
-  cert_issuer      = module.cert_manager.issuer
-  db_host          = module.postgres.host
-  db_passwords     = var.db_passwords
-  default_csp      = local.default_csp
-  domain           = var.domain
-  keycloak_clients = module.keycloak_config.clients
-  keycloak_realm   = var.keycloak_realm
-  keycloak_secrets = var.keycloak_secrets
-  mail_account     = var.mail_account
-  mail_password    = var.mail_password
-  namespaces       = module.namespaces.namespaces
-  project_name     = var.project_name
-  release_name     = var.release_name
-  resources        = var.resources
-  subdomains       = var.subdomains
-  versions         = var.versions
-}
-
-module "grafana_config" {
-  source = "./modules/grafana_config"
-
-  versions = var.versions
+  cluster_vars = local.cluster_vars
+  config       = var.app_config.home
 
   depends_on = [
-    module.grafana
+    module.namespaces
   ]
 }
 
-module "workadventure" {
-  source = "./modules/workadventure"
+module "jitsi" {
+  source = "./modules/jitsi"
 
-  cert_issuer              = module.cert_manager.issuer
-  default_csp              = local.default_csp
-  domain                   = var.domain
-  jitsi_secrets            = var.jitsi_secrets
-  namespaces               = module.namespaces.namespaces
-  release_name             = var.release_name
-  resources                = var.resources
-  subdomains               = var.subdomains
-  versions                 = var.versions
-  workadventure_maps_image = var.workadventure_maps_image
-  workadventure_start_map  = var.workadventure_start_map
+  cluster_vars = local.cluster_vars
+  config       = var.app_config.jitsi
+
+  depends_on = [
+    module.namespaces
+  ]
 }
 
-module "shlink" {
-  source = "./modules/shlink"
+module "keycloak" {
+  source = "./modules/keycloak"
 
-  cert_issuer  = module.cert_manager.issuer
-  db_host      = module.postgres.host
-  db_passwords = var.db_passwords
-  default_csp  = local.default_csp
-  domain       = var.domain
-  namespaces   = module.namespaces.namespaces
-  release_name = var.release_name
-  resources    = var.resources
-  subdomains   = var.subdomains
-  versions     = var.versions
-}
+  cluster_vars = local.cluster_vars
+  config       = var.app_config.keycloak
 
-module "pretix" {
-  source = "./modules/pretix"
-
-  cert_issuer      = module.cert_manager.issuer
-  db_host          = module.postgres.host
-  db_passwords     = var.db_passwords
-  default_csp      = local.default_csp
-  domain           = var.domain
-  keycloak_clients = module.keycloak_config.clients
-  keycloak_realm   = var.keycloak_realm
-  keycloak_secrets = var.keycloak_secrets
-  mail_account     = var.mail_account
-  mail_password    = var.mail_password
-  namespaces       = module.namespaces.namespaces
-  pvcs             = module.volumes.pvcs
-  resources        = var.resources
-  subdomains       = var.subdomains
-  versions         = var.versions
-}
-
-module "buddy" {
-  source = "./modules/buddy"
-
-  cert_issuer  = module.cert_manager.issuer
-  default_csp  = local.default_csp
-  domain       = var.domain
-  namespaces   = module.namespaces.namespaces
-  release_name = var.release_name
-  resources    = var.resources
-  subdomains   = var.subdomains
-  versions     = var.versions
+  depends_on = [
+    module.namespaces
+  ]
 }
 
 module "mailserver" {
   source = "./modules/mailserver"
 
-  cert_issuer   = module.cert_manager.issuer
-  default_csp   = local.default_csp
-  domain        = var.domain
-  namespaces    = module.namespaces.namespaces
-  pvcs          = module.volumes.pvcs
-  release_name  = var.release_name
-  secrets_files = var.mail_secrets_files
-  subdomains    = var.subdomains
-  versions      = var.versions
+  cluster_vars = local.cluster_vars
+  config       = var.app_config.mailserver
+
+  depends_on = [
+    module.namespaces
+  ]
 }
 
 module "minecraft" {
   source = "./modules/minecraft"
 
-  cert_issuer                 = module.cert_manager.issuer
-  default_csp                 = local.default_csp
-  domain                      = var.domain
-  minecraft_admins            = var.minecraft_admins
-  minecraft_modpack_url       = var.minecraft_modpack_url
-  minecraft_world             = var.minecraft_world
-  minecraft_rcon_password     = var.minecraft_rcon_password
-  minecraft_rcon_web_password = var.minecraft_rcon_web_password
-  minecraft_seed              = var.minecraft_seed
-  namespaces                  = module.namespaces.namespaces
-  project_name                = var.project_name
-  pvcs                        = module.volumes.pvcs
-  release_name                = var.release_name
-  subdomains                  = var.subdomains
-  versions                    = var.versions
+  cluster_vars = local.cluster_vars
+  config       = var.app_config.minecraft
+
+  depends_on = [
+    module.namespaces
+  ]
+}
+
+module "nextcloud" {
+  source = "./modules/nextcloud"
+
+  cluster_vars = local.cluster_vars
+  config       = var.app_config.nextcloud
+
+  depends_on = [
+    module.namespaces
+  ]
+}
+
+module "postgres" {
+  source = "./modules/postgres"
+
+  cluster_vars = local.cluster_vars
+  config       = var.app_config.postgres
+
+  depends_on = [
+    module.namespaces
+  ]
+}
+
+module "pretix" {
+  source = "./modules/pretix"
+
+  cluster_vars = local.cluster_vars
+  config       = var.app_config.pretix
+
+  depends_on = [
+    module.namespaces
+  ]
+}
+
+module "shlink" {
+  source = "./modules/shlink"
+
+  cluster_vars = local.cluster_vars
+  config       = var.app_config.shlink
+
+  depends_on = [
+    module.namespaces
+  ]
+}
+
+module "shlink_web" {
+  source = "./modules/shlink_web"
+
+  cluster_vars = local.cluster_vars
+  config       = var.app_config.shlink_web
+
+  depends_on = [
+    module.namespaces
+  ]
+}
+
+module "sliding_sync" {
+  source = "./modules/sliding_sync"
+
+  cluster_vars = local.cluster_vars
+  config       = var.app_config.sliding_sync
+
+  depends_on = [
+    module.namespaces
+  ]
+}
+
+module "synapse" {
+  source = "./modules/synapse"
+
+  cluster_vars = local.cluster_vars
+  config       = var.app_config.synapse
+
+  depends_on = [
+    module.namespaces
+  ]
+}
+
+
+module "keycloak_config" {
+  source = "./modules/keycloak_config"
+
+  clients = {
+    for app_config_key, app_config_entry in var.app_config :
+    app_config_key => {
+      client_id : app_config_entry.keycloak.client
+      secret : contains(keys(app_config_entry.keycloak), "secret") ? app_config_entry.keycloak.secret : ""
+      url : "https://${app_config_entry.subdomain}.${var.domain}"
+    }
+    if contains(keys(app_config_entry), "keycloak")
+  }
+  cluster_vars = local.cluster_vars
+  config       = var.app_config.keycloak
+
+  depends_on = [
+    module.keycloak
+  ]
+}
+
+module "grafana_config" {
+  source = "./modules/grafana_config"
+
+  versions = {
+    jitsi_prometheus_exporter = var.app_config.jitsi.version_prometheus_exporter
+    nginx_prometheus_exporter = var.app_config.home.version_nginx_prometheus_exporter
+  }
+
+  depends_on = [
+    module.grafana
+  ]
 }

@@ -1,5 +1,5 @@
 resource "keycloak_realm" "realm" {
-  realm = var.keycloak_realm
+  realm = var.config.realm
 
   user_managed_access      = true
   registration_allowed     = true
@@ -16,15 +16,15 @@ resource "keycloak_realm" "realm" {
   }
 
   smtp_server {
-    host              = "${var.subdomains.mailserver}.${var.domain}"
-    from              = "${var.mail_account}@${var.domain}"
+    host              = var.cluster_vars.mail_server
+    from              = "${var.config.mail.account}@${var.cluster_vars.domains.domain}"
     port              = 587
     starttls          = true
-    from_display_name = title(var.project_name)
+    from_display_name = var.config.mail.display_name
 
     auth {
-      username = "${var.mail_account}@${var.domain}"
-      password = var.mail_password
+      username = "${var.config.mail.account}@${var.cluster_vars.domains.domain}"
+      password = var.config.mail.password
     }
   }
 

@@ -32,7 +32,7 @@
       dest: "{{ playbook_dir }}/.tmp/setup.sh"
       mode: "+x"
 
-  - name: Generate Postfix accounts (requires sudo, use --ask-become-pass)
+  - name: Generate Postfix accounts (requires sudo, use --ask-become-pass, make sure Docker Daemon is running)
     command:
       cmd: "{{ playbook_dir }}/.tmp/setup.sh email add {{ item.name }}@{{ mail_domain }} {{ item.password }}"
     with_items: "{{ mail_mail_accounts }}"

@@ -1,8 +1,8 @@
 locals {
-  fqdn     = "${var.subdomains.pretix}.${var.domain}"
-  oidc_url = "/realms/${var.keycloak_realm}/protocol/openid-connect"
+  fqdn     = "${var.config.subdomain}.${var.cluster_vars.domains.domain}"
+  oidc_url = "/realms/${var.cluster_vars.keycloak_realm}/protocol/openid-connect"
 
-  csp = merge(var.default_csp, {
+  csp = merge(var.cluster_vars.default_csp, {
     "script-src"      = "'self' 'unsafe-eval'"
     "frame-ancestors" = "*"
   })
@@ -11,22 +11,22 @@ locals {
 resource "kubernetes_secret_v1" "config" {
   metadata {
     name      = "config"
-    namespace = var.namespaces.pretix
+    namespace = var.config.namespace
   }
 
   data = {
     "pretix.cfg" = <<-CFG
       [pretix]
-      instance_name=${var.domain}
+      instance_name=${var.cluster_vars.domains.domain}
       url=https://${local.fqdn}
       currency=EUR
       datadir=/data
 
       [mail]
-      from=${var.mail_account}@${var.domain}
-      host=${var.subdomains.mailserver}.${var.domain}
-      user=${var.mail_account}@${var.domain}
-      password=${var.mail_password}
+      from=${var.config.mail.account}@${var.cluster_vars.domains.domain}
+      host=${var.cluster_vars.mail_server}
+      user=${var.config.mail.account}@${var.cluster_vars.domains.domain}
+      password=${var.config.mail.password}
       port=587
       tls=True
 
@@ -35,10 +35,10 @@ resource "kubernetes_secret_v1" "config" {
 
       [database]
       backend=postgresql_psycopg2
-      name=pretix
-      user=pretix
-      password=${var.db_passwords.pretix}
-      host=${var.db_host}
+      name=${var.config.db.database}
+      user=${var.config.db.username}
+      password=${var.config.db.password}
+      host=${var.cluster_vars.db_host}
 
       [redis]
       location=redis://localhost/0
@@ -54,7 +54,7 @@ resource "kubernetes_secret_v1" "config" {
 resource "kubernetes_deployment_v1" "pretix" {
   metadata {
     name      = "pretix"
-    namespace = var.namespaces.pretix
+    namespace = var.config.namespace
 
     labels = {
       app = "pretix"
@@ -83,7 +83,7 @@ resource "kubernetes_deployment_v1" "pretix" {
 
       spec {
         container {
-          image             = "pretix/standalone:${var.versions.pretix}"
+          image             = "pretix/standalone:${var.config.version}"
           name              = "pretix"
           image_pull_policy = "IfNotPresent"
 
@@ -105,7 +105,7 @@ resource "kubernetes_deployment_v1" "pretix" {
 
           resources {
             requests = {
-              memory = var.resources.memory.pretix
+              memory = var.config.memory
             }
           }
         }
@@ -127,7 +127,7 @@ resource "kubernetes_deployment_v1" "pretix" {
 
           resources {
             requests = {
-              memory = var.resources.memory.pretix_redis
+              memory = var.config.memory_redis
             }
           }
         }
@@ -146,7 +146,7 @@ resource "kubernetes_deployment_v1" "pretix" {
         volume {
           name = "data"
           persistent_volume_claim {
-            claim_name = var.pvcs.pretix
+            claim_name = "pretix-pvc"
           }
         }
       }
@@ -157,7 +157,7 @@ resource "kubernetes_deployment_v1" "pretix" {
 resource "kubernetes_service_v1" "pretix" {
   metadata {
     name      = "pretix"
-    namespace = var.namespaces.pretix
+    namespace = var.config.namespace
   }
 
   spec {
@@ -177,10 +177,10 @@ resource "kubernetes_service_v1" "pretix" {
 resource "kubernetes_ingress_v1" "pretix" {
   metadata {
     name      = "pretix"
-    namespace = var.namespaces.pretix
+    namespace = var.config.namespace
 
     annotations = {
-      "cert-manager.io/cluster-issuer"                    = var.cert_issuer
+      "cert-manager.io/cluster-issuer"                    = var.cluster_vars.issuer
       "nginx.ingress.kubernetes.io/proxy-body-size"       = "10M"
       "nginx.ingress.kubernetes.io/configuration-snippet" = <<-CONF
         more_set_headers "Content-Security-Policy: ${join(";", [for key, value in local.csp : "${key} ${value}"])}";

@@ -1,8 +1,8 @@
 locals {
-  fqdn     = "${var.subdomains.mailserver}.${var.domain}"
-  fullname = "${var.release_name}-docker-mailserver"
+  fqdn     = "${var.config.subdomain}.${var.cluster_vars.domains.domain}"
+  fullname = "${var.cluster_vars.release_name}-docker-mailserver"
 
-  csp = merge(var.default_csp, {
+  csp = merge(var.cluster_vars.default_csp, {
     "script-src" = "'self' 'unsafe-eval'"
   })
 }
@@ -11,14 +11,14 @@ resource "kubernetes_config_map_v1" "config" {
   # The helm chart ConfigMap tries to glob config contents from local files which it won't be able to find.
   metadata {
     name      = "${local.fullname}-configs"
-    namespace = var.namespaces.mailserver
+    namespace = var.config.namespace
   }
 
   data = {
-    "postfix-accounts.cf" = file(var.secrets_files.accounts)
-    "postfix-virtual.cf"  = file(var.secrets_files.aliases)
-    "KeyTable"            = "mail._domainkey.${var.domain} ${var.domain}:mail:/etc/opendkim/keys/${var.domain}/mail.private"
-    "SigningTable"        = "*@${var.domain} mail._domainkey.${var.domain}"
+    "postfix-accounts.cf" = file(var.config.secrets_files.accounts)
+    "postfix-virtual.cf"  = file(var.config.secrets_files.aliases)
+    "KeyTable"            = "mail._domainkey.${var.cluster_vars.domains.domain} ${var.cluster_vars.domains.domain}:mail:/etc/opendkim/keys/${var.cluster_vars.domains.domain}/mail.private"
+    "SigningTable"        = "*@${var.cluster_vars.domains.domain} mail._domainkey.${var.cluster_vars.domains.domain}"
     "TrustedHosts"        = <<-HOSTS
       127.0.0.1
       localhost
@@ -89,11 +89,11 @@ resource "kubernetes_config_map_v1" "config" {
 resource "kubernetes_secret_v1" "secrets" {
   metadata {
     name      = "${local.fullname}-secrets"
-    namespace = var.namespaces.mailserver
+    namespace = var.config.namespace
   }
 
   data = {
-    "${var.domain}-mail.private" = file(var.secrets_files.key)
+    "${var.cluster_vars.domains.domain}-mail.private" = file(var.config.secrets_files.key)
   }
 }
 
@@ -104,14 +104,14 @@ resource "kubernetes_manifest" "cert" {
 
     metadata = {
       name      = "${local.fqdn}-tls"
-      namespace = var.namespaces.mailserver
+      namespace = var.config.namespace
     }
 
     spec = {
       secretName = "${local.fqdn}-tls"
 
       issuerRef = {
-        name = var.cert_issuer
+        name = var.cluster_vars.issuer
         kind = "ClusterIssuer"
       }
 
@@ -123,15 +123,15 @@ resource "kubernetes_manifest" "cert" {
 }
 
 resource "helm_release" "mailserver" {
-  name       = var.release_name
-  namespace  = var.namespaces.mailserver
+  name       = var.cluster_vars.release_name
+  namespace  = var.config.namespace
   repository = "https://docker-mailserver.github.io/docker-mailserver-helm/"
   chart      = "docker-mailserver"
-  version    = var.versions.mailserver_helm
+  version    = var.config.version_helm
 
   values = [<<-YAML
     image:
-      tag: ${var.versions.mailserver}
+      tag: ${var.config.version}
 
     pod:
       dockermailserver:
@@ -142,7 +142,7 @@ resource "helm_release" "mailserver" {
       enabled: false
 
     domains:
-      - ${var.domain}
+      - ${var.cluster_vars.domains.domain}
 
     ssl:
       useExisting: true
@@ -158,7 +158,7 @@ resource "helm_release" "mailserver" {
       type: "ClusterIP"
 
     persistence:
-      existingClaim: ${var.pvcs.mailserver}
+      existingClaim: mailserver-pvc
   YAML
   ]
 }
