@@ -1,0 +1,4 @@
+- name: Store terraform variables in file for easy non-ansible execution
+  copy:
+    dest: "{{ terraform_variables_file }}"
+    content: "{{ terraform_variables | to_nice_json }}"

@@ -1,4 +1,0 @@
-- name: Decrypt mail DKIM file.
-  copy:
-    src: "{{ terraform_servers_dkim_file_vault }}"
-    dest: "{{ terraform_servers_dkim_file }}"

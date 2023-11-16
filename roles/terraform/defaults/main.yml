@@ -1,0 +1,30 @@
+terraform_stage:
+terraform_plan_file: "{{ terraform_project_path }}/{{ terraform_workspace }}.tfplan"
+terraform_project_path:
+terraform_targets: []
+terraform_variables:
+terraform_variables_file: "{{ terraform_project_path }}/{{ terraform_workspace }}.tfvars.json"
+terraform_vault_files: []
+terraform_vault_files_decryption_path: "{{ terraform_project_path }}/.vault_decrypted/"
+terraform_workspace: "{{ terraform_workspace_base }}-{{ terraform_stage }}"
+terraform_workspace_base: 
+
+terraform_backend:
+  hostname:
+  organization:
+  token:
+
+terraform_env:
+  TF_CLOUD_HOSTNAME: "{{ terraform_backend.hostname }}"
+  TF_CLOUD_ORGANIZATION: "{{ terraform_backend.organization }}"
+  TF_WORKSPACE: "{{ terraform_workspace }}"
+  TF_TOKEN_app_terraform_io: "{{ terraform_backend.token }}"
+
+terraform_task_parameters:
+  force_init: yes
+  plan_file: "{{ terraform_plan_file }}"
+  project_path: "{{ terraform_project_path }}"
+  provider_upgrade: yes
+  targets: "{{ terraform_targets }}"
+  variables_file: "{{ terraform_variables_file }}"
+  workspace: "{{ terraform_workspace }}"

@@ -1,3 +1,44 @@
 - hosts: localhost
   roles:
-    - role: terraform_cluster
+    - role: terraform
+      vars:
+        terraform_backend: "{{ terraform_backend_cloud }}"
+        terraform_stage: "{{ stage }}"
+        terraform_project_path: "{{ playbook_dir }}/terraform/cluster"
+        terraform_workspace_base: cluster
+
+        terraform_variables:
+          cert_manager_config: "{{ app_config.cert_manager }}"
+          default_csp: "{{ default_csp }}"
+          domain: "{{ domain }}"
+          hetzner_config: "{{ app_config.hetzner }}"
+          kubeconf_file: "{{ kubeconf_file }}"
+          namespaces: "{{ namespaces }}"
+          release_name: "{{ helm_release_name }}"
+          volume_config: "{{ volume_config }}"
+
+        # Apps with namespace attribute:
+        namespace_app_config_items: "{{ app_config | dict2items | selectattr('value.namespace', 'defined') }}"
+        # App dict keys:
+        namespace_app_config_keys: "{{ namespace_app_config_items | map(attribute='key') }}"
+        # App namespaces:
+        namespace_app_config_namespaces: "{{ namespace_app_config_items | map(attribute='value.namespace') }}"
+        # Zip of keys and namespaces:
+        namespaces: "{{ dict(namespace_app_config_keys | zip(namespace_app_config_namespaces)) }}"
+
+        # Apps with volume attribute:
+        volume_app_config_items: "{{ app_config | dict2items | selectattr('value.volume', 'defined') }}"
+        # App dict keys:
+        volume_app_config_keys: "{{ volume_app_config_items | map(attribute='key') }}"
+        # App volumes:
+        volume_app_config_volumes: "{{ volume_app_config_items | map(attribute='value.volume') }}"
+        # Zip of keys and volumes:
+        volume_config: "{{ dict(volume_app_config_keys | zip(volume_app_config_volumes)) }}"
+
+- hosts: all
+  tasks:
+    - name: Reboot nodes. Required after updating RKE2 configuration for the first time.
+      reboot:
+      tags:
+        - cluster-reboot
+        - never

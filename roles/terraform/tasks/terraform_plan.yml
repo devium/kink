@@ -1,0 +1,8 @@
+- name: Plan terraform project
+  community.general.terraform: "{{ terraform_task_parameters | combine({ 'state': 'planned' }) }}"  
+  environment: "{{ terraform_env }}"
+  register: terraform_result
+
+- name: Print Terraform output
+  debug:
+    msg: "{{ terraform_result.stdout }}"

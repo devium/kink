@@ -1,144 +1,323 @@
 stage: "{{ lookup('env', 'ANSIBLE_STAGE') }}"
 stage_prefix: "{{ '' if stage == 'prod' else stage + '-' }}"
 helm_release_name: "main"
+kubeconf_file: "{{ ansible_inventory_sources[0] | dirname }}/rke2.yaml"
 namespace_prefix: "{{ stage_prefix }}"
 secrets_file: "{{ ansible_inventory_sources[0] | dirname }}/group_vars/all/secrets.yml"
+vault_dir: "{{ playbook_dir }}/vault"
 
 app_config_default:
+  backup:
+    namespace: backup
+    schedule: "0 0 * * *"
+    memory: 100Mi
+
+    volume:
+      handle:
+      size: 10Gi
+
   buddy:
+    namespace: buddy
+    memory: 20Mi
     subdomain: buddy
+    version: 0.2.0
+
+  cert_manager:
+    email:
+    hdns_token:
+    namespace: cert-manager
+    memory: 150Mi
+    memory_cainjector: 150Mi
+    memory_webhook: 50Mi
+    use_production_cert: true
+    version_helm: v1.7.1
 
   collabora:
+    admin_password:
+    memory: 600Mi
+    namespace: collabora
     subdomain: office.next
+    version: 21.11.3.6.1
+    version_helm: 2.5.1
 
   element:
+    memory: 20Mi
+    namespace: element
+    version: v1.11.46
+    version_helm: 1.3.3
     subdomain: element
 
   grafana:
+    admin_password:
+    memory: 300Mi
+    memory_alertmanager: 50Mi
+    memory_loki: 100Mi
+    memory_prometheus: 600Mi
+    memory_promtail: 100Mi
+    namespace: grafana
     subdomain: grafana
+    version_helm: 54.0.1
+    version_loki_helm: 2.8.2
+
+    dashboards:
+      jitsi_meet_system: https://raw.githubusercontent.com/systemli/prometheus-jitsi-meet-exporter/1.2.1/dashboards/jitsi-meet-system.json
+      jitsi_meet: https://raw.githubusercontent.com/systemli/prometheus-jitsi-meet-exporter/1.2.1/dashboards/jitsi-meet.json
+      nginx: https://raw.githubusercontent.com/nginxinc/nginx-prometheus-exporter/v0.11.0/grafana/dashboard.json
+
+    db:
+      database: grafana
+      username: grafana
+      password:
+
+    keycloak:
+      client: grafana
+      secret:
+
+    mail:
+      account: noreply
+      display_name: Grafana
+      password:
+
+  hetzner:
+    hcloud_token:
+    version: v2.5.1
 
   hedgedoc:
+    memory: 300Mi
+    namespace: hedgedoc
+    secret:
     subdomain: doc
+    version: 1.9.8
+    version_helm: 1.1.0
+
+    db:
+      database: hedgedoc
+      username: hedgedoc
+      password:
+
+    keycloak:
+      client: hedgedoc
+      secret:
+
+    volume:
+      handle:
+      size: 10Gi
 
   home:
+    memory: 20Mi
+    namespace: home
+    site_image:
     subdomain: www
+    version_nginx: 1.23.0
+    version_nginx_helm: 13.1.0
+    version_nginx_prometheus_exporter: 0.11.0
 
   jitsi:
+    memory_jicofo: 300Mi
+    memory_jvb: 1500Mi
+    memory_keycloak_adapter: 30Mi
+    memory_prosody: 50Mi
+    memory_web: 30Mi
+    namespace: jitsi
     subdomain: jitsi
+    version: stable-8960-1
+    version_helm: 1.3.7
+    version_keycloak_adapter: v20231029
+    version_prometheus_exporter: 1.2.1
+
+    keycloak:
+      client: jitsi
+
+    secrets:
+      jicofo:
+      jvb:
+      jwt:
 
   keycloak:
+    admin_password:
+    mail_from_display_name: Keycloak
+    memory: 800Mi
+    namespace: keycloak
+    realm: primary
     subdomain: auth
+    version: 22.0.4
+    version_helm: 2.3.0
+
+    db:
+      database: keycloak
+      username: keycloak
+      password:
+
+    google_identity_provider:
+      client_id:
+      client_secret:
+
+    mail:
+      account: noreply
+      display_name: Keycloak
+      password:
 
   mailserver:
+    namespace: mailserver
     subdomain: mail
+    version: 11.0.0
+    version_helm: 1.0.1
+
+    vault_files:
+      key: "{{ vault_dir }}/mail.{{ stage }}.private"
+      accounts: "{{ vault_dir }}/postfix-accounts.{{ stage }}.cf"
+      aliases: "{{ vault_dir }}/postfix-virtual.{{ stage }}.cf"
+
+    volume:
+      handle:
+      size: 10Gi
 
   minecraft:
+    admins:
+    memory: 4Gi
+    namespace: minecraft
+    modpack_url:
+    world: world
+    rcon_password:
+    seed: 0
     subdomain: minecraft
+    version: latest
+    version_game: 1.20.1
+    version_helm: 4.9.3
+
+    volume:
+      handle:
+      size: 10Gi
+
+  minecraft_backup:
+    namespace: minecraft
+
+    volume:
+      handle:
+      size: 50Gi
 
   nextcloud:
+    admin_password:
+    memory: 600Mi
+    namespace: nextcloud
     subdomain: next
+    version: 27.1.2-apache
+    version_helm: 4.3.3
 
+    db:
+      database: nextcloud
+      username: nextcloud
+      password:
+
+    keycloak:
+      client: nextcloud
+      secret:
+
+    volume:
+      handle:
+      size: 10Gi
+
+  postgres:
+    memory: 100Mi
+    namespace: postgres
+    password:
+    version: 14.1.0-debian-10-r80
+
+    volume:
+      handle:
+      size: 10Gi
+  
   pretix:
+    memory: 1300Mi
+    memory_redis: 200Mi
+    namespace: pretix
     subdomain: tickets
+    version: 4.8.0
+
+    db:
+      database: pretix
+      username: pretix
+      password:
+
+    volume:
+      handle:
+      size: 10Gi
+
+    mail:
+      account: noreply
+      display_name: Pretix
+      password:
 
   shlink:
+    memory: 100Mi
+    memory_web: 20Mi
+    namespace: shlink
     subdomain: api.shlink
+    version: 3.2.1
+    version_helm: 5.1.2
+
+    db:
+      database: shlink
+      username: shlink
+      password:
 
   shlink_web:
+    memory: 20Mi
+    namespace: shlink
     subdomain: shlink
+    version: 3.7.2
 
   sliding_sync:
+    memory: 200Mi
+    namespace: synapse
     subdomain: syncv3
+    version: v0.99.11
+    version_helm: 0.2.5
+
+    db:
+      database: sliding_sync
+      username: sliding_sync
+      password:
 
   synapse:
+    memory: 600Mi
+    memory_sliding_sync: 200Mi
+    namespace: synapse
     subdomain: matrix
+    version: v1.94.0
+    version_helm: 3.7.8
+
+    db:
+      database: synapse
+      username: synapse
+      password:
+      params: "LC_COLLATE 'C' LC_CTYPE 'C' TEMPLATE template0"
+
+    keycloak:
+      client: synapse
+      secret:
+
+    secrets:
+      registration:
+      macaroon:
+
+    volume:
+      handle:
+      size: 10Gi
+
+
+default_csp:
+  default-src     : "'none'"
+  script-src      : "'self'"
+  connect-src     : "'self' https://{{ app_config.keycloak.subdomain }}.{{ domain }} wss:"
+  style-src       : "'self' 'unsafe-inline'"
+  img-src         : "* blob: data:"
+  font-src        : "* blob: data:"
+  frame-src       : "'none'"
+  object-src      : "'none'"
+  media-src       : "'self'"
+  manifest-src    : "'self'"
+  frame-ancestors : "'none'"
+  base-uri        : "'self'"
 
 app_config: "{{ app_config_default | combine(app_config_override, recursive=True) }}"
-# Apps with subdomain attribute:
-subdomain_app_config_items: "{{ app_config | dict2items | selectattr('value.subdomain', 'defined') }}"
-# App dict keys:
-subdomain_app_config_keys: "{{ subdomain_app_config_items | map(attribute='key') }}"
-# App subdomains:
-subdomain_app_config_subdomains: "{{ subdomain_app_config_items | map(attribute='value.subdomain') }}"
-# Zip of keys and subdomains:
-subdomains: "{{ dict(subdomain_app_config_keys | zip(subdomain_app_config_subdomains)) }}"
-
-
-mail_domain: "{{ domain }}"
-mail_mail_aliases: "{{ mail_aliases }}"
-mail_mail_accounts: "{{ mail_accounts }}"
-mail_stage: "{{ stage }}"
-
-
-terraform_servers_backend: "{{ terraform_backend }}"
-terraform_servers_domain: "{{ domain }}"
-terraform_servers_hcloud_token: "{{ hcloud_token }}"
-terraform_servers_hdns_token: "{{ hdns_token }}"
-terraform_servers_hdns_zone_id: "{{ hdns_zone_id }}"
-terraform_servers_ssh_key: "{{ ssh_key }}"
-terraform_servers_stage: "{{ stage }}"
-terraform_servers_subdomains: "{{ subdomains }}"
-
-terraform_servers_nodes:
-  - name: master
-    type: cx21
-    image: ubuntu-22.04
-    taints: "[CriticalAddonsOnly=true:NoSchedule]"
-  - name: worker0
-    type: cx21
-    image: ubuntu-22.04
-    taints: "[]"
-  - name: worker1
-    type: cx21
-    image: ubuntu-22.04
-    taints: "[]"
-  - name: worker2
-    type: cx21
-    image: ubuntu-22.04
-    taints: "[]"
-  - name: worker3
-    type: cx21
-    image: ubuntu-22.04
-    taints: "[]"
-  - name: gaming
-    type: cpx31
-    image: ubuntu-22.04
-    taints: "[CriticalAddonsOnly=true:NoSchedule]"
-
-
-netplan_config_file: /etc/netplan/60-floating-ip.yaml
-netplan_remove_existing: false
-
-netplan_configuration:
-  network:
-   version: 2
-   renderer: networkd
-   ethernets:
-     eth0:
-       addresses:
-       - "{{ ansible_host }}/32"
-       - "{{ ipv6_address }}/64"
-
-
-rke2_download_kubeconf: true
-rke2_download_kubeconf_file_name: rke2.yaml
-rke2_download_kubeconf_path: "{{ ansible_inventory_sources[0] | dirname }}"
-rke2_version: v1.28.3+rke2r2
-
-
-terraform_cluster_backend: "{{ terraform_backend }}"
-terraform_cluster_app_config_override: "{{ app_config }}"
-terraform_cluster_domain: "{{ domain }}"
-terraform_cluster_kubeconf_file: "{{ rke2_download_kubeconf_path }}/{{ rke2_download_kubeconf_file_name }}"
-terraform_cluster_stage: "{{ stage }}"
-
-
-config_kubeconf_file: "{{ rke2_download_kubeconf_path }}/{{ rke2_download_kubeconf_file_name }}"
-config_domain: "{{ domain }}"
-config_subdomains_override: "{{ subdomains_override }}"
-config_namespaces_override: "{{ namespaces }}"
-config_keycloak_realm: "{{ project_name }}"
-config_keycloak_secrets: "{{ keycloak_secrets }}"
-config_admin_passwords: "{{ admin_passwords }}"
-config_db_passwords: "{{ db_passwords }}"
-config_helm_release_name: "{{ helm_release_name }}"

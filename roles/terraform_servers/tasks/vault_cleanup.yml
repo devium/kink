@@ -1,4 +1,0 @@
-- name: Remove decrypted DKIM file.
-  file:
-    path: "{{ terraform_servers_dkim_file }}"
-    state: absent

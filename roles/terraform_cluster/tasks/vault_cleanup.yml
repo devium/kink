@@ -1,8 +1,0 @@
-- name: Remove decrypted mail files.
-  file:
-    path: "{{ item }}"
-    state: absent
-  with_items:
-    - "{{ terraform_cluster_app_config.mailserver.secrets_files.key }}"
-    - "{{ terraform_cluster_app_config.mailserver.secrets_files.accounts }}"
-    - "{{ terraform_cluster_app_config.mailserver.secrets_files.aliases }}"

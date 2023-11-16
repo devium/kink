@@ -1,3 +1,57 @@
 - hosts: localhost
   roles:
-    - role: terraform_servers
+    - role: terraform
+      vars:
+        terraform_backend: "{{ terraform_backend_cloud }}"
+        terraform_stage: "{{ stage }}"
+        terraform_project_path: "{{ playbook_dir }}/terraform/servers"
+        terraform_workspace_base: servers
+
+        terraform_variables:
+          dkim_file: "{{ terraform_vault_files_decryption_path }}/mail.{{ stage }}.txt"
+          domain: "{{ domain }}"
+          hcloud_token: "{{ hcloud_token }}"
+          hdns_token: "{{ hdns_token }}"
+          hdns_zone_id: "{{ hdns_zone_id }}"
+          inventory_file: "{{ ansible_inventory_sources[0] }}"
+          nodes: "{{ nodes }}"
+          ssh_keys: "{{ ssh_keys }}"
+          subdomains: "{{ subdomains }}"
+
+        terraform_vault_files:
+          - "{{ playbook_dir }}/vault/mail.{{ stage }}.txt"
+
+        nodes:
+          - name: master
+            type: cx21
+            image: ubuntu-22.04
+            taints: "[CriticalAddonsOnly=true:NoSchedule]"
+          - name: worker0
+            type: cx21
+            image: ubuntu-22.04
+            taints: "[]"
+          - name: worker1
+            type: cx21
+            image: ubuntu-22.04
+            taints: "[]"
+          - name: worker2
+            type: cx21
+            image: ubuntu-22.04
+            taints: "[]"
+          - name: worker3
+            type: cx21
+            image: ubuntu-22.04
+            taints: "[]"
+          - name: gaming
+            type: cpx31
+            image: ubuntu-22.04
+            taints: "[CriticalAddonsOnly=true:NoSchedule]"
+
+        # Apps with subdomain attribute:
+        subdomain_app_config_items: "{{ app_config | dict2items | selectattr('value.subdomain', 'defined') }}"
+        # App dict keys:
+        subdomain_app_config_keys: "{{ subdomain_app_config_items | map(attribute='key') }}"
+        # App subdomains:
+        subdomain_app_config_subdomains: "{{ subdomain_app_config_items | map(attribute='value.subdomain') }}"
+        # Zip of keys and subdomains:
+        subdomains: "{{ dict(subdomain_app_config_keys | zip(subdomain_app_config_subdomains)) }}"

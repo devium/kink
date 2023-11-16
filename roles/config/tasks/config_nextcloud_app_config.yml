@@ -1,0 +1,8 @@
+- include_tasks: config_nextcloud_set_property.yml
+  loop: "{{ properties | dict2items }}"
+
+  loop_control:
+    loop_var: property_item
+
+  vars:
+    is_array_value: "{{ property_item.value is sequence and not property_item.value is string and not property_item.value is mapping }}"

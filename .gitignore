@@ -39,3 +39,7 @@ rke2.yaml
 /secrets/
 /vault/
 /.tmp/
+**/.vault_decrypted/
+*.tfvars
+*.tfvars.json
+*.tfplan

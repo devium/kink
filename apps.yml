@@ -1,0 +1,21 @@
+- hosts: localhost
+  roles:
+    - role: terraform
+      vars:
+        terraform_backend: "{{ terraform_backend_cloud }}"
+        terraform_stage: "{{ stage }}"
+        terraform_project_path: "{{ playbook_dir }}/terraform/apps"
+        terraform_workspace_base: apps
+
+        terraform_variables:
+          app_config: "{{ app_config }}"
+          decryption_path: "{{ terraform_vault_files_decryption_path }}"
+          default_csp: "{{ default_csp }}"
+          domain: "{{ domain }}"
+          kubeconf_file: "{{ kubeconf_file }}"
+          release_name: "{{ helm_release_name }}"
+
+        terraform_vault_files: 
+          - "{{ app_config.mailserver.vault_files.key }}"
+          - "{{ app_config.mailserver.vault_files.accounts }}"
+          - "{{ app_config.mailserver.vault_files.aliases }}"

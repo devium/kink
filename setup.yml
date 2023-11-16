@@ -9,9 +9,29 @@
     - role: mrlesmithjr.netplan
       tags:
         - setup-netplan
+      
+      vars:
+        netplan_config_file: /etc/netplan/60-floating-ip.yaml
+        netplan_remove_existing: false
+
+        netplan_configuration:
+          network:
+          version: 2
+          renderer: networkd
+          ethernets:
+            eth0:
+              addresses:
+              - "{{ ansible_host }}/32"
+              - "{{ ipv6_address }}/64"
 
 - hosts: all
   roles:
     - role: lablabs.rke2
       tags:
         - setup-kubernetes
+
+      vars:
+        rke2_download_kubeconf: true
+        rke2_download_kubeconf_file_name: "{{ kubeconf_file | basename }}"
+        rke2_download_kubeconf_path: "{{ kubeconf_file | dirname }}"
+        rke2_version: v1.28.3+rke2r2

@@ -1,0 +1,31 @@
+- import_tasks: "{{ role_path }}/tasks/serialize_variables.yml"
+  tags:
+    - terraform-plan
+    - terraform-apply
+    - terraform-destroy
+
+- import_tasks: "{{ role_path }}/tasks/vault_decrypt.yml"
+  tags:
+    - terraform-plan
+    - terraform-apply
+    - terraform-destroy
+
+- import_tasks: "{{ role_path }}/tasks/terraform_destroy.yml"
+  tags:
+    - terraform-destroy
+    - never
+
+- import_tasks: "{{ role_path }}/tasks/terraform_plan.yml"
+  tags:
+    - terraform-plan
+    - terraform-apply
+
+- import_tasks: "{{ role_path }}/tasks/terraform_apply.yml"
+  tags:
+    - terraform-apply
+
+- import_tasks: "{{ role_path }}/tasks/vault_cleanup.yml"
+  tags:
+    - terraform-plan
+    - terraform-apply
+    - terraform-destroy

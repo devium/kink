@@ -1,20 +1,34 @@
-- name: "Get Nextcloud {{ item.app }} property {{ item.key }}"
+- name: "Get Nextcloud {{ app }} property {{ property_item.key }}"
   kubernetes.core.k8s_exec:
     kubeconfig: "{{ config_kubeconf_file }}"
-    namespace: "{{ config_namespaces.nextcloud }}"
+    namespace: "{{ config_app_config.nextcloud.namespace }}"
     pod: "{{ pods_result.resources[0].metadata.name }}"
-    command: "su -s /bin/bash -c '/var/www/html/occ config:{{ category }}:get {{ identifier }}' www-data"
+    command: "su -s /bin/bash -c '/var/www/html/occ config:{{ category }}:get {{ app_key }} {{ property_item.key }}' www-data"
   register: get_result
   failed_when: get_result.rc != 0 and get_result.stderr | length > 0
   changed_when: false
 
-- name: "Set Nextcloud {{ item.app }} property {{ item.key }}"
+- name: "Set Nextcloud {{ app }} property {{ property_item.key }}"
   kubernetes.core.k8s_exec:
     kubeconfig: "{{ config_kubeconf_file }}"
-    namespace: "{{ config_namespaces.nextcloud }}"
+    namespace: "{{ config_app_config.nextcloud.namespace }}"
     pod: "{{ pods_result.resources[0].metadata.name }}"
-    command: su -s /bin/bash -c '/var/www/html/occ config:{{ category }}:set {{ identifier }} --value "{{ item.value }}" {{ enforce_boolean }}' www-data
+    command: su -s /bin/bash -c '/var/www/html/occ config:{{ category }}:set {{ app_key }} {{ property_item.key }} --value {{ property_item.value }} {{ enforce_boolean }}' www-data
   vars:
-    enforce_boolean: "{{ '--type=boolean' if item.value is boolean }}"
-  # Currently no way to check if the returned value is a string or boolean, so bools are updated always.
-  when: get_result.stdout | length == 0 or get_result.stdout[:-1] != item.value
+    enforce_boolean: "{{ '--type=boolean' if property_item.value is boolean }}"
+  # No way to check if the returned value is a string or boolean, so bools are updated always.
+  when: not is_array_value and (get_result.stdout | length == 0 or get_result.stdout[:-1] != property_item.value)
+
+- name: "Set Nextcloud {{ app }} array property {{ property_item.key }} [{{ index }}]"
+  kubernetes.core.k8s_exec:
+    kubeconfig: "{{ config_kubeconf_file }}"
+    namespace: "{{ config_app_config.nextcloud.namespace }}"
+    pod: "{{ pods_result.resources[0].metadata.name }}"
+    command: su -s /bin/bash -c '/var/www/html/occ config:{{ category }}:set {{ app_key }} {{ property_item.key }} {{ index }} --value {{ array_value }} {{ enforce_boolean }}' www-data
+  vars:
+    enforce_boolean: "{{ '--type=boolean' if array_item is boolean }}"
+  loop: "{{ property_item.value if is_array_value else [] }}"
+  loop_control:
+    loop_var: array_value
+    index_var: index
+  when: is_array_value and (get_result.stdout | length == 0 or get_result.stdout[:-1] != property_item.value | join('\n'))

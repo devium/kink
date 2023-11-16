@@ -1,0 +1,5 @@
+- name: Decrypt vault files.
+  copy:
+    src: "{{ item }}"
+    dest: "{{ terraform_vault_files_decryption_path }}"
+  with_items: "{{ terraform_vault_files }}"

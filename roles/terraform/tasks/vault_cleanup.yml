@@ -1,0 +1,4 @@
+- name: Remove decrypted vault files.
+  file:
+    path: "{{ terraform_vault_files_decryption_path }}"
+    state: absent

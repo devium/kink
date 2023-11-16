@@ -2,7 +2,7 @@
   kubernetes.core.k8s_info:
     kubeconfig: "{{ config_kubeconf_file }}"
     kind: pods
-    namespace: "{{ config_namespaces.nextcloud }}"
+    namespace: "{{ config_app_config.nextcloud.namespace }}"
     label_selectors:
       - app.kubernetes.io/name = nextcloud
   register: pods_result
@@ -11,11 +11,16 @@
 
 - import_tasks: config_nextcloud_apps.yml
 
-- include_tasks: config_nextcloud_set_property.yml
-  with_items: "{{ config_nextcloud_config }}"
+- include_tasks: config_nextcloud_app_config.yml
+  loop: "{{ config_nextcloud_occ | dict2items }}"
+
+  loop_control:
+    loop_var: app_item
+
   vars:
-    category: "{{ 'system' if item.app == 'system' else 'app' }}"
-    app: "{{ '' if item.app == 'system' else item.app }}"
-    identifier: "{{ app }} {{ item.key }} {{ item.index | default('') }}"
+    category: "{{ 'system' if app_item.key == 'system' else 'app' }}"
+    app: "{{ app_item.key }}"
+    app_key: "{{ '' if app_item.key == 'system' else app_item.key }}"
+    properties: "{{ app_item.value }}"
 
 - import_tasks: config_nextcloud_keycloak.yml

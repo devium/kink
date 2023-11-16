@@ -1,115 +1,72 @@
+config_app_config:
 config_domain:
-config_keycloak_realm:
 config_kubeconf_file:
-config_namespaces_override:
-config_subdomains_override:
 
-config_admin_passwords:
-  collabora:
-  grafana:
-  keycloak:
-  nextcloud:
+config_oidc_url: "https://{{ config_app_config.keycloak.subdomain }}.{{ config_domain }}/realms/{{ config_app_config.keycloak.realm }}/protocol/openid-connect"
+config_release_name: main
 
-config_db_passwords:
-  grafana:
-  hedgedoc:
-  keycloak:
-  nextcloud:
-  synapse:
 
-config_keycloak_secrets:
-  hedgedoc:
-  jitsi:
-  nextcloud:
-
-config_helm_release_name: primary
-config_namespaces: "{{ config_namespaces_default | combine(config_namespaces_override, recursive=True) }}"
-config_oidc_url: "https://{{ config_subdomains.keycloak }}.{{ config_domain }}/realms/{{ config_keycloak_realm }}/protocol/openid-connect"
-config_release_name: primary
-config_subdomains: "{{ config_subdomains_default | combine(config_subdomains_override, recursive=True) }}"
-
-config_nextcloud_config:
-  - app: system
-    key: overwriteprotocol
-    value: https
-  - app: system
-    key: allow_user_to_change_display_name
-    value: false
-  - app: system
-    key: hide_login_form
-    value: false
-  - app: system
-    key: skeletondirectory
-    value: ""
-  - app: system
-    index: 2
-    key: trusted_domains
-    value: "{{ config_subdomains.collabora }}.{{ config_domain }}"
-  - app: system
-    key: profile.enabled
-    value: false
-  - app: core
-    key: shareapi_allow_share_dialog_user_enumeration
-    value: "no"
-  - app: files
-    key: default_quota
-    value: "250 MB"
-  - app: richdocuments
-    key: wopi_url
-    value: "https://{{ config_subdomains.collabora }}.{{ config_domain }}"
-  - app: richdocuments
-    key: public_wopi_url
-    value: "https://{{ config_subdomains.collabora }}.{{ config_domain }}"
-  - app: richdocuments
-    key: disable_certificate_verification
-    value: ""
-  - app: sociallogin
-    key: disable_registration
-    value: ""
-  - app: sociallogin
-    key: create_disabled_users
-    value: ""
-  - app: sociallogin
-    key: allow_login_connect
-    value: "1"
-  - app: sociallogin
-    key: prevent_create_email_exists
-    value: ""
-  - app: sociallogin
-    key: update_profile_on_login
-    value: "1"
-  - app: sociallogin
-    key: no_prune_user_groups
-    value: ""
-  - app: sociallogin
-    key: auto_create_groups
-    value: ""
-  - app: sociallogin
-    key: restrict_users_wo_mapped_groups
-    value: ""
-  - app: sociallogin
-    key: restrict_users_wo_assigned_groups
-    value: ""
-  - app: sociallogin
-    key: disable_notify_admins
-    value: ""
-  - app: sociallogin
-    key: hide_default_login
-    value: "1"
-  - app: dav
-    key: calendarSubscriptionRefreshRate
-    value: "P1H"
-
-config_nextcloud_disable_apps:
+config_nextcloud_apps_disabled:
   - circles
   - dashboard
   - federation
   - firstrunwizard
+  - user_status
+
+config_nextcloud_apps_installed:
+  - calendar
+  - deck
+  - richdocuments
+  - sociallogin
+  - polls
+  - forms
 
 config_nextcloud_groups:
   - Default
 
-config_nextcloud_keycloak_config:
+config_nextcloud_occ:
+  system:
+    overwriteprotocol: https
+    allow_user_to_change_display_name: false
+    hide_login_form: false
+    skeletondirectory: ""
+    profile.enabled: false
+
+    trusted_domains: 
+      - localhost
+      - "{{ config_app_config.nextcloud.subdomain }}.{{ domain }}"
+      - "{{ config_app_config.collabora.subdomain }}.{{ domain }}"
+  
+  core:
+    shareapi_allow_share_dialog_user_enumeration: "no"
+
+  files:
+    default_quota: "250 MB"
+
+  richdocuments:
+    wopi_url: "https://{{ config_app_config.collabora.subdomain }}.{{ domain }}"
+    public_wopi_url: "https://{{ config_app_config.collabora.subdomain }}.{{ domain }}"
+    disable_certificate_verification: ""
+
+  sociallogin:
+    disable_registration: ""
+    create_disabled_users: ""
+    allow_login_connect: "1"
+    prevent_create_email_exists: ""
+    update_profile_on_login: "1"
+    no_prune_user_groups: ""
+    auto_create_groups: ""
+    restrict_users_wo_mapped_groups: ""
+    restrict_users_wo_assigned_groups: ""
+    disable_notify_admins: ""
+
+  settings:
+    profile_enabled_by_default: "0"
+
+  dav:
+    calendarSubscriptionRefreshRate: "P1H"
+
+config_nextcloud_oidc_config:
   {
     "custom_oidc": [
       {
@@ -120,8 +77,8 @@ config_nextcloud_keycloak_config:
         "displayNameClaim": "",
         "userInfoUrl": "{{ config_oidc_url }}/userinfo",
         "logoutUrl": "",
-        "clientId": "nextcloud",
-        "clientSecret": "{{ config_keycloak_secrets.nextcloud }}",
+        "clientId": "{{ config_app_config.nextcloud.keycloak.client }}",
+        "clientSecret": "{{ config_app_config.nextcloud.keycloak.secret }}",
         "scope": "openid",
         "groupsClaim": "groups",
         "style": "keycloak",
@@ -132,46 +89,3 @@ config_nextcloud_keycloak_config:
       }
     ]
   }
-
-config_nextcloud_install_apps:
-  - calendar
-  - deck
-  - richdocuments
-  - sociallogin
-  - polls
-  - forms
-
-config_namespaces_default:
-  backup: backup
-  cert_manager: cert-manager
-  collabora: collabora
-  element: element
-  grafana: grafana
-  hedgedoc: hedgedoc
-  hetzner: hetzner
-  home: home
-  jitsi: jitsi
-  keycloak: keycloak
-  nextcloud: nextcloud
-  postgres: postgres
-  pretix: pretix
-  synapse: synapse
-  workadventure: workadventure
-
-config_subdomains_default:
-  collabora: office.next
-  element: element
-  grafana: grafana
-  hedgedoc: doc
-  home: www
-  jitsi: jitsi
-  jitsi_keycloak: auth.jitsi
-  keycloak: auth
-  nextcloud: next
-  pretix: tickets
-  synapse: matrix
-  workadventure_back: api.play
-  workadventure_front: play
-  workadventure_maps: maps.play
-  workadventure_pusher: pusher.play
-  workadventure_uploader: uploader.play

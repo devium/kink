@@ -1,3 +1,8 @@
 - hosts: localhost
   roles:
     - role: mail
+      vars:
+        mail_domain: "{{ domain }}"
+        mail_mail_aliases: "{{ mail_aliases }}"
+        mail_mail_accounts: "{{ mail_accounts }}"
+        mail_stage: "{{ stage }}"

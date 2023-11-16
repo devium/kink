@@ -1,7 +1,7 @@
 - name: Check if installed
   kubernetes.core.k8s_exec:
     kubeconfig: "{{ config_kubeconf_file }}"
-    namespace: "{{ config_namespaces.nextcloud }}"
+    namespace: "{{ config_app_config.nextcloud.namespace }}"
     pod: "{{ pods_result.resources[0].metadata.name }}"
     command: "su -s /bin/bash -c '/var/www/html/occ check' www-data"
   register: check_result
@@ -12,7 +12,7 @@
 - name: Install Nextcloud
   kubernetes.core.k8s_exec:
     kubeconfig: "{{ config_kubeconf_file }}"
-    namespace: "{{ config_namespaces.nextcloud }}"
+    namespace: "{{ config_app_config.nextcloud.namespace }}"
     pod: "{{ pods_result.resources[0].metadata.name }}"
     command: "su -s /bin/bash -c '/var/www/html/occ maintenance:install --no-interaction --admin-user admin_temp --admin-pass {{ config_admin_passwords.nextcloud }} --database pgsql --database-name nextcloud --database-host {{ config_helm_release_name }}-postgresql.postgres.svc.cluster.local:5432 --database-user nextcloud --database-pass {{ config_db_passwords.nextcloud }}' www-data"
   no_log: true
@@ -21,7 +21,7 @@
 - name: Check if temporary admin user exists
   kubernetes.core.k8s_exec:
     kubeconfig: "{{ config_kubeconf_file }}"
-    namespace: "{{ config_namespaces.nextcloud }}"
+    namespace: "{{ config_app_config.nextcloud.namespace }}"
     pod: "{{ pods_result.resources[0].metadata.name }}"
     command: "su -s /bin/bash -c '/var/www/html/occ user:info admin_temp' www-data"
   register: user_result
@@ -31,7 +31,7 @@
 - name: Delete temporary admin user
   kubernetes.core.k8s_exec:
     kubeconfig: "{{ config_kubeconf_file }}"
-    namespace: "{{ config_namespaces.nextcloud }}"
+    namespace: "{{ config_app_config.nextcloud.namespace }}"
     pod: "{{ pods_result.resources[0].metadata.name }}"
     command: "su -s /bin/bash -c '/var/www/html/occ user:delete admin_temp' www-data"
   register: check_result
