@@ -1,5 +1,22 @@
+app_config: "{{ app_config_default | combine(vault_app_config, recursive=True) }}"
+domain: "{{ vault_domain }}"
+hcloud_token: "{{ vault_hcloud_token }}"
+hdns_token: "{{ vault_hdns_token }}"
+hdns_zone_id: "{{ vault_hdns_zone_id }}"
+mail_accounts: "{{ vault_mail_accounts }}"
+  # - name:
+  #   password:
+mail_aliases: "{{ vault_mail_aliases }}"
+  # - alias:
+  #   account:
+ssh_keys: "{{ vault_ssh_keys }}"
+  # - 
+terraform_backend_cloud: "{{ vault_terraform_backend_cloud }}"
+  # hostname:
+  # organization:
+  # token:
+
 stage: "{{ lookup('env', 'ANSIBLE_STAGE') }}"
-stage_prefix: "{{ '' if stage == 'prod' else stage + '-' }}"
 helm_release_name: "main"
 kubeconf_file: "{{ ansible_inventory_sources[0] | dirname }}/rke2.yaml"
 namespace_prefix: "{{ stage_prefix }}"
@@ -319,5 +336,3 @@ default_csp:
   manifest-src    : "'self'"
   frame-ancestors : "'none'"
   base-uri        : "'self'"
-
-app_config: "{{ app_config_default | combine(app_config_override, recursive=True) }}"

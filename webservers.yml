@@ -1,4 +1,5 @@
-- hosts: localhost
+- name: Setup cloud resources
+  hosts: localhost
   roles:
     - role: terraform
       vars:
@@ -55,3 +56,14 @@
         subdomain_app_config_subdomains: "{{ subdomain_app_config_items | map(attribute='value.subdomain') }}"
         # Zip of keys and subdomains:
         subdomains: "{{ dict(subdomain_app_config_keys | zip(subdomain_app_config_subdomains)) }}"
+
+- hosts: localhost
+  tasks:
+    - name: Reload Ansible inventory
+      meta: refresh_inventory
+
+    - name: Wait for servers to be reachable
+      wait_for:
+        host: "{{ item.value.ansible_host }}"
+        port: 22
+      with_dict: "{{ hostvars }}"

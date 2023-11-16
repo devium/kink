@@ -2,10 +2,6 @@ variable "cert_manager_config" {
   type = map(string)
 }
 
-variable "default_csp" {
-  type = map(string)
-}
-
 variable "domain" {
   type = string
 }

@@ -1,17 +1,30 @@
 config_app_config:
 config_domain:
 config_kubeconf_file:
-
 config_oidc_url: "https://{{ config_app_config.keycloak.subdomain }}.{{ config_domain }}/realms/{{ config_app_config.keycloak.realm }}/protocol/openid-connect"
 config_release_name: main
 
-
 config_nextcloud_apps_disabled:
   - circles
+  - comments
+  - contactsinteraction
   - dashboard
   - federation
+  - files_pdfviewer
+  - files_reminders
   - firstrunwizard
+  - nextcloud_announcements
+  - notifications
+  - password_policy
+  - privacy
+  - recommendations
+  - sharebymail
+  - support
+  - survey_client
+  - systemtags
+  - updatenotification
   - user_status
+  - weather_status
 
 config_nextcloud_apps_installed:
   - calendar
@@ -31,6 +44,7 @@ config_nextcloud_occ:
     hide_login_form: false
     skeletondirectory: ""
     profile.enabled: false
+    loglevel: 2
 
     trusted_domains: 
       - localhost

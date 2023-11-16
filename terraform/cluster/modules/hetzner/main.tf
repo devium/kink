@@ -1,5 +1,5 @@
 resource "helm_release" "hcloud_csi" {
-  name       = var.release_name
+  name       = "hetzner"
   namespace  = "kube-system"
   repository = "https://charts.hetzner.cloud"
   chart      = "hcloud-csi"

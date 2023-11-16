@@ -91,6 +91,10 @@ module "home" {
 
   cluster_vars = local.cluster_vars
   config       = var.app_config.home
+
+  depends_on = [
+    module.grafana
+  ]
 }
 
 module "jitsi" {
@@ -98,6 +102,10 @@ module "jitsi" {
 
   cluster_vars = local.cluster_vars
   config       = var.app_config.jitsi
+
+  depends_on = [
+    module.grafana
+  ]
 }
 
 module "keycloak" {
@@ -191,6 +199,7 @@ module "synapse" {
   config       = var.app_config.synapse
 
   depends_on = [
+    module.keycloak,
     module.postgres
   ]
 }

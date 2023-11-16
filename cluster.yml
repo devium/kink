@@ -1,4 +1,35 @@
+- name: Configure cluster network
+  hosts: localhost
+  roles:
+    - role: terraform
+      vars:
+        terraform_backend: "{{ terraform_backend_cloud }}"
+        terraform_stage: "{{ stage }}"
+        terraform_project_path: "{{ playbook_dir }}/terraform/network"
+        terraform_workspace_base: network
+
+        terraform_variables:
+          default_csp: "{{ default_csp }}"
+          kubeconf_file: "{{ kubeconf_file }}"
+          mailserver_service: "{{ app_config.mailserver.namespace }}/{{ helm_release_name }}-docker-mailserver"
+
+- hosts: all
+  tasks:
+    - name: Reboot nodes. Required after updating RKE2 configuration for the first time.
+      reboot:
+      tags:
+        - reboot
+        - never
+
 - hosts: localhost
+  tasks:
+    - name: Wait for Kubernetes cluster to come online.
+      wait_for:
+        host: "{{ hostvars.master.ansible_host }}"
+        port: 6443
+
+- name: Setup cluster infrastructure and resources
+  hosts: localhost
   roles:
     - role: terraform
       vars:
@@ -9,7 +40,6 @@
 
         terraform_variables:
           cert_manager_config: "{{ app_config.cert_manager }}"
-          default_csp: "{{ default_csp }}"
           domain: "{{ domain }}"
           hetzner_config: "{{ app_config.hetzner }}"
           kubeconf_file: "{{ kubeconf_file }}"
@@ -34,11 +64,3 @@
         volume_app_config_volumes: "{{ volume_app_config_items | map(attribute='value.volume') }}"
         # Zip of keys and volumes:
         volume_config: "{{ dict(volume_app_config_keys | zip(volume_app_config_volumes)) }}"
-
-- hosts: all
-  tasks:
-    - name: Reboot nodes. Required after updating RKE2 configuration for the first time.
-      reboot:
-      tags:
-        - cluster-reboot
-        - never

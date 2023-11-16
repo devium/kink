@@ -10,8 +10,14 @@
     path: /var/run/reboot-required
   register: stat_result
   changed_when: false
+  tags:
+    - reboot
+    - never
 
 - name: Reboot if required
   reboot:
   when: stat_result.stat.exists
+  tags:
+    - reboot
+    - never
 

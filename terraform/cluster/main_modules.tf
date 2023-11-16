@@ -1,29 +1,13 @@
-module "rke2" {
-  source = "./modules/rke2"
-
-  default_csp        = var.default_csp
-  mailserver_service = "${var.namespaces.mailserver}/${var.release_name}-docker-mailserver"
-}
-
 module "hetzner" {
   source = "./modules/hetzner"
 
-  config       = var.hetzner_config
-  release_name = var.release_name
-
-  depends_on = [
-    module.rke2
-  ]
+  config = var.hetzner_config
 }
 
 module "namespaces" {
   source = "./modules/namespaces"
 
   namespaces = var.namespaces
-
-  depends_on = [
-    module.rke2
-  ]
 }
 
 module "cert_manager" {

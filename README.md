@@ -12,114 +12,8 @@ pip install kubernetes
 ```
 
 ### Manage secrets
-Use an existing vault or create a `secrets.{dev|prod}.yml` in `vault/` and fill in the following values:
-```yaml
-# Email registered with the ACME SSL certificate server
-cert_email: 
-# Fully qualified domain name of the desired root domain
-domain: 
-# Google SSO client ID and secret
-google_identity_provider_client_id: 
-google_identity_provider_client_secret: 
-# Hetzner Cloud project API token
-hcloud_token: 
-# Hetzner DNS API token
-hdns_token: 
-# Hetzner DNS zone ID of the desired hosted zone (check URL in DNS console)
-hdns_zone_id: 
-# Container image of the static website served at www
-home_site_image: 
-# Name of Minecraft players with admin privileges
-minecraft_admins: 
-# Link to zip file of Minecraft plugins
-minecraft_modpack_url: 
-# Minecraft world seed
-minecraft_seed: 
-# Minecraft world name
-minecraft_world: 
-# Project name used in user-facing applications
-project_name: 
-# SSH key name as defined in Hetzner Cloud
-ssh_key: 
-# Container image that contains WorkAdventure maps
-workadventure_maps_image: 
-# Workadventure map.json that is initially loaded
-workadventure_start_map: 
+Use an existing vault or create a `secrets.{dev|prod}.yml` in `vault/`. Define all `vault_` values referenced at the top of `inventories/common/main.yml`.
 
-# IDs of persistent Hetzner volumes
-volume_handles:
-  backup: 
-  hedgedoc: 
-  mailserver: 
-  minecraft: 
-  minecraft_backup: 
-  minecraft_bedrock: 
-  nextcloud: 
-  postgres: 
-  pretix: 
-  synapse: 
-
-# Subdomain for servers/apps
-subdomains_override:
-  jitsi: 
-  jitsi_keycloak: 
-  shlink: 
-  shlink_web: 
-
-# Terraform state backend configuration
-terraform_backend:
-  hostname:
-  organization:
-  token:
-
-# Random tokens and passwords that may be generated
-hedgedoc_secret: 
-minecraft_rcon_password: 
-minecraft_rcon_web_password: 
-rke2_token: 
-mail_password: 
-
-admin_passwords:
-  collabora: 
-  grafana: 
-  keycloak: 
-  nextcloud: 
-
-db_passwords:
-  grafana: 
-  hedgedoc: 
-  keycloak: 
-  nextcloud: 
-  postgres: 
-  pretix: 
-  shlink: 
-  sliding_sync: 
-  synapse: 
-
-jitsi_secrets:
-  jicofo: 
-  jvb: 
-  jwt: 
-
-keycloak_secrets:
-  grafana: 
-  hedgedoc: 
-  jitsi: 
-  nextcloud: 
-  synapse: 
-
-mail_accounts:
-  - name: "{{ mail_account }}"
-    password: "{{ mail_password }}"
-
-mail_aliases:
-  - alias: 
-    account: 
-
-synapse_secrets:
-  registration: 
-  macaroon: 
-```
 You can use `./generate-secrets.sh` to generate BIP39-like secrets.
 
 Encrypt the secrets file you just created using Ansible:
@@ -142,30 +36,18 @@ From now on, use `--ask-vault-pass` on all Ansible commands or store the vault p
 
 Run the Ansible playbook:
 ```bash
-ansible-playbook site.yml --ask-vault-pass
+ansible-playbook site.yml --ask-vault-pass --ask-become-pass --tags all,reboot
 ```
+The `--ask-become-pass` is required for a local Docker container that generates Postfix files. You can skip this if you can run Docker without sudo or already have your mail files ready.
 
-When creating a new cluster from scratch, you have to go slower:
-```bash
-ansible-playbook mail.yml --ask-become-pass
-# Only do the following line if new mail secrets have been created
-ansible-vault encrypt secrets/*$ANSIBLE_STAGE* && mv secrets/*$ANSIBLE_STAGE* vault/
-ansible-playbook webservers.yml
-ansible-playbook setup.yml
-ansible-playbook cluster.yml --extra-vars "{'terraform_cluster_targets': ['module.namespaces']}"
-ansible-playbook cluster.yml --extra-vars "{'terraform_cluster_targets': ['module.rke2']}"
-# The command above changes RKE2's networking backend. This requires a complete server restart.
-ansible all -m reboot
-ansible-playbook cluster.yml --extra-vars "{'terraform_cluster_targets': ['module.keycloak']}"
-ansible-playbook cluster.yml
-ansible-playbook config.yml
-```
+Setting up the cluster initially requires a full node reboot after updating the networking backend in the `cluster.yml` playbook. This can be avoided on future runs by skipping the `reboot` tag.
 
 ## Teardown
 Run the Ansible playbook with the `terraform-destroy` tag:
 ```bash
-ansible-playbook site.yml --tags terraform-destroy
+ansible-playbook webservers.yml --tags terraform-destroy
 ```
+Terraform states for `network`, `cluster`, and `apps` will now be invalid. Make sure to clear them manually, e.g., by deleting and recreating the workspaces on Terraform Cloud. `config` states should be persisted via volumes and database.
 
 ## Additional information
 ### Volume management

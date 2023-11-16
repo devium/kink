@@ -18,7 +18,7 @@ resource "kubernetes_manifest" "flannel_iface_patch" {
   }
 }
 
-# Allow snippet annotations in ingresses
+# Allow snippet annotations in ingresses and forward mail server ports.
 resource "kubernetes_manifest" "ingress_patch" {
   manifest = {
     apiVersion = "helm.cattle.io/v1"
