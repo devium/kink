@@ -16,7 +16,7 @@ resource "kubernetes_config_map_v1" "config" {
 
   data = {
     "postfix-accounts.cf" = file("${var.decryption_path}/${basename(var.config.vault_files.accounts)}")
-    "postfix-virtual.cf"  = file("${var.decryption_path}/${basename(var.config.vault_files.aliases)}")
+    "postfix-virtual.cf"  = join("\n", [for alias, account in var.config.aliases : "${alias}@${var.cluster_vars.domains.domain} ${account}@${var.cluster_vars.domains.domain}"])
     "KeyTable"            = "mail._domainkey.${var.cluster_vars.domains.domain} ${var.cluster_vars.domains.domain}:mail:/etc/opendkim/keys/${var.cluster_vars.domains.domain}/mail.private"
     "SigningTable"        = "*@${var.cluster_vars.domains.domain} mail._domainkey.${var.cluster_vars.domains.domain}"
     "TrustedHosts"        = <<-HOSTS

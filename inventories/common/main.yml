@@ -180,10 +180,14 @@ app_config_default:
     version: 11.0.0
     version_helm: 1.0.1
 
+    aliases:
+      postmaster: noreply
+      webmaster: noreply
+      abuse: noreply
+
     vault_files:
       key: "{{ vault_dir }}/mail.{{ stage }}.private"
       accounts: "{{ vault_dir }}/postfix-accounts.{{ stage }}.cf"
-      aliases: "{{ vault_dir }}/postfix-virtual.{{ stage }}.cf"
 
     volume:
       handle:
