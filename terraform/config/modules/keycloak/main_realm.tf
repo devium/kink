@@ -28,6 +28,11 @@ resource "keycloak_realm" "realm" {
     }
   }
 
+  login_theme   = "keycloak"
+  account_theme = "keycloak.v3"
+  admin_theme   = "keycloak.v2"
+  email_theme   = "keycloak"
+
   attributes = {
     userProfileEnabled = true
   }

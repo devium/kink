@@ -50,7 +50,7 @@ resource "helm_release" "keycloak" {
       - "--http-port=8080"
       - "--hostname-strict=false"
       - "--hostname-strict-https=false"
-      - "--features=declarative-user-profile,dynamic-scopes"
+      - "--features=declarative-user-profile,account3,dynamic-scopes"
 
     postgresql:
       enabled: false
