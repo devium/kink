@@ -17,9 +17,9 @@
   tasks:
     - name: Reboot nodes. Required after updating RKE2 configuration for the first time.
       reboot:
-      tags:
-        - reboot
-        - never
+  tags:
+    - reboot
+    - never
 
 - hosts: localhost
   tasks:
