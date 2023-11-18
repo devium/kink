@@ -102,7 +102,7 @@ resource "helm_release" "synapse" {
       enabled: true
 
       annotations:
-        cert-manager.io/cluster-issuer: leysencrypt
+        cert-manager.io/cluster-issuer: ${var.cluster_vars.issuer}
         nginx.ingress.kubernetes.io/enable-cors: "true"
         nginx.ingress.kubernetes.io/proxy-body-size: ${local.max_upload}
 
