@@ -76,4 +76,4 @@
       state: absent
     become: yes
 
-  when: not postfix_stat_result.stat.exists or not aliases_stat_result.stat.exists or not dkim_stat_result.stat.exists
+  when: not postfix_stat_result.stat.exists or not dkim_stat_result.stat.exists
