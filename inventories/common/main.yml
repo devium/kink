@@ -3,12 +3,6 @@ domain: "{{ vault_domain }}"
 hcloud_token: "{{ vault_hcloud_token }}"
 hdns_token: "{{ vault_hdns_token }}"
 hdns_zone_id: "{{ vault_hdns_zone_id }}"
-mail_accounts: "{{ vault_mail_accounts }}"
-  # - name:
-  #   password:
-mail_aliases: "{{ vault_mail_aliases }}"
-  # - alias:
-  #   account:
 ssh_keys: "{{ vault_ssh_keys }}"
   # - 
 terraform_backend_cloud: "{{ vault_terraform_backend_cloud }}"
@@ -179,6 +173,10 @@ app_config_default:
     subdomain: mail
     version: 11.0.0
     version_helm: 1.0.1
+
+    accounts:
+      - name: noreply
+        password:
 
     aliases:
       postmaster: noreply

@@ -14,7 +14,7 @@ pip install kubernetes
 ### Manage secrets
 Use an existing vault or create a `secrets.{dev|prod}.yml` in `vault/`. Define all `vault_` values referenced at the top of `inventories/common/main.yml`.
 
-You can use `./generate-secrets.sh` to generate BIP39-like secrets.
+You can use `./bip39_secrets.sh` to generate BIP39-like secrets.
 
 Encrypt the secrets file you just created using Ansible:
 ```
@@ -38,7 +38,7 @@ Run the Ansible playbook:
 ```bash
 ansible-playbook site.yml --ask-vault-pass --ask-become-pass --tags all,reboot
 ```
-The `--ask-become-pass` is required for a local Docker container that generates Postfix files. You can skip this if you can run Docker without sudo or already have your mail files ready.
+The `--ask-become-pass` is required for local Docker containers to generate complex secrets. You can skip this if you can run Docker without sudo or already have your secret files ready.
 
 Setting up the cluster initially requires a full node reboot after updating the networking backend in the `cluster.yml` playbook. This can be avoided on future runs by skipping the `reboot` tag.
 
