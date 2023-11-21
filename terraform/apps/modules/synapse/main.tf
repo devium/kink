@@ -4,6 +4,17 @@ locals {
   max_upload = "20M"
 }
 
+resource "kubernetes_secret_v1" "signing_key" {
+  metadata {
+    name      = "signing-key"
+    namespace = var.config.namespace
+  }
+
+  data = {
+    "signing.key" = var.config.secrets.signing_key
+  }
+}
+
 resource "helm_release" "synapse" {
   name      = var.cluster_vars.release_name
   namespace = var.config.namespace
@@ -69,6 +80,13 @@ resource "helm_release" "synapse" {
               localpart_template: "{{ user.sub.split('-')[0] }}"
               display_name_template: "{{ user.preferred_username }}"
 
+    signingkey:
+      existingSecret: signing-key
+      existingSecretKey: signing.key
+
+      job:
+        enabled: false
+
     synapse:
       podSecurityContext:
         fsGroup: 666
@@ -82,7 +100,6 @@ resource "helm_release" "synapse" {
 
       strategy:
         type: Recreate
-
 
     postgresql:
       enabled: false

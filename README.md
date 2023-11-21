@@ -14,7 +14,9 @@ pip install kubernetes
 ### Manage secrets
 Use an existing vault or create a `secrets.{dev|prod}.yml` in `vault/`. Define all `vault_` values referenced at the top of `inventories/common/main.yml`.
 
-You can use `./bip39_secrets.sh` to generate BIP39-like secrets.
+You can use `scripts/bip39_secrets.sh` to generate BIP39-like secrets.
+
+Use `scripts/synapse_signing_key.py` to generate a Synapse signing key (requires `signedjson`).
 
 Encrypt the secrets file you just created using Ansible:
 ```

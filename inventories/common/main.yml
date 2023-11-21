@@ -319,6 +319,7 @@ app_config_default:
     secrets:
       registration:
       macaroon:
+      signing_key:
 
     volume:
       handle:
