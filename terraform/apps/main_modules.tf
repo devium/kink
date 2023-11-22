@@ -127,6 +127,13 @@ module "mailserver" {
   decryption_path = var.decryption_path
 }
 
+module "mas" {
+  source = "./modules/mas"
+
+  cluster_vars = local.cluster_vars
+  config       = var.app_config.mas
+}
+
 module "minecraft" {
   source = "./modules/minecraft"
 

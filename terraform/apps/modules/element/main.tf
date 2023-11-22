@@ -23,6 +23,7 @@ resource "helm_release" "element" {
     defaultServer:
       url: https://${var.cluster_vars.domains.domain}
       name: ${var.cluster_vars.domains.domain}
+      identity_url: none
 
     config:
       default_theme: dark

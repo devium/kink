@@ -39,20 +39,18 @@ resource "keycloak_openid_client" "hedgedoc" {
   admin_url             = "/"
 }
 
-resource "keycloak_openid_client" "synapse" {
+resource "keycloak_openid_client" "mas" {
   realm_id  = keycloak_realm.realm.id
-  client_id = var.clients.synapse.client
+  client_id = var.clients.mas.client
 
   access_type   = "CONFIDENTIAL"
-  client_secret = var.clients.synapse.secret
+  client_secret = var.clients.mas.secret
 
-  standard_flow_enabled               = true
-  root_url                            = "https://${var.cluster_vars.domains.synapse}"
-  backchannel_logout_url              = "https://${var.cluster_vars.domains.synapse}/_synapse/client/oidc/backchannel_logout"
-  backchannel_logout_session_required = true
-  web_origins                         = ["+"]
-  valid_redirect_uris                 = ["/*"]
-  admin_url                           = "/"
+  standard_flow_enabled = true
+  root_url              = "https://${var.cluster_vars.domains.mas}"
+  web_origins           = ["+"]
+  valid_redirect_uris   = ["https://${var.cluster_vars.domains.mas}/upstream/callback/*"]
+  admin_url             = "/"
 }
 
 resource "keycloak_openid_client" "grafana" {
@@ -74,7 +72,7 @@ locals {
     jitsi     = keycloak_openid_client.jitsi,
     nextcloud = keycloak_openid_client.nextcloud,
     hedgedoc  = keycloak_openid_client.hedgedoc,
-    synapse   = keycloak_openid_client.synapse,
+    mas       = keycloak_openid_client.mas,
     grafana   = keycloak_openid_client.grafana
   }
 }

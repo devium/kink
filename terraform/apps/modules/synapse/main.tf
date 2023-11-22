@@ -1,6 +1,5 @@
 locals {
   fqdn       = "${var.config.subdomain}.${var.cluster_vars.domains.domain}"
-  oidc_url   = "https://${var.cluster_vars.domains.keycloak}/realms/${var.cluster_vars.keycloak_realm}"
   max_upload = "20M"
 }
 
@@ -37,6 +36,9 @@ resource "helm_release" "synapse" {
         m.homeserver:
           base_url: https://${local.fqdn}
 
+        m.identity_server:
+          base_url: ""
+
         org.matrix.msc3575.proxy:
           url: https://${var.cluster_vars.domains.sliding_sync}
 
@@ -44,8 +46,8 @@ resource "helm_release" "synapse" {
           preferredDomain: ${var.cluster_vars.domains.jitsi}
 
         org.matrix.msc2965.authentication:
-          issuer: ${local.oidc_url}
-          account: ${local.oidc_url}/account
+          issuer: https://${var.cluster_vars.domains.domain}/
+          account: https://${var.cluster_vars.domains.keycloak}/realms/${var.cluster_vars.keycloak_realm}/account
 
     config:
       enableRegistration: false
@@ -53,32 +55,27 @@ resource "helm_release" "synapse" {
       macaroonSecretKey: ${var.config.secrets.macaroon}
 
     extraConfig:
-      default_room_version: "9"
+      default_room_version: "11"
+      enable_set_displayname: false
       web_client_location: https://${var.cluster_vars.domains.element}
       autocreate_auto_join_rooms: false
       max_upload_size: ${local.max_upload}
       auto_join_rooms:
-        - "#lobby:${var.cluster_vars.domains.domain}"
+      - "#lobby:${var.cluster_vars.domains.domain}"
 
       password_config:
         enabled: false
 
-      oidc_providers:
-        - idp_id: keycloak
-          idp_name: Keycloak
-          issuer: ${local.oidc_url}
-          client_id: ${var.config.keycloak.client}
-          client_secret: ${var.config.keycloak.secret}
-          scopes: ["openid", "private_profile"]
-          authorization_endpoint: ${local.oidc_url}/protocol/openid-connect/auth
-          token_endpoint: ${local.oidc_url}/protocol/openid-connect/token
-          userinfo_endpoint: ${local.oidc_url}/protocol/openid-connect/userinfo
-          backchannel_logout_enabled: true
-
-          user_mapping_provider:
-            config:
-              localpart_template: "{{ user.sub.split('-')[0] }}"
-              display_name_template: "{{ user.preferred_username }}"
+      experimental_features:
+        msc3861:
+          enabled: true
+          # Trailing slash is important for URL matching with the MAS.
+          issuer: https://${var.cluster_vars.domains.domain}/
+          client_id: ${var.config.mas_client}
+          client_auth_method: client_secret_basic
+          client_secret: ${var.config.secrets.mas_client}
+          admin_token: ${var.config.secrets.admin_token}
+          account_management_url: https://${var.cluster_vars.domains.keycloak}/realms/${var.cluster_vars.keycloak_realm}/account
 
     signingkey:
       existingSecret: signing-key
@@ -122,6 +119,27 @@ resource "helm_release" "synapse" {
         cert-manager.io/cluster-issuer: ${var.cluster_vars.issuer}
         nginx.ingress.kubernetes.io/enable-cors: "true"
         nginx.ingress.kubernetes.io/proxy-body-size: ${local.max_upload}
+        nginx.ingress.kubernetes.io/use-regex: "true"
+
+      # Comatibility layer for Matrix Authentication Service:
+      # https://matrix-org.github.io/matrix-authentication-service/setup/reverse-proxy.html#example-nginx-configuration
+      paths:
+        - path: /_matrix/client/(.*)/(login|logout|refresh)
+          pathType: ImplementationSpecific
+          backend:
+            service:
+              name: mas
+              port:
+                number: 8080
+
+      csPaths:
+        - path: /_matrix/client/(.*)/(login|logout|refresh)
+          pathType: ImplementationSpecific
+          backend:
+            service:
+              name: mas
+              port:
+                number: 8080
 
       tls:
         - secretName: ${local.fqdn}-tls
