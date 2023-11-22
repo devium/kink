@@ -20,16 +20,18 @@ resource "helm_release" "shlink" {
 
         annotations:
           cert-manager.io/cluster-issuer: ${var.cluster_vars.issuer}
+          # Necessary so resolution is bucketed with Synapse's regex ingress.
+          nginx.ingress.kubernetes.io/use-regex: "true"
 
         hosts:
           - host: ${var.cluster_vars.domains.domain}
             paths:
-              - path: /
-                pathType: Prefix
+              - path: /[^\._].+
+                pathType: ImplementationSpecific
           - host: ${local.fqdn}
             paths:
-              - path: /
-                pathType: Prefix
+              - path: /.*
+                pathType: ImplementationSpecific
 
         tls:
           - secretName: ${var.cluster_vars.domains.domain}-tls

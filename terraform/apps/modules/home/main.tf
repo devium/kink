@@ -115,6 +115,8 @@ resource "kubernetes_ingress_v1" "home_redirect" {
     annotations = {
       "cert-manager.io/cluster-issuer"                 = var.cluster_vars.issuer
       "nginx.ingress.kubernetes.io/permanent-redirect" = "https://${local.fqdn}$uri"
+      # Necessary so resolution is bucketed with Synapse's regex ingress.
+      "nginx.ingress.kubernetes.io/use-regex" = "true"
     }
   }
 
@@ -124,8 +126,10 @@ resource "kubernetes_ingress_v1" "home_redirect" {
 
       http {
         path {
+          # Note: Redirect is triggered even if this path rule does
+          # not match, as long as all others fail too.
           path      = "/"
-          path_type = "Exact"
+          path_type = "ImplementationSpecific"
 
           # This is not used but required anyway
           backend {
