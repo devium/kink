@@ -55,11 +55,13 @@ resource "helm_release" "synapse" {
       macaroonSecretKey: ${var.config.secrets.macaroon}
 
     extraConfig:
+      allow_public_rooms_over_federation: true
+      autocreate_auto_join_rooms: false
       default_room_version: "11"
       enable_set_displayname: false
-      web_client_location: https://${var.cluster_vars.domains.element}
-      autocreate_auto_join_rooms: false
       max_upload_size: ${local.max_upload}
+      web_client_location: https://${var.cluster_vars.domains.element}
+      
       auto_join_rooms:
       - "#lobby:${var.cluster_vars.domains.domain}"
 
