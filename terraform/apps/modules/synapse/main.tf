@@ -21,6 +21,7 @@ resource "helm_release" "synapse" {
   repository = "https://ananace.gitlab.io/charts"
   chart      = "matrix-synapse"
   version    = var.config.version_helm
+  timeout    = 120
 
   values = [<<-YAML
     image:
@@ -55,18 +56,28 @@ resource "helm_release" "synapse" {
       macaroonSecretKey: ${var.config.secrets.macaroon}
 
     extraConfig:
+      admin_contact: ${var.config.admin_contact}
       allow_public_rooms_over_federation: true
       autocreate_auto_join_rooms: false
       default_room_version: "11"
       enable_set_displayname: false
       max_upload_size: ${local.max_upload}
       web_client_location: https://${var.cluster_vars.domains.element}
-      
+
       auto_join_rooms:
       - "#lobby:${var.cluster_vars.domains.domain}"
 
       password_config:
         enabled: false
+
+      email:
+        smtp_host: ${var.cluster_vars.mail_server}
+        smtp_port: 587
+        smtp_user: ${var.config.mail.account}@${var.cluster_vars.domains.domain}
+        smtp_pass: ${var.config.mail.password}
+        force_tls: true
+        enable_notifs: true
+        notif_from: "%(app)s"
 
       experimental_features:
         msc3861:

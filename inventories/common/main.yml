@@ -326,6 +326,7 @@ app_config_default:
       password:
 
   synapse:
+    admin_contact: "mailto:abuse@{{ domain }}"
     mas_client: *mas_synapse_client
     memory: 600Mi
     memory_sliding_sync: 200Mi
@@ -339,6 +340,11 @@ app_config_default:
       username: synapse
       password:
       params: "LC_COLLATE 'C' LC_CTYPE 'C' TEMPLATE template0"
+
+    mail:
+      account: noreply
+      display_name: Matrix
+      password:
 
     secrets:
       registration:
