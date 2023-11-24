@@ -244,15 +244,6 @@ app_config_default:
       handle:
       size: 50Gi
 
-  neodatefix:
-    bot_token:
-    bot_username:
-    memory: 10M
-    namespace: synapse
-    subdomain: date.matrix
-    version: 1.5.3
-    version_bot: 2.4.2
-
   nextcloud:
     admin_password:
     memory: 600Mi
