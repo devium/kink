@@ -10,21 +10,27 @@ terraform_workspace: "{{ terraform_workspace_base }}-{{ terraform_stage }}"
 terraform_workspace_base: 
 
 terraform_backend:
-  hostname:
-  organization:
-  token:
+  bucket:
+  region:
+  access_key:
+  secret_key:
+  dynamodb_table:
 
 terraform_env:
-  TF_CLOUD_HOSTNAME: "{{ terraform_backend.hostname }}"
-  TF_CLOUD_ORGANIZATION: "{{ terraform_backend.organization }}"
-  TF_WORKSPACE: "{{ terraform_workspace }}"
-  TF_TOKEN_app_terraform_io: "{{ terraform_backend.token }}"
+  AWS_ACCESS_KEY_ID: "{{ terraform_backend.access_key }}"
+  AWS_SECRET_ACCESS_KEY: "{{ terraform_backend.secret_key }}"
 
 terraform_task_parameters:
   force_init: yes
+  init_reconfigure: yes
   plan_file: "{{ terraform_plan_file }}"
   project_path: "{{ terraform_project_path }}"
   provider_upgrade: yes
   targets: "{{ terraform_targets }}"
   variables_file: "{{ terraform_variables_file }}"
-  workspace: "{{ terraform_workspace }}"
+
+  backend_config:
+    bucket: "{{ terraform_backend.bucket }}"
+    region: "{{ terraform_backend.region }}"
+    key: "{{ terraform_workspace }}.tfstate"
+    dynamodb_table: "{{ terraform_backend.dynamodb_table }}"

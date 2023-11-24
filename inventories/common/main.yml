@@ -5,10 +5,12 @@ hdns_token: "{{ vault_hdns_token }}"
 hdns_zone_id: "{{ vault_hdns_zone_id }}"
 ssh_keys: "{{ vault_ssh_keys }}"
   # - 
-terraform_backend_cloud: "{{ vault_terraform_backend_cloud }}"
-  # hostname:
-  # organization:
-  # token:
+terraform_backend_s3: "{{ vault_terraform_backend_s3 }}"
+  # bucket:
+  # region:
+  # access_key:
+  # secret_key:
+  # dynamodb_table:
 
 stage: "{{ lookup('env', 'ANSIBLE_STAGE') }}"
 helm_release_name: "main"
@@ -241,6 +243,15 @@ app_config_default:
     volume:
       handle:
       size: 50Gi
+
+  neodatefix:
+    bot_token:
+    bot_username:
+    memory: 10M
+    namespace: synapse
+    subdomain: date.matrix
+    version: 1.5.3
+    version_bot: 2.4.2
 
   nextcloud:
     admin_password:

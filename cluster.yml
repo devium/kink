@@ -3,7 +3,7 @@
   roles:
     - role: terraform
       vars:
-        terraform_backend: "{{ terraform_backend_cloud }}"
+        terraform_backend: "{{ terraform_backend_s3 }}"
         terraform_stage: "{{ stage }}"
         terraform_project_path: "{{ playbook_dir }}/terraform/network"
         terraform_workspace_base: network
@@ -33,7 +33,7 @@
   roles:
     - role: terraform
       vars:
-        terraform_backend: "{{ terraform_backend_cloud }}"
+        terraform_backend: "{{ terraform_backend_s3 }}"
         terraform_stage: "{{ stage }}"
         terraform_project_path: "{{ playbook_dir }}/terraform/cluster"
         terraform_workspace_base: cluster

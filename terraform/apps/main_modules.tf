@@ -141,6 +141,13 @@ module "minecraft" {
   config       = var.app_config.minecraft
 }
 
+# module "neodatefix" {
+#   source = "./modules/neodatefix"
+
+#   cluster_vars = local.cluster_vars
+#   config       = var.app_config.neodatefix
+# }
+
 module "nextcloud" {
   source = "./modules/nextcloud"
 

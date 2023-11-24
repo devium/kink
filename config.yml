@@ -3,7 +3,7 @@
   roles:
     - role: terraform
       vars:
-        terraform_backend: "{{ terraform_backend_cloud }}"
+        terraform_backend: "{{ terraform_backend_s3 }}"
         terraform_stage: "{{ stage }}"
         terraform_project_path: "{{ playbook_dir }}/terraform/config"
         terraform_workspace_base: config
