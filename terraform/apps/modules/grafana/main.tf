@@ -30,6 +30,9 @@ resource "helm_release" "grafana" {
 
   values = [<<-YAML
     grafana:
+      image:
+        tag: ${var.config.version}
+
       ingress:
         enabled: true
 
@@ -87,6 +90,7 @@ resource "helm_release" "grafana" {
           name: Keycloak
           icon: signin
           enabled: true
+          auto_login: true
           client_id: ${var.config.keycloak.client}
           client_secret: ${var.config.keycloak.secret}
           scopes: openid private_profile
@@ -97,9 +101,12 @@ resource "helm_release" "grafana" {
           allow_sign_up: true
           tls_skip_verify_insecure: false
           use_pkce: true
+          email_attribute_path: email
           login_attribute_path: sub
           name_attribute_path: preferred_username
           role_attribute_path: contains(groups[*], 'admin') && 'Admin' || contains(groups[*], 'grafana_editor') && 'Editor' || 'Viewer'
+          # https://github.com/grafana/grafana/issues/70203#issuecomment-1603895013
+          oauth_allow_insecure_email_lookup: true
 
         smtp:
           enabled: true

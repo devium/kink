@@ -69,7 +69,8 @@ app_config_default:
     memory_promtail: 100Mi
     namespace: grafana
     subdomain: grafana
-    version_helm: 54.0.1
+    version: 10.2.2
+    version_helm: 54.2.2
     version_loki_helm: 2.8.2
 
     dashboards:
