@@ -210,3 +210,14 @@ module "synapse" {
     module.postgres
   ]
 }
+
+module "wiki" {
+  source = "./modules/wiki"
+
+  cluster_vars = local.cluster_vars
+  config       = var.app_config.wiki
+
+  depends_on = [
+    module.postgres
+  ]
+}

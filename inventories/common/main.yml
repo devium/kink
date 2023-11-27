@@ -364,6 +364,22 @@ app_config_default:
       handle:
       size: 10Gi
 
+  wiki:
+    memory: 100M
+    namespace: wiki
+    subdomain: wiki
+    version: 2.5
+    version_helm: 2.2.0
+
+    db:
+      database: wiki
+      username: wiki
+      password:
+
+    keycloak:
+      client: wiki
+      secret:
+
 
 default_csp:
   default-src     : "'none'"

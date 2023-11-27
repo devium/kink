@@ -75,6 +75,20 @@ resource "keycloak_openid_client" "grafana" {
   frontchannel_logout_url     = "https://${var.cluster_vars.domains.grafana}/logout"
 }
 
+resource "keycloak_openid_client" "wiki" {
+  realm_id  = keycloak_realm.realm.id
+  client_id = var.clients.wiki.client
+
+  access_type   = "CONFIDENTIAL"
+  client_secret = var.clients.wiki.secret
+
+  standard_flow_enabled = true
+  root_url              = "https://${var.cluster_vars.domains.wiki}"
+  web_origins           = ["+"]
+  valid_redirect_uris   = ["/login/*"]
+  admin_url             = "/"
+}
+
 locals {
   clients = {
     jitsi     = keycloak_openid_client.jitsi,
