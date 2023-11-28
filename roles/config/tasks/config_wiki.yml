@@ -1,0 +1,18 @@
+- name: Check if Wiki.js is already initialized
+  uri:
+    method: GET
+    url: "https://{{ config_app_config.wiki.subdomain }}.{{ config_domain }}/finalize"
+  register: get_result
+  failed_when: no
+
+- name: Initialize Wiki.js
+  uri:
+    method: POST
+    url: "https://{{ config_app_config.wiki.subdomain }}.{{ config_domain }}/finalize"
+    body_format: json
+    body:
+      adminEmail: "{{ config_app_config.wiki.admin.email }}"
+      adminPassword: "{{ config_app_config.wiki.admin.password }}"
+      siteUrl: "https://{{ config_app_config.wiki.subdomain }}.{{ config_domain }}"
+      telemetry: false
+  when: get_result.status != 404

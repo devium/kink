@@ -1,3 +1,12 @@
+- hosts: localhost
+  roles:
+    - role: config
+      vars:
+        config_app_config: "{{ app_config }}"
+        config_domain: "{{ domain }}"
+        config_kubeconf_file: "{{ kubeconf_file }}"
+        config_release_name: "{{ helm_release_name }}"
+
 - name: Configure cluster apps
   hosts: localhost
   roles:
@@ -11,12 +20,3 @@
         terraform_variables:
           app_config: "{{ app_config }}"
           domain: "{{ domain }}"
-
-- hosts: localhost
-  roles:
-    - role: config
-      vars:
-        config_app_config: "{{ app_config }}"
-        config_domain: "{{ domain }}"
-        config_kubeconf_file: "{{ kubeconf_file }}"
-        config_release_name: "{{ helm_release_name }}"

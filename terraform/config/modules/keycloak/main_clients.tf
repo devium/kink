@@ -15,6 +15,7 @@ resource "keycloak_openid_client" "nextcloud" {
   realm_id  = keycloak_realm.realm.id
   client_id = var.clients.nextcloud.client
 
+  name          = "Nextcloud"
   access_type   = "CONFIDENTIAL"
   client_secret = var.clients.nextcloud.secret
 
@@ -31,6 +32,7 @@ resource "keycloak_openid_client" "hedgedoc" {
   realm_id  = keycloak_realm.realm.id
   client_id = var.clients.hedgedoc.client
 
+  name          = "HedgeDoc"
   access_type   = "CONFIDENTIAL"
   client_secret = var.clients.hedgedoc.secret
 
@@ -47,6 +49,7 @@ resource "keycloak_openid_client" "mas" {
   realm_id  = keycloak_realm.realm.id
   client_id = var.clients.mas.client
 
+  name          = "Matrix Authentication Service"
   access_type   = "CONFIDENTIAL"
   client_secret = var.clients.mas.secret
 
@@ -63,6 +66,7 @@ resource "keycloak_openid_client" "grafana" {
   realm_id  = keycloak_realm.realm.id
   client_id = var.clients.grafana.client
 
+  name          = "Grafana"
   access_type   = "CONFIDENTIAL"
   client_secret = var.clients.grafana.secret
 
@@ -79,14 +83,17 @@ resource "keycloak_openid_client" "wiki" {
   realm_id  = keycloak_realm.realm.id
   client_id = var.clients.wiki.client
 
+  name          = "Wiki.js"
   access_type   = "CONFIDENTIAL"
   client_secret = var.clients.wiki.secret
 
-  standard_flow_enabled = true
-  root_url              = "https://${var.cluster_vars.domains.wiki}"
-  web_origins           = ["+"]
-  valid_redirect_uris   = ["/login/*"]
-  admin_url             = "/"
+  standard_flow_enabled       = true
+  root_url                    = "https://${var.cluster_vars.domains.wiki}"
+  web_origins                 = ["+"]
+  valid_redirect_uris         = ["/*"]
+  admin_url                   = "/"
+  frontchannel_logout_enabled = true
+  frontchannel_logout_url     = "https://${var.cluster_vars.domains.wiki}/logout"
 }
 
 locals {
@@ -95,6 +102,7 @@ locals {
     nextcloud = keycloak_openid_client.nextcloud,
     hedgedoc  = keycloak_openid_client.hedgedoc,
     mas       = keycloak_openid_client.mas,
-    grafana   = keycloak_openid_client.grafana
+    grafana   = keycloak_openid_client.grafana,
+    wiki      = keycloak_openid_client.wiki
   }
 }

@@ -15,8 +15,8 @@ provider "keycloak" {
   initial_login            = false
 }
 
-provider "grafana" {
-  url                  = "https://${var.app_config.grafana.subdomain}.${var.domain}"
-  auth                 = "admin:${var.app_config.grafana.admin_password}"
-  insecure_skip_verify = true
+provider "wikijs" {
+  site_url = "https://${var.app_config.wiki.subdomain}.${var.domain}/graphql"
+  email    = var.app_config.wiki.admin.email
+  password = var.app_config.wiki.admin.password
 }

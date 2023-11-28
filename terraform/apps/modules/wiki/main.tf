@@ -2,7 +2,9 @@ locals {
   fqdn = "${var.config.subdomain}.${var.cluster_vars.domains.domain}"
 
   csp = merge(var.cluster_vars.default_csp, {
-    script-src = "'self' 'unsafe-inline' 'unsafe-eval' blob:"
+    "script-src"      = "'self' 'unsafe-inline' 'unsafe-eval' blob: https://cdn.jsdelivr.net"
+    "style-src"       = "'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com"
+    "frame-ancestors" = "'self' https://${var.cluster_vars.domains.keycloak}"
   })
 }
 

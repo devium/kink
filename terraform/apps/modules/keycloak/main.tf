@@ -3,7 +3,7 @@ locals {
 
   csp = merge(var.cluster_vars.default_csp, {
     "script-src"      = "'self' 'unsafe-inline' 'unsafe-eval'"
-    "frame-src"       = "'self' https://${var.cluster_vars.domains.grafana} https://${var.cluster_vars.domains.hedgedoc} https://${var.cluster_vars.domains.mas}"
+    "frame-src"       = "'self' https://${var.cluster_vars.domains.grafana} https://${var.cluster_vars.domains.hedgedoc} https://${var.cluster_vars.domains.mas} https://${var.cluster_vars.domains.wiki}"
     "frame-ancestors" = "'self' https://${var.cluster_vars.domains.element}"
   })
 }
@@ -50,7 +50,7 @@ resource "helm_release" "keycloak" {
       - "--http-port=8080"
       - "--hostname-strict=false"
       - "--hostname-strict-https=false"
-      - "--features=declarative-user-profile,account3,dynamic-scopes"
+      - "--features=declarative-user-profile,account3"
 
     postgresql:
       enabled: false

@@ -1,6 +1,7 @@
 locals {
   cluster_vars = {
-    mail_server = "${var.app_config.mailserver.subdomain}.${var.domain}"
+    keycloak_realm = "${var.app_config.keycloak.realm}"
+    mail_server    = "${var.app_config.mailserver.subdomain}.${var.domain}"
 
     domains = merge(
       {
@@ -25,4 +26,11 @@ module "keycloak" {
   }
   cluster_vars = local.cluster_vars
   config       = var.app_config.keycloak
+}
+
+module "wiki" {
+  source = "./modules/wiki"
+
+  cluster_vars = local.cluster_vars
+  config       = var.app_config.wiki
 }

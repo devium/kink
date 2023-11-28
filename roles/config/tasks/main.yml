@@ -1,3 +1,7 @@
+- import_tasks: "{{ role_path }}/tasks/config_wiki.yml"
+  tags:
+    - config-wiki
+
 - import_tasks: "{{ role_path }}/tasks/config_nextcloud.yml"
   tags:
     - config-nextcloud
