@@ -29,6 +29,10 @@ resource "helm_release" "element" {
       default_theme: dark
       disable_custom_urls: true
       disable_guests: true
+      logout_redirect_url: https://${var.cluster_vars.domains.mas}/logout?post_logout_redirect_uri=https%3A%2F%2F${local.fqdn}%2F%23%2Flogin
+
+      sso_redirect_options:
+        immediate: true
 
       settingDefaults:
         UIFeature.registration: false

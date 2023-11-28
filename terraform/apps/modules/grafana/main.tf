@@ -3,7 +3,8 @@ locals {
   oidc_url = "https://${var.cluster_vars.domains.keycloak}/realms/${var.cluster_vars.keycloak_realm}"
 
   csp = merge(var.cluster_vars.default_csp, {
-    "script-src" = "'self' 'unsafe-inline' 'unsafe-eval'"
+    "script-src"      = "'self' 'unsafe-inline' 'unsafe-eval'"
+    "frame-ancestors" = "'self' https://${var.cluster_vars.domains.keycloak}"
   })
 
 
@@ -85,9 +86,10 @@ resource "helm_release" "grafana" {
 
         auth:
           disable_login_form: true
+          signout_redirect_url: ${local.oidc_url}/protocol/openid-connect/logout?post_logout_redirect_uri=https%3A%2F%2F${local.fqdn}%2Flogin
 
         auth.generic_oauth:
-          name: Keycloak
+          name: ${var.config.keycloak.name}
           icon: signin
           enabled: true
           auto_login: true

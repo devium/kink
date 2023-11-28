@@ -3,7 +3,8 @@ locals {
   oidc_url = "https://${var.cluster_vars.domains.keycloak}/realms/${var.cluster_vars.keycloak_realm}/protocol/openid-connect"
 
   csp = merge(var.cluster_vars.default_csp, {
-    "frame-src" = "*"
+    "frame-src"       = "*"
+    "frame-ancestors" = "'self' https://${var.cluster_vars.domains.keycloak}"
   })
 }
 
@@ -34,7 +35,7 @@ resource "helm_release" "hedgedoc" {
       CMD_OAUTH2_TOKEN_URL: ${local.oidc_url}/token
       CMD_OAUTH2_AUTHORIZATION_URL: ${local.oidc_url}/auth
       CMD_OAUTH2_CLIENT_ID: ${var.config.keycloak.client}
-      CMD_OAUTH2_PROVIDERNAME: Keycloak
+      CMD_OAUTH2_PROVIDERNAME: ${var.config.keycloak.name}
       CMD_OAUTH2_SCOPE: openid email private_profile
       CMD_EMAIL: "false"
       CMD_ALLOW_EMAIL_REGISTER: "false"

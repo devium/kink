@@ -1,44 +1,10 @@
-- name: Get Nextcloud groups
+- name: Set Nextcloud Keycloak config
   kubernetes.core.k8s_exec:
     kubeconfig: "{{ config_kubeconf_file }}"
     namespace: "{{ config_app_config.nextcloud.namespace }}"
     pod: "{{ pods_result.resources[0].metadata.name }}"
-    command: su -s /bin/bash -c '/var/www/html/occ group:list' www-data
-  register: groups_result
-  failed_when: groups_result.rc != 0 and groups_result.stderr | length > 0
-  changed_when: false
-
-- name: Create missing groups
-  kubernetes.core.k8s_exec:
-    kubeconfig: "{{ config_kubeconf_file }}"
-    namespace: "{{ config_app_config.nextcloud.namespace }}"
-    pod: "{{ pods_result.resources[0].metadata.name }}"
-    command: su -s /bin/bash -c '/var/www/html/occ group:add "{{ item }}"' www-data
-  when: group_expr not in groups_result.stdout
+    command: su -s /bin/bash -c '/var/www/html/occ user_oidc:provider {{ args }} {{ config_nextcloud_user_oidc.identifier }}' www-data
   vars:
-    group_expr: "- {{ item }}:"
-  with_items: "{{ config_nextcloud_groups }}"
-
-- name: Get Nextcloud keycloak config
-  kubernetes.core.k8s_exec:
-    kubeconfig: "{{ config_kubeconf_file }}"
-    namespace: "{{ config_app_config.nextcloud.namespace }}"
-    pod: "{{ pods_result.resources[0].metadata.name }}"
-    command: su -s /bin/bash -c '/var/www/html/occ config:app:get sociallogin custom_providers' www-data
-  register: get_result
-  failed_when: get_result.rc != 0 and get_result.stderr | length > 0
-  changed_when: false
-
-- name: Set Nextcloud keycloak config
-  kubernetes.core.k8s_exec:
-    kubeconfig: "{{ config_kubeconf_file }}"
-    namespace: "{{ config_app_config.nextcloud.namespace }}"
-    pod: "{{ pods_result.resources[0].metadata.name }}"
-    command: su -s /bin/bash -c '/var/www/html/occ config:app:set sociallogin custom_providers --value "{{ value_sanitized }}"' www-data
-  vars:
-    # Note: We need doubly escaped quotes so the command passes unaltered through `bash -c`, and all spaces removed
-    # so we end up with an identical value as the UI would produce.
-    merged_dict: "{{ json_result.custom_oidc[0] | combine(config_nextcloud_oidc_config.custom_oidc[0], recursive=True) }}"
-    value_sanitized: "{{ { 'custom_oidc': [merged_dict] } | to_json | replace('\"', '\\\"') | replace(' ', '') }}"
-    json_result: "{{ get_result.stdout | from_json if get_result.stdout | length > 0 else { 'custom_oidc': [{}]} }}"
-  when: get_result.stdout | length == 0 or json_result.custom_oidc[0] != merged_dict
+    arg_keys: "{{ ['--'] | product(config_nextcloud_user_oidc.args | dict2items | map(attribute='key')) | map('join') }}"
+    arg_values: "{{ config_nextcloud_user_oidc.args | dict2items | map(attribute='value') }}"
+    args: "{{ arg_keys | zip(arg_values) | map('join', ' \"') | join('\" ') }}\""

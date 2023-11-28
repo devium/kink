@@ -18,11 +18,13 @@ resource "keycloak_openid_client" "nextcloud" {
   access_type   = "CONFIDENTIAL"
   client_secret = var.clients.nextcloud.secret
 
-  standard_flow_enabled = true
-  root_url              = "https://${var.cluster_vars.domains.nextcloud}"
-  web_origins           = ["+"]
-  valid_redirect_uris   = ["/*"]
-  admin_url             = "/"
+  standard_flow_enabled               = true
+  root_url                            = "https://${var.cluster_vars.domains.nextcloud}"
+  web_origins                         = ["+"]
+  valid_redirect_uris                 = ["/*"]
+  admin_url                           = "/"
+  backchannel_logout_url              = "https://${var.cluster_vars.domains.nextcloud}/apps/user_oidc/backchannel-logout/${var.clients.nextcloud.name}"
+  backchannel_logout_session_required = true
 }
 
 resource "keycloak_openid_client" "hedgedoc" {
@@ -32,11 +34,13 @@ resource "keycloak_openid_client" "hedgedoc" {
   access_type   = "CONFIDENTIAL"
   client_secret = var.clients.hedgedoc.secret
 
-  standard_flow_enabled = true
-  root_url              = "https://${var.cluster_vars.domains.hedgedoc}"
-  web_origins           = ["+"]
-  valid_redirect_uris   = ["/*"]
-  admin_url             = "/"
+  standard_flow_enabled       = true
+  root_url                    = "https://${var.cluster_vars.domains.hedgedoc}"
+  web_origins                 = ["+"]
+  valid_redirect_uris         = ["/*"]
+  admin_url                   = "/"
+  frontchannel_logout_enabled = true
+  frontchannel_logout_url     = "https://${var.cluster_vars.domains.hedgedoc}/logout"
 }
 
 resource "keycloak_openid_client" "mas" {
@@ -46,11 +50,13 @@ resource "keycloak_openid_client" "mas" {
   access_type   = "CONFIDENTIAL"
   client_secret = var.clients.mas.secret
 
-  standard_flow_enabled = true
-  root_url              = "https://${var.cluster_vars.domains.mas}"
-  web_origins           = ["+"]
-  valid_redirect_uris   = ["https://${var.cluster_vars.domains.mas}/upstream/callback/*"]
-  admin_url             = "/"
+  standard_flow_enabled       = true
+  root_url                    = "https://${var.cluster_vars.domains.mas}"
+  web_origins                 = ["+"]
+  valid_redirect_uris         = ["https://${var.cluster_vars.domains.mas}/upstream/callback/*"]
+  admin_url                   = "/"
+  frontchannel_logout_enabled = true
+  frontchannel_logout_url     = "https://${var.cluster_vars.domains.mas}/logout"
 }
 
 resource "keycloak_openid_client" "grafana" {
@@ -60,11 +66,13 @@ resource "keycloak_openid_client" "grafana" {
   access_type   = "CONFIDENTIAL"
   client_secret = var.clients.grafana.secret
 
-  standard_flow_enabled = true
-  root_url              = "https://${var.cluster_vars.domains.grafana}"
-  web_origins           = ["+"]
-  valid_redirect_uris   = ["/*"]
-  admin_url             = "/"
+  standard_flow_enabled       = true
+  root_url                    = "https://${var.cluster_vars.domains.grafana}"
+  web_origins                 = ["+"]
+  valid_redirect_uris         = ["/*"]
+  admin_url                   = "/"
+  frontchannel_logout_enabled = true
+  frontchannel_logout_url     = "https://${var.cluster_vars.domains.grafana}/logout"
 }
 
 locals {

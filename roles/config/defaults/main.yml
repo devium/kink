@@ -30,9 +30,9 @@ config_nextcloud_apps_installed:
   - calendar
   - deck
   - richdocuments
-  - sociallogin
   - polls
   - forms
+  - user_oidc
 
 config_nextcloud_groups:
   - Default
@@ -62,17 +62,8 @@ config_nextcloud_occ:
     public_wopi_url: "https://{{ config_app_config.collabora.subdomain }}.{{ domain }}"
     disable_certificate_verification: ""
 
-  sociallogin:
-    disable_registration: ""
-    create_disabled_users: ""
-    allow_login_connect: "1"
-    prevent_create_email_exists: ""
-    update_profile_on_login: "1"
-    no_prune_user_groups: ""
-    auto_create_groups: ""
-    restrict_users_wo_mapped_groups: ""
-    restrict_users_wo_assigned_groups: ""
-    disable_notify_admins: ""
+  user_oidc:
+    allow_multiple_user_backends: "0"
 
   settings:
     profile_enabled_by_default: "0"
@@ -80,26 +71,19 @@ config_nextcloud_occ:
   dav:
     calendarSubscriptionRefreshRate: "P1H"
 
-config_nextcloud_oidc_config:
-  {
-    "custom_oidc": [
-      {
-        "name": "keycloak",
-        "title": "Keycloak",
-        "authorizeUrl": "{{ config_oidc_url }}/auth",
-        "tokenUrl": "{{ config_oidc_url }}/token",
-        "displayNameClaim": "",
-        "userInfoUrl": "{{ config_oidc_url }}/userinfo",
-        "logoutUrl": "",
-        "clientId": "{{ config_app_config.nextcloud.keycloak.client }}",
-        "clientSecret": "{{ config_app_config.nextcloud.keycloak.secret }}",
-        "scope": "openid",
-        "groupsClaim": "groups",
-        "style": "keycloak",
-        "defaultGroup": "Default",
-        "groupMapping": {
-          "admin": "admin"
-        }
-      }
-    ]
-  }
+config_nextcloud_user_oidc:
+  identifier: "{{ config_app_config.nextcloud.keycloak.name }}"
+
+  args:
+    clientid: "{{ config_app_config.nextcloud.keycloak.client }}"
+    clientsecret: "{{ config_app_config.nextcloud.keycloak.secret }}"
+    discoveryuri: "https://{{ config_app_config.keycloak.subdomain }}.{{ config_domain }}/realms/{{ config_app_config.keycloak.realm }}/.well-known/openid-configuration"
+    scope: openid email private_profile
+    unique-uid: 0
+    check-bearer: 0
+    send-id-token-hint: 1
+    mapping-display-name: preferred_username
+    mapping-email: email
+    mapping-quota: ""
+    mapping-uid: sub
+    extra-claims: ""

@@ -44,9 +44,22 @@ resource "keycloak_group" "admin" {
   name     = "admin"
 }
 
+resource "keycloak_group" "default" {
+  realm_id = keycloak_realm.realm.id
+  name     = "default"
+}
+
 resource "keycloak_group" "grafana_editor" {
   realm_id = keycloak_realm.realm.id
   name     = "grafana_editor"
+}
+
+resource "keycloak_default_groups" "default" {
+  realm_id = keycloak_realm.realm.id
+
+  group_ids = [
+    keycloak_group.default.id
+  ]
 }
 
 # Remove first and last name from user profile

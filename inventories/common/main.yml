@@ -12,11 +12,12 @@ terraform_backend_s3: "{{ vault_terraform_backend_s3 }}"
   # secret_key:
   # dynamodb_table:
 
-stage: "{{ lookup('env', 'ANSIBLE_STAGE') }}"
-helm_release_name: "main"
+helm_release_name: main
+keycloak_display_name: "{{ vault_keycloak_display_name | default('Keycloak') }}"
 kubeconf_file: "{{ ansible_inventory_sources[0] | dirname }}/rke2.yaml"
 namespace_prefix: "{{ stage_prefix }}"
 secrets_file: "{{ ansible_inventory_sources[0] | dirname }}/group_vars/all/secrets.yml"
+stage: "{{ lookup('env', 'ANSIBLE_STAGE') }}"
 vault_dir: "{{ playbook_dir }}/vault"
 
 app_config_default:
@@ -85,6 +86,7 @@ app_config_default:
 
     keycloak:
       client: grafana
+      name: "{{ keycloak_display_name }}"
       secret:
 
     mail:
@@ -111,6 +113,7 @@ app_config_default:
 
     keycloak:
       client: hedgedoc
+      name: "{{ keycloak_display_name }}"
       secret:
 
     volume:
@@ -260,6 +263,7 @@ app_config_default:
 
     keycloak:
       client: nextcloud
+      name: "{{ keycloak_display_name }}"
       secret:
 
     volume:
