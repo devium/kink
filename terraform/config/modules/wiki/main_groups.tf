@@ -19,8 +19,6 @@ resource "wikijs_group" "default" {
         "read:source",
         "read:history",
         "read:assets",
-        "write:assets",
-        "manage:assets",
         "read:comments",
         "write:comments"
       ]
@@ -37,8 +35,6 @@ resource "wikijs_group" "default" {
     "read:source",
     "read:history",
     "read:assets",
-    "write:assets",
-    "manage:assets",
     "read:comments",
     "write:comments"
   ]
