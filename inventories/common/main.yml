@@ -339,8 +339,8 @@ app_config_default:
     memory_sliding_sync: 200Mi
     namespace: synapse
     subdomain: matrix
-    version: v1.96.1
-    version_helm: 3.7.12
+    version: v1.97.0
+    version_helm: 3.7.13
 
     db:
       database: synapse

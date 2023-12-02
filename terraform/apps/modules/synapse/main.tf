@@ -48,7 +48,12 @@ resource "helm_release" "synapse" {
 
         org.matrix.msc2965.authentication:
           issuer: https://${var.cluster_vars.domains.domain}/
-          account: https://${var.cluster_vars.domains.keycloak}/realms/${var.cluster_vars.keycloak_realm}/account
+          account: https://${var.cluster_vars.domains.mas}/account
+
+        io.element.e2ee:
+          secure_backup_required: true
+          secure_backup_setup_methods:
+          - key
 
     config:
       enableRegistration: false
@@ -88,7 +93,7 @@ resource "helm_release" "synapse" {
           client_auth_method: client_secret_basic
           client_secret: ${var.config.secrets.mas_client}
           admin_token: ${var.config.secrets.admin_token}
-          account_management_url: https://${var.cluster_vars.domains.keycloak}/realms/${var.cluster_vars.keycloak_realm}/account
+          account_management_url: https://${var.cluster_vars.domains.mas}/account
 
     signingkey:
       existingSecret: signing-key

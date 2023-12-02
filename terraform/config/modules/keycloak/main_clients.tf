@@ -53,13 +53,11 @@ resource "keycloak_openid_client" "mas" {
   access_type   = "CONFIDENTIAL"
   client_secret = var.clients.mas.secret
 
-  standard_flow_enabled       = true
-  root_url                    = "https://${var.cluster_vars.domains.mas}"
-  web_origins                 = ["+"]
-  valid_redirect_uris         = ["https://${var.cluster_vars.domains.mas}/upstream/callback/*"]
-  admin_url                   = "/"
-  frontchannel_logout_enabled = true
-  frontchannel_logout_url     = "https://${var.cluster_vars.domains.mas}/logout"
+  standard_flow_enabled = true
+  root_url              = "https://${var.cluster_vars.domains.mas}"
+  web_origins           = ["+"]
+  valid_redirect_uris   = ["https://${var.cluster_vars.domains.mas}/upstream/callback/*"]
+  admin_url             = "/"
 }
 
 resource "keycloak_openid_client" "grafana" {
