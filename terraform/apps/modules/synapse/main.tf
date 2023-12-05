@@ -70,7 +70,7 @@ resource "helm_release" "synapse" {
       web_client_location: https://${var.cluster_vars.domains.element}
 
       auto_join_rooms:
-      - "#lobby:${var.cluster_vars.domains.domain}"
+      ${indent(2, yamlencode([for room in var.config.default_rooms : "#${room}:${var.cluster_vars.domains.domain}"]))}
 
       password_config:
         enabled: false

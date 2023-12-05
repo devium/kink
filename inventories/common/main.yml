@@ -202,7 +202,7 @@ app_config_default:
     namespace: synapse
     subdomain: auth.matrix
     synapse_client: &mas_synapse_client 0000000000000000000SYNAPSE
-    version: 0.6.1
+    version: 0.7.0
 
     admins:
       # - localpart
@@ -347,6 +347,10 @@ app_config_default:
       username: synapse
       password:
       params: "LC_COLLATE 'C' LC_CTYPE 'C' TEMPLATE template0"
+
+    default_rooms:
+    - lobby
+    - support
 
     mail:
       account: noreply
