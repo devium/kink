@@ -335,7 +335,7 @@ app_config_default:
   synapse:
     admin_contact: "mailto:abuse@{{ domain }}"
     mas_client: *mas_synapse_client
-    memory: 600Mi
+    memory: 1200Mi
     memory_sliding_sync: 200Mi
     namespace: synapse
     subdomain: matrix
