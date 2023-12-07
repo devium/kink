@@ -70,7 +70,7 @@ resource "helm_release" "synapse" {
       web_client_location: https://${var.cluster_vars.domains.element}
 
       auto_join_rooms:
-      ${indent(2, yamlencode([for room in var.config.default_rooms : "#${room}:${var.cluster_vars.domains.domain}"]))}
+        ${indent(4, yamlencode([for room in var.config.default_rooms : "#${room}:${var.cluster_vars.domains.domain}"]))}
 
       password_config:
         enabled: false
@@ -139,25 +139,15 @@ resource "helm_release" "synapse" {
         nginx.ingress.kubernetes.io/proxy-body-size: ${local.max_upload}
         nginx.ingress.kubernetes.io/use-regex: "true"
 
-      # Comatibility layer for Matrix Authentication Service:
-      # https://matrix-org.github.io/matrix-authentication-service/setup/reverse-proxy.html#example-nginx-configuration
+      # Path type "Prefix" does not match when regex paths are defined on the same host.
       paths:
-        - path: /_matrix/client/(.*)/(login|logout|refresh)
+        - path: /(_matrix/*|_synapse/*)
           pathType: ImplementationSpecific
           backend:
             service:
-              name: mas
+              name: ${var.cluster_vars.release_name}-matrix-synapse
               port:
-                number: 8080
-
-      csPaths:
-        - path: /_matrix/client/(.*)/(login|logout|refresh)
-          pathType: ImplementationSpecific
-          backend:
-            service:
-              name: mas
-              port:
-                number: 8080
+                number: 8008
 
       tls:
         - secretName: ${local.fqdn}-tls

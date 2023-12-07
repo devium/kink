@@ -325,6 +325,46 @@ resource "kubernetes_ingress_v1" "mas" {
             }
           }
         }
+
+        # Comatibility layer for Matrix Authentication Service:
+        # https://matrix-org.github.io/matrix-authentication-service/setup/reverse-proxy.html#example-nginx-configuration
+        path {
+          path      = "/_matrix/client/(.*)/(login|logout|refresh)"
+          path_type = "ImplementationSpecific"
+
+          backend {
+            service {
+              name = one(kubernetes_service_v1.mas.metadata).name
+
+              port {
+                number = 8080
+              }
+            }
+          }
+        }
+      }
+    }
+
+    rule {
+      host = var.cluster_vars.domains.synapse
+
+      http {
+        # Comatibility layer for Matrix Authentication Service:
+        # https://matrix-org.github.io/matrix-authentication-service/setup/reverse-proxy.html#example-nginx-configuration
+        path {
+          path      = "/_matrix/client/(.*)/(login|logout|refresh)"
+          path_type = "ImplementationSpecific"
+
+          backend {
+            service {
+              name = one(kubernetes_service_v1.mas.metadata).name
+
+              port {
+                number = 8080
+              }
+            }
+          }
+        }
       }
     }
 
@@ -341,6 +381,14 @@ resource "kubernetes_ingress_v1" "mas" {
 
       hosts = [
         var.cluster_vars.domains.domain
+      ]
+    }
+
+    tls {
+      secret_name = "${var.cluster_vars.domains.synapse}-tls"
+
+      hosts = [
+        var.cluster_vars.domains.synapse
       ]
     }
   }

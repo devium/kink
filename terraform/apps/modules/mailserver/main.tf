@@ -135,6 +135,7 @@ resource "helm_release" "mailserver" {
 
     pod:
       dockermailserver:
+        enable_clamav: 0
         override_hostname: ${local.fqdn}
         ssl_type: manual
 
@@ -159,6 +160,10 @@ resource "helm_release" "mailserver" {
 
     persistence:
       existingClaim: mailserver-pvc
+
+    resources:
+      requests:
+        memory: ${var.config.memory}
   YAML
   ]
 }

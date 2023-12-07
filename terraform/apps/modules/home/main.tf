@@ -128,7 +128,7 @@ resource "kubernetes_ingress_v1" "home_redirect" {
         path {
           # Note: Redirect is triggered even if this path rule does
           # not match, as long as all others fail too.
-          path      = "/"
+          path      = "/(imprint|privacy)?"
           path_type = "ImplementationSpecific"
 
           # This is not used but required anyway

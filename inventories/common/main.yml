@@ -175,10 +175,11 @@ app_config_default:
       password:
 
   mailserver:
+    memory: 500Mi
     namespace: mailserver
     subdomain: mail
-    version: 11.0.0
-    version_helm: 1.0.1
+    version: 13.0.1
+    version_helm: 2.1.1
 
     accounts:
       - name: noreply
