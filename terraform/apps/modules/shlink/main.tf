@@ -26,7 +26,8 @@ resource "helm_release" "shlink" {
         hosts:
           - host: ${var.cluster_vars.domains.domain}
             paths:
-              - path: /[^\._].+
+              # Nginx sorts paths by length, so this will always be the last one matching.
+              - path: /.*
                 pathType: ImplementationSpecific
           - host: ${local.fqdn}
             paths:
