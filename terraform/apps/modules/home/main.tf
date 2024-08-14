@@ -2,7 +2,7 @@ locals {
   fqdn = "${var.config.subdomain}.${var.cluster_vars.domains.domain}"
 
   csp = merge(var.cluster_vars.default_csp, {
-    "connect-src" = "https://${var.cluster_vars.domains.jitsi} https://${var.cluster_vars.domains.nextcloud} wss:"
+    "connect-src" = "wss: https:"
   })
 }
 
