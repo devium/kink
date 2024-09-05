@@ -4,6 +4,7 @@ locals {
   csp = merge(var.cluster_vars.default_csp, {
     "script-src"      = "'self' 'unsafe-inline' 'unsafe-eval' blob: https://cdn.jsdelivr.net"
     "style-src"       = "'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com"
+    "frame-src"       = "'self' https://*.openstreetmap.de"
     "frame-ancestors" = "'self' https://${var.cluster_vars.domains.keycloak}"
   })
 }
