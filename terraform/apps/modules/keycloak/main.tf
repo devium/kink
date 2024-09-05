@@ -48,9 +48,8 @@ resource "helm_release" "keycloak" {
       - "start"
       - "--http-enabled=true"
       - "--http-port=8080"
-      - "--hostname-strict=false"
-      - "--hostname-strict-https=false"
-      - "--features=declarative-user-profile,account3"
+      - "--hostname=https://${local.fqdn}"
+      - "--features=account3"
 
     postgresql:
       enabled: false
