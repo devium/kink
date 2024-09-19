@@ -103,7 +103,7 @@ app_config_default:
     namespace: hedgedoc
     secret:
     subdomain: doc
-    version: 1.9.8
+    version: 1.10.0
     version_helm: 1.1.0
 
     db:
@@ -254,8 +254,8 @@ app_config_default:
     memory: 600Mi
     namespace: nextcloud
     subdomain: next
-    version: 29-apache
-    version_helm: 4.3.3
+    version: 30-apache
+    version_helm: 6.0.0
 
     db:
       database: nextcloud
