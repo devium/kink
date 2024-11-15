@@ -68,6 +68,7 @@ resource "helm_release" "synapse" {
       enable_set_displayname: false
       max_upload_size: ${local.max_upload}
       web_client_location: https://${var.cluster_vars.domains.element}
+      allow_guest_access: true
 
       auto_join_rooms:
         ${indent(4, yamlencode([for room in var.config.default_rooms : "#${room}:${var.cluster_vars.domains.domain}"]))}
