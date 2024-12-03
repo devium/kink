@@ -187,7 +187,7 @@ resource "kubernetes_deployment_v1" "mas" {
 
       spec {
         container {
-          image = "ghcr.io/matrix-org/matrix-authentication-service:${var.config.version}"
+          image = "ghcr.io/element-hq/matrix-authentication-service:${var.config.version}"
           name  = "mas"
           args = [
             "server"
@@ -211,7 +211,7 @@ resource "kubernetes_deployment_v1" "mas" {
         }
 
         init_container {
-          image = "ghcr.io/matrix-org/matrix-authentication-service:${var.config.version}"
+          image = "ghcr.io/element-hq/matrix-authentication-service:${var.config.version}"
           name  = "mas-migrate"
           args = [
             "database",
@@ -226,7 +226,7 @@ resource "kubernetes_deployment_v1" "mas" {
         }
 
         init_container {
-          image = "ghcr.io/matrix-org/matrix-authentication-service:${var.config.version}"
+          image = "ghcr.io/element-hq/matrix-authentication-service:${var.config.version}"
           name  = "mas-config-sync"
           args = [
             "config",

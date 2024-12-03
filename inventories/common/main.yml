@@ -203,7 +203,7 @@ app_config_default:
     namespace: synapse
     subdomain: auth.matrix
     synapse_client: &mas_synapse_client 0000000000000000000SYNAPSE
-    version: 0.11.0
+    version: 0.12.0
 
     admins:
       # - localpart
