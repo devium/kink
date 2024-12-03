@@ -40,9 +40,6 @@ resource "helm_release" "synapse" {
         m.identity_server:
           base_url: ""
 
-        org.matrix.msc3575.proxy:
-          url: https://${var.cluster_vars.domains.sliding_sync}
-
         im.vector.riot.jitsi:
           preferredDomain: ${var.cluster_vars.domains.jitsi}
 

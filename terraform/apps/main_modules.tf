@@ -188,17 +188,6 @@ module "shlink_web" {
   config       = var.app_config.shlink_web
 }
 
-module "sliding_sync" {
-  source = "./modules/sliding_sync"
-
-  cluster_vars = local.cluster_vars
-  config       = var.app_config.sliding_sync
-
-  depends_on = [
-    module.postgres
-  ]
-}
-
 module "synapse" {
   source = "./modules/synapse"
 
