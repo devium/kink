@@ -25,6 +25,7 @@ resource "helm_release" "nextcloud" {
         cert-manager.io/cluster-issuer: ${var.cluster_vars.issuer}
         nginx.ingress.kubernetes.io/enable-cors: "true"
         nginx.ingress.kubernetes.io/proxy-body-size: 500m
+        nginx.ingress.kubernetes.io/cors-allow-headers: "X-Forwarded-For"
 
         nginx.ingress.kubernetes.io/configuration-snippet: |
           more_set_headers "Content-Security-Policy: ${join(";", [for key, value in local.csp : "${key} ${value}"])}";
@@ -39,6 +40,10 @@ resource "helm_release" "nextcloud" {
           hosts:
             - ${local.fqdn}
 
+    phpClientHttpsFix:
+      enabled: false
+      protocol: https
+
     resources:
       requests:
         memory: ${var.config.memory}
@@ -48,9 +53,26 @@ resource "helm_release" "nextcloud" {
       username: admin_temp
       password: ${var.config.admin_password}
 
+      configs:
+        custom.config.php: |-
+          <?php
+          $CONFIG = array (
+            'maintenance_window_start' => 1,
+            'default_phone_region' => 'DE',
+            'default_timezone' => 'Europe/Berlin'
+          );
+
+        proxy.config.php: |-
+          <?php
+          $CONFIG = array (
+            'trusted_proxies' => array(
+              0 => '127.0.0.1',
+              1 => '10.0.0.0/8',
+            ),
+            'forwarded_for_headers' => array('HTTP_X_FORWARDED_FOR'),
+          );
+
       extraEnv:
-        - name: OVERWRITEPROTOCOL
-          value: https
         # Env values with NC_ prefix override config values, just in case they become outdated
         - name: NC_dbhost
           value: ${var.cluster_vars.db_host}
@@ -83,6 +105,22 @@ resource "helm_release" "nextcloud" {
     persistence:
       enabled: true
       existingClaim: nextcloud-pvc
+
+    cronjob:
+      enabled: true
+
+    redis:
+      enabled: true
+      auth:
+        enabled: false
+
+      master:
+        persistence:
+          enabled: false
+
+      replica:
+        persistence:
+          enabled: false
   YAML
   ]
 }
