@@ -59,7 +59,8 @@ resource "helm_release" "nextcloud" {
           $CONFIG = array (
             'maintenance_window_start' => 1,
             'default_phone_region' => 'DE',
-            'default_timezone' => 'Europe/Berlin'
+            'default_timezone' => 'Europe/Berlin',
+            'overwrite.cli.url' => 'https://${local.fqdn}'
           );
 
         proxy.config.php: |-
