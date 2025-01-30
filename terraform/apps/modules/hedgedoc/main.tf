@@ -3,6 +3,7 @@ locals {
   oidc_url = "https://${var.cluster_vars.domains.keycloak}/realms/${var.cluster_vars.keycloak_realm}/protocol/openid-connect"
 
   csp = merge(var.cluster_vars.default_csp, {
+    "script-src"      = "'self' 'unsafe-inline'"    
     "frame-src"       = "*"
     "frame-ancestors" = "'self' https://${var.cluster_vars.domains.keycloak}"
   })
