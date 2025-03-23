@@ -7,96 +7,6 @@ locals {
   })
 }
 
-resource "kubernetes_config_map_v1" "config" {
-  # The helm chart ConfigMap tries to glob config contents from local files which it won't be able to find.
-  metadata {
-    name      = "${local.fullname}-configs"
-    namespace = var.config.namespace
-  }
-
-  data = {
-    "postfix-accounts.cf" = file("${var.decryption_path}/${basename(var.config.vault_files.accounts)}")
-    "postfix-virtual.cf"  = join("\n", [for alias, account in var.config.aliases : "${alias}@${var.cluster_vars.domains.domain} ${account}@${var.cluster_vars.domains.domain}"])
-    "KeyTable"            = "mail._domainkey.${var.cluster_vars.domains.domain} ${var.cluster_vars.domains.domain}:mail:/etc/opendkim/keys/${var.cluster_vars.domains.domain}/mail.private"
-    "SigningTable"        = "*@${var.cluster_vars.domains.domain} mail._domainkey.${var.cluster_vars.domains.domain}"
-    "TrustedHosts"        = <<-HOSTS
-      127.0.0.1
-      localhost
-    HOSTS
-
-    "postfix-main.cf" = <<-CF
-      smtpd_recipient_restrictions = permit_sasl_authenticated, permit_mynetworks, reject_unauth_destination, reject_unauth_pipelining, reject_invalid_helo_hostname, reject_non_fqdn_helo_hostname, reject_unknown_recipient_domain, reject_rbl_client zen.spamhaus.org, reject_rbl_client bl.spamcop.net
-    CF
-
-    "dovecot-services.cf" = <<-CF
-      inet_listener imaps-rainloop {
-        port = 10993
-        ssl = yes
-      }
-    CF
-
-    "80-replication.conf" = <<-CONF
-      mail_plugins = $mail_plugins notify replication
-      service replicator {
-        process_min_avail = 1
-        unix_listener replicator-doveadm {
-          mode = 0600
-          user = docker
-        }
-      }
-      service aggregator {
-        fifo_listener replication-notify-fifo {
-          user = docker
-        }
-        unix_listener replication-notify {
-          user = docker
-        }
-      }
-      
-      doveadm_port = 4117
-      doveadm_password = secret
-      service doveadm {
-        inet_listener {
-          port = 4117
-          ssl = yes
-        }
-      }
-      plugin {
-        #mail_replica = tcp:anotherhost.example.com       # use doveadm_port
-        #mail_replica = tcp:anotherhost.example.com:12345 # use port 12345 explicitly
-      }
-    CONF
-
-    "91-override-sieve.conf" = <<-CONF
-      plugin {
-        sieve = /var/mail/sieve/%d/%n/.dovecot.sieve
-        sieve_dir = /var/mail/sieve/%d/%n/sieve
-      }
-    CONF
-
-    "am-i-healthy.sh" = <<-BASH
-      #!/bin/bash
-      # this script is intended to be used by periodic kubernetes liveness probes to ensure that the container
-      # (and all its dependent services) is healthy
-      {{ range .Values.livenessTests.commands -}}
-      {{ . }} && \
-      {{- end }}
-      echo "All healthy"
-    BASH
-  }
-}
-
-resource "kubernetes_secret_v1" "secrets" {
-  metadata {
-    name      = "${local.fullname}-secrets"
-    namespace = var.config.namespace
-  }
-
-  data = {
-    "${var.cluster_vars.domains.domain}-mail.private" = file("${var.decryption_path}/${basename(var.config.vault_files.key)}")
-  }
-}
-
 resource "kubernetes_manifest" "cert" {
   manifest = {
     apiVersion = "cert-manager.io/v1"
@@ -132,34 +42,58 @@ resource "helm_release" "mailserver" {
   values = [<<-YAML
     image:
       tag: ${var.config.version}
+      
+    deployment:
+      env:
+        OVERRIDE_HOSTNAME: ${local.fqdn}
 
-    pod:
-      dockermailserver:
-        enable_clamav: 0
-        override_hostname: ${local.fqdn}
-        ssl_type: manual
+    certificate: ${local.fqdn}-tls
 
-    demoMode:
-      enabled: false
+    configMaps:
+      postfix-accounts.cf:
+        create: true
+        path: /tmp/docker-mailserver/postfix-accounts.cf
+        data: |
+          ${indent(6, file("${var.decryption_path}/${basename(var.config.vault_files.accounts)}"))}
 
-    domains:
-      - ${var.cluster_vars.domains.domain}
+      postfix-virtual.cf:
+        create: true
+        path: /tmp/docker-mailserver/postfix-virtual.cf
+        data: |
+          ${indent(6, join("\n", [for alias, account in var.config.aliases : "${alias}@${var.cluster_vars.domains.domain} ${account}@${var.cluster_vars.domains.domain}"]))}
 
-    ssl:
-      useExisting: true
-      existingName: ${local.fqdn}-tls
+      key-table:
+        create: true
+        path: /tmp/docker-mailserver/opendkim/KeyTable
+        data: "mail._domainkey.${var.cluster_vars.domains.domain} ${var.cluster_vars.domains.domain}:mail:/etc/opendkim/keys/${var.cluster_vars.domains.domain}/mail.private"
 
-    configMap:
-      useExisting: true
+      signing-table:
+        create: true
+        path: /tmp/docker-mailserver/opendkim/SigningTable
+        data: "*@${var.cluster_vars.domains.domain} mail._domainkey.${var.cluster_vars.domains.domain}"
 
-    secret:
-      useExisting: true
+    secrets:
+      mail.private:
+        name: mail.private
+        create: true
+        path: ${var.cluster_vars.domains.domain}-mail.private
+        data: ${base64encode(file("${var.decryption_path}/${basename(var.config.vault_files.key)}"))}
 
-    service:
-      type: "ClusterIP"
+    securityContext:
+      fsGroup: 5000
 
     persistence:
-      existingClaim: mailserver-pvc
+      mail-config:
+        enabled: false
+
+      mail-data:
+        existingClaim: mailserver-pvc
+
+      mail-state:
+        enabled: false
+
+      mail-log:
+        enabled: false
 
     resources:
       requests:
