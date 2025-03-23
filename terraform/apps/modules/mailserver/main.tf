@@ -46,6 +46,9 @@ resource "helm_release" "mailserver" {
     deployment:
       env:
         OVERRIDE_HOSTNAME: ${local.fqdn}
+        ENABLE_RSPAMD: 0
+        ENABLE_OPENDKIM: 1
+        ENABLE_OPENDMARC: 1
 
     certificate: ${local.fqdn}-tls
 
@@ -64,19 +67,32 @@ resource "helm_release" "mailserver" {
 
       key-table:
         create: true
-        path: /tmp/docker-mailserver/opendkim/KeyTable
+        path: /etc/opendkim/KeyTable
         data: "mail._domainkey.${var.cluster_vars.domains.domain} ${var.cluster_vars.domains.domain}:mail:/etc/opendkim/keys/${var.cluster_vars.domains.domain}/mail.private"
 
       signing-table:
         create: true
-        path: /tmp/docker-mailserver/opendkim/SigningTable
+        path: /etc/opendkim/SigningTable
         data: "*@${var.cluster_vars.domains.domain} mail._domainkey.${var.cluster_vars.domains.domain}"
+
+      trusted-hosts:
+        create: true
+        path: /etc/opendkim/TrustedHosts
+        data: |
+          127.0.0.1
+          ::1
+
+      opendkim-patch:
+        create: true
+        path: /usr/local/bin/setup.d/opendkim_patch.sh
+        data: |
+          echo "RequireSafeKeys false" >> /etc/opendkim.conf
 
     secrets:
       mail.private:
         name: mail.private
         create: true
-        path: ${var.cluster_vars.domains.domain}-mail.private
+        path: /etc/opendkim/keys/${var.cluster_vars.domains.domain}/mail.private
         data: ${base64encode(file("${var.decryption_path}/${basename(var.config.vault_files.key)}"))}
 
     securityContext:
