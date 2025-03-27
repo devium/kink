@@ -45,6 +45,8 @@ resource "kubernetes_manifest" "ingress_patch" {
 
           config:
             http-snippet: "proxy_cache_path /tmp/nginx_cache levels=1:2 keys_zone=app-cache:10m use_temp_path=off max_size=50m inactive=2h;"
+            lua-shared-dicts: "certificate_data: 100"
+            annotations-risk-level: Critical
 
         tcp:
           25: "${var.mailserver_service}:25"

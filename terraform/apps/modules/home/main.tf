@@ -114,7 +114,8 @@ resource "kubernetes_ingress_v1" "home_redirect" {
 
     annotations = {
       "cert-manager.io/cluster-issuer"                 = var.cluster_vars.issuer
-      "nginx.ingress.kubernetes.io/permanent-redirect" = "https://${local.fqdn}$uri"
+      # TODO: Add $uri back to the redirect URL, once this is fixed: https://github.com/kubernetes/ingress-nginx/issues/12709
+      "nginx.ingress.kubernetes.io/permanent-redirect" = "https://${local.fqdn}"
       # Necessary so resolution is bucketed with Synapse's regex ingress.
       "nginx.ingress.kubernetes.io/use-regex" = "true"
     }
