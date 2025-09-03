@@ -125,9 +125,7 @@ app_config_default:
     namespace: home
     site_image:
     subdomain: www
-    version_nginx: 1.23.0
-    version_nginx_helm: 13.1.0
-    version_nginx_prometheus_exporter: 0.11.0
+    version_nginx: 1.29.1
 
   jitsi:
     memory_jicofo: 300Mi

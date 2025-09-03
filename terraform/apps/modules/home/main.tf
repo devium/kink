@@ -6,105 +6,139 @@ locals {
   })
 }
 
-resource "kubernetes_config_map_v1" "service_worker" {
+resource "kubernetes_deployment_v1" "nginx" {
   metadata {
-    name      = "service-worker"
+    name      = "nginx"
     namespace = var.config.namespace
+
+    labels = {
+      app = "nginx"
+    }
   }
 
-  data = {
-    "service-worker.js" = <<-JS
-      self.addEventListener('install', function(e) {
-        self.skipWaiting();
-      });
+  spec {
+    replicas = 1
 
-      self.addEventListener('activate', function(e) {
-        self.registration.unregister()
-          .then(function() {
-            return self.clients.matchAll();
-          })
-          .then(function(clients) {
-            clients.forEach(client => client.navigate(client.url))
-          });
-      });
-    JS
+    selector {
+      match_labels = {
+        app = "nginx"
+      }
+    }
+
+    template {
+      metadata {
+        labels = {
+          app = "nginx"
+        }
+      }
+
+      spec {
+        volume {
+          name = "html"
+          empty_dir {
+          }
+        }
+
+        container {
+          image = "nginx:${var.config.version_nginx}"
+          name  = "nginx"
+
+          port {
+            container_port = 80
+          }
+
+          resources {
+            requests = {
+              memory = var.config.memory
+            }
+          }
+
+          volume_mount {
+            name       = "html"
+            mount_path = "/usr/share/nginx/html"
+          }
+        }
+
+        init_container {
+          image             = var.config.site_image
+          name              = "site"
+          image_pull_policy = "IfNotPresent"
+          command           = ["sh"]
+          args              = ["-c", "cp -R /html/* /html_shared/"]
+
+          volume_mount {
+            name       = "html"
+            mount_path = "/html_shared"
+          }
+        }
+      }
+    }
   }
 }
 
-resource "helm_release" "home" {
-  name      = var.cluster_vars.release_name
-  namespace = var.config.namespace
+resource "kubernetes_service_v1" "home" {
+  metadata {
+    name      = "home"
+    namespace = var.config.namespace
+  }
 
-  repository = "https://charts.bitnami.com/bitnami"
-  chart      = "nginx"
-  version    = var.config.version_nginx_helm
+  spec {
+    selector = {
+      app = one(kubernetes_deployment_v1.nginx.metadata).labels.app
+    }
 
-  values = [<<-YAML
-    image:
-      tag: ${var.config.version_nginx}
+    port {
+      name        = "http"
+      protocol    = "TCP"
+      port        = 80
+      target_port = 80
+    }
+  }
+}
 
-    ingress:
-      enabled: true
-      tls: true
-      certManager: true
+resource "kubernetes_ingress_v1" "home" {
+  metadata {
+    name      = "home"
+    namespace = var.config.namespace
 
-      secrets: []
+    annotations = {
+      "cert-manager.io/cluster-issuer"                    = var.cluster_vars.issuer
+      "nginx.ingress.kubernetes.io/configuration-snippet" = <<-CONF
+        more_set_headers "Content-Security-Policy: ${join(";", [for key, value in local.csp : "${key} ${value}"])}";
+      CONF
+    }
+  }
 
-      pathType: Prefix
-      hostname: ${local.fqdn}
+  spec {
+    rule {
+      host = local.fqdn
 
-      annotations:
-        cert-manager.io/cluster-issuer: ${var.cluster_vars.issuer}
-        nginx.ingress.kubernetes.io/configuration-snippet: |
-          more_set_headers "Content-Security-Policy: ${join(";", [for key, value in local.csp : "${key} ${value}"])}";
+      http {
+        path {
+          path      = "/"
+          path_type = "Prefix"
 
-    resources:
-      requests:
-        memory: ${var.config.memory}
+          backend {
+            service {
+              name = one(kubernetes_service_v1.home.metadata).name
 
-    service:
-      type: ClusterIP
+              port {
+                number = 80
+              }
+            }
+          }
+        }
+      }
+    }
 
-    extraVolumes:
-      - name: html
-        emptyDir: {}
-      - name: service-worker
-        configMap:
-          name: ${one(kubernetes_config_map_v1.service_worker.metadata).name}
+    tls {
+      secret_name = "${local.fqdn}-tls"
 
-    extraVolumeMounts:
-      - name: html
-        mountPath: /app
-      - name: service-worker
-        mountPath: /app/service-worker.js
-        subPath: service-worker.js
-
-    initContainers:
-      - name: site
-        image: ${var.config.site_image}
-        imagePullPolicy: IfNotPresent
-
-        command:
-          - sh
-
-        args:
-          - -c
-          - cp -R /html/* /html_volume/
-
-        volumeMounts:
-          - name: html
-            mountPath: /html_volume
-
-    metrics:
-      enabled: true
-
-      image:
-        tag: ${var.config.version_nginx_prometheus_exporter}
-
-      serviceMonitor:
-        enabled: true
-  YAML
-  ]
+      hosts = [
+        local.fqdn
+      ]
+    }
+  }
 }
 
 resource "kubernetes_ingress_v1" "home_redirect" {
@@ -113,7 +147,7 @@ resource "kubernetes_ingress_v1" "home_redirect" {
     namespace = var.config.namespace
 
     annotations = {
-      "cert-manager.io/cluster-issuer"                 = var.cluster_vars.issuer
+      "cert-manager.io/cluster-issuer" = var.cluster_vars.issuer
       # TODO: Add $uri back to the redirect URL, once this is fixed: https://github.com/kubernetes/ingress-nginx/issues/12709
       "nginx.ingress.kubernetes.io/permanent-redirect" = "https://${local.fqdn}"
       # Necessary so resolution is bucketed with Synapse's regex ingress.
@@ -134,8 +168,7 @@ resource "kubernetes_ingress_v1" "home_redirect" {
           # This is not used but required anyway
           backend {
             service {
-              name = "${helm_release.home.name}-nginx"
-
+              name = one(kubernetes_service_v1.home.metadata).name
               port {
                 number = 80
               }

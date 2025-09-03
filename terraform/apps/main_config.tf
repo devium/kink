@@ -8,7 +8,7 @@ provider "kubernetes" {
 }
 
 provider "helm" {
-  kubernetes {
+  kubernetes = {
     config_path = var.kubeconf_file
   }
 }
