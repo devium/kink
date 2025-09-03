@@ -48,6 +48,12 @@ resource "kubernetes_manifest" "ingress_patch" {
             lua-shared-dicts: "certificate_data: 100"
             annotations-risk-level: Critical
 
+          metrics:
+            enabled: true
+            serviceMonitor:
+              enabled: true
+              namespace: grafana
+
         tcp:
           25: "${var.mailserver_service}:25"
           143: "${var.mailserver_service}:143"
