@@ -284,7 +284,7 @@ app_config_default:
     memory_redis: 200Mi
     namespace: pretix
     subdomain: tickets
-    version: 4.8.0
+    version: v1.0.0
 
     db:
       database: pretix

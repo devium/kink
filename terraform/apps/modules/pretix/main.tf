@@ -51,6 +51,7 @@ resource "kubernetes_secret_v1" "config" {
   }
 }
 
+// TODO: Try Pretix Helm chart: https://github.com/Techwolf12/charts/tree/main/pretix-helm
 resource "kubernetes_deployment_v1" "pretix" {
   metadata {
     name      = "pretix"
@@ -83,7 +84,7 @@ resource "kubernetes_deployment_v1" "pretix" {
 
       spec {
         container {
-          image             = "pretix/standalone:${var.config.version}"
+          image             = "ghcr.io/devium/pretix-kink:${var.config.version}"
           name              = "pretix"
           image_pull_policy = "IfNotPresent"
 
