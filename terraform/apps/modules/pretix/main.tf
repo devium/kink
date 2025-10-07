@@ -3,7 +3,9 @@ locals {
   oidc_url = "/realms/${var.cluster_vars.keycloak_realm}/protocol/openid-connect"
 
   csp = merge(var.cluster_vars.default_csp, {
-    "script-src"      = "'self' 'unsafe-eval'"
+    "connect-src"     = "'self' https://${var.cluster_vars.domains.keycloak}.${var.cluster_vars.domains.domain} wss: https://www.paypal.com https://www.sandbox.paypal.com"
+    "script-src"      = "'self' 'unsafe-eval' 'unsafe-inline' https://www.paypal.com https://www.sandbox.paypal.com"
+    "frame-src"       = "https://www.paypal.com https://www.sandbox.paypal.com"
     "frame-ancestors" = "*"
   })
 }
