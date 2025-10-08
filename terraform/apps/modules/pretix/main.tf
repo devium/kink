@@ -51,6 +51,10 @@ resource "kubernetes_secret_v1" "config" {
       backend=redis://localhost/1
       broker=redis://localhost/2
 
+      [locale]
+      default=de
+      timezone=Europe/Berlin
+
       [oidc]
       title=Login via ${var.config.keycloak.name}
       issuer=https://${var.cluster_vars.domains.keycloak}/realms/${var.cluster_vars.keycloak_realm}
