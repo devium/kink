@@ -16,6 +16,12 @@ resource "hcloud_server" "node" {
   firewall_ids = [
     var.firewall_id
   ]
+
+  lifecycle {
+    ignore_changes = [ 
+      ssh_keys
+    ]
+  }
 }
 
 resource "hcloud_rdns" "rdns_ipv4" {
