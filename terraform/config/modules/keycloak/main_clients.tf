@@ -94,6 +94,23 @@ resource "keycloak_openid_client" "wiki" {
   frontchannel_logout_url     = "https://${var.cluster_vars.domains.wiki}/logout"
 }
 
+resource "keycloak_openid_client" "pretix" {
+  realm_id  = keycloak_realm.realm.id
+  client_id = var.clients.pretix.client
+
+  name          = "Pretix"
+  access_type   = "CONFIDENTIAL"
+  client_secret = var.clients.pretix.secret
+
+  standard_flow_enabled       = true
+  root_url                    = "https://${var.cluster_vars.domains.pretix}"
+  web_origins                 = ["+"]
+  valid_redirect_uris         = ["/*"]
+  admin_url                   = "/"
+  frontchannel_logout_enabled = true
+  frontchannel_logout_url     = "https://${var.cluster_vars.domains.pretix}/logout"
+}
+
 locals {
   clients = {
     jitsi     = keycloak_openid_client.jitsi,
@@ -101,6 +118,7 @@ locals {
     hedgedoc  = keycloak_openid_client.hedgedoc,
     mas       = keycloak_openid_client.mas,
     grafana   = keycloak_openid_client.grafana,
-    wiki      = keycloak_openid_client.wiki
+    wiki      = keycloak_openid_client.wiki,
+    pretix    = keycloak_openid_client.pretix
   }
 }

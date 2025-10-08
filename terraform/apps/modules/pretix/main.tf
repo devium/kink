@@ -1,6 +1,6 @@
 locals {
   fqdn     = "${var.config.subdomain}.${var.cluster_vars.domains.domain}"
-  oidc_url = "/realms/${var.cluster_vars.keycloak_realm}/protocol/openid-connect"
+  oidc_url = "https://${var.cluster_vars.domains.keycloak}/realms/${var.cluster_vars.keycloak_realm}/protocol/openid-connect"
 
   csp = merge(var.cluster_vars.default_csp, {
     "connect-src"     = "'self' https://${var.cluster_vars.domains.keycloak}.${var.cluster_vars.domains.domain} wss: https://www.paypal.com https://www.sandbox.paypal.com"
@@ -23,6 +23,7 @@ resource "kubernetes_secret_v1" "config" {
       url=https://${local.fqdn}
       currency=EUR
       datadir=/data
+      auth_backends=pretix_oidc.auth.OIDCAuthBackend
 
       [mail]
       from=${var.config.mail.account}@${var.cluster_vars.domains.domain}
@@ -49,6 +50,19 @@ resource "kubernetes_secret_v1" "config" {
       [celery]
       backend=redis://localhost/1
       broker=redis://localhost/2
+
+      [oidc]
+      title=Login via ${var.config.keycloak.name}
+      issuer=https://${var.cluster_vars.domains.keycloak}/realms/${var.cluster_vars.keycloak_realm}
+      authorization_endpoint=${local.oidc_url}/auth
+      token_endpoint=${local.oidc_url}/token
+      userinfo_endpoint=${local.oidc_url}/userinfo
+      end_session_endpoint=${local.oidc_url}/logout
+      jwks_uri=${local.oidc_url}/certs
+      client_id=${var.config.keycloak.client}
+      client_secret=${var.config.keycloak.secret}
+      scopes=openid,email,private_profile
+      unique_attribute=sub
     CFG
   }
 }

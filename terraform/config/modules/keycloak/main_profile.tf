@@ -22,7 +22,7 @@ resource "keycloak_openid_group_membership_protocol_mapper" "groups" {
 }
 resource "keycloak_openid_user_property_protocol_mapper" "username" {
   realm_id        = keycloak_realm.realm.id
-  name            = "Username"
+  name            = "Username as preferred_username"
   claim_name      = "preferred_username"
   user_property   = "username"
   client_scope_id = keycloak_openid_client_scope.private_profile.id
@@ -40,6 +40,14 @@ resource "keycloak_openid_user_property_protocol_mapper" "id" {
   name            = "User ID"
   claim_name      = "id"
   user_property   = "id"
+  client_scope_id = keycloak_openid_client_scope.private_profile.id
+}
+# Pretix-OIDC requires a "name" claim
+resource "keycloak_openid_user_property_protocol_mapper" "name" {
+  realm_id        = keycloak_realm.realm.id
+  name            = "Username as name"
+  claim_name      = "name"
+  user_property   = "username"
   client_scope_id = keycloak_openid_client_scope.private_profile.id
 }
 
