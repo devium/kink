@@ -150,7 +150,6 @@ app_config_default:
 
   keycloak:
     admin_password:
-    mail_from_display_name: Keycloak
     memory: 800Mi
     namespace: keycloak
     realm: primary
@@ -284,7 +283,7 @@ app_config_default:
     memory_redis: 200Mi
     namespace: pretix
     subdomain: tickets
-    version: v1.0.0
+    version: v1.1.0
 
     db:
       database: pretix
@@ -299,6 +298,11 @@ app_config_default:
       account: noreply
       display_name: Pretix
       password:
+
+    keycloak:
+      client: pretix
+      name: "{{ keycloak_display_name }}"
+      secret:
 
   shlink:
     memory: 100Mi
@@ -374,7 +378,6 @@ app_config_default:
       client: wiki
       name: "{{ keycloak_display_name }}"
       secret:
-
 
 default_csp:
   default-src     : "'none'"

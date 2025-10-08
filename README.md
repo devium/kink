@@ -6,6 +6,7 @@
 * Terraform: https://learn.hashicorp.com/tutorials/terraform/install-cli
 
 ### Install Ansible modules
+The Python module `kubernetes` is required for the `kubernetes.core.k8s` Ansible module.
 ```bash
 ansible-galaxy install -r requirements.yml
 pip install kubernetes
