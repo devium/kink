@@ -23,7 +23,7 @@ vault_dir: "{{ playbook_dir }}/vault"
 app_config_default:
   backup:
     namespace: backup
-    schedule: "0 0 * * *"
+    schedule: "0 0 * * 0"
     memory: 100Mi
 
     volume:
