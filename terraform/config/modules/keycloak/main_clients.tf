@@ -45,21 +45,6 @@ resource "keycloak_openid_client" "hedgedoc" {
   frontchannel_logout_url     = "https://${var.cluster_vars.domains.hedgedoc}/logout"
 }
 
-resource "keycloak_openid_client" "mas" {
-  realm_id  = keycloak_realm.realm.id
-  client_id = var.clients.mas.client
-
-  name          = "Matrix Authentication Service"
-  access_type   = "CONFIDENTIAL"
-  client_secret = var.clients.mas.secret
-
-  standard_flow_enabled = true
-  root_url              = "https://${var.cluster_vars.domains.mas}"
-  web_origins           = ["+"]
-  valid_redirect_uris   = ["https://${var.cluster_vars.domains.mas}/upstream/callback/*"]
-  admin_url             = "/"
-}
-
 resource "keycloak_openid_client" "grafana" {
   realm_id  = keycloak_realm.realm.id
   client_id = var.clients.grafana.client
@@ -116,7 +101,6 @@ locals {
     jitsi     = keycloak_openid_client.jitsi,
     nextcloud = keycloak_openid_client.nextcloud,
     hedgedoc  = keycloak_openid_client.hedgedoc,
-    mas       = keycloak_openid_client.mas,
     grafana   = keycloak_openid_client.grafana,
     wiki      = keycloak_openid_client.wiki,
     pretix    = keycloak_openid_client.pretix

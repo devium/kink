@@ -54,13 +54,6 @@ app_config_default:
     version: 24.04.7.1.2
     version_helm: 2.6.0
 
-  element:
-    memory: 20Mi
-    namespace: element
-    version: v1.11.86
-    version_helm: 1.3.37
-    subdomain: element
-
   grafana:
     admin_password:
     memory: 300Mi
@@ -195,33 +188,6 @@ app_config_default:
       handle:
       size: 10Gi
 
-  mas:
-    memory: 20Mi
-    namespace: synapse
-    subdomain: auth.matrix
-    synapse_client: &mas_synapse_client 0000000000000000000SYNAPSE
-    version: 0.12.0
-
-    admins:
-      # - localpart
-
-    db:
-      database: mas
-      username: mas
-      password:
-
-    keycloak:
-      client: mas
-      secret:
-
-    secrets:
-      client: &mas_client_secret
-      encryption:
-      admin_token: &mas_admin_token
-      keys:
-        - kid:
-          key:
-
   minecraft:
     admins:
     memory: 4Gi
@@ -251,8 +217,8 @@ app_config_default:
     memory: 600Mi
     namespace: nextcloud
     subdomain: next
-    version: 30-apache
-    version_helm: 6.0.0
+    version: 32.0.1-apache
+    version_helm: 8.5.2
 
     db:
       database: nextcloud
@@ -272,7 +238,7 @@ app_config_default:
     memory: 100Mi
     namespace: postgres
     password:
-    version: 14.1.0-debian-10-r80
+    version: 14.9.0-debian-11-r60
 
     volume:
       handle:
@@ -322,41 +288,6 @@ app_config_default:
     namespace: shlink
     subdomain: shlink
     version: 3.7.2
-
-  synapse:
-    admin_contact: "mailto:abuse@{{ domain }}"
-    mas_client: *mas_synapse_client
-    memory: 1200Mi
-    namespace: synapse
-    subdomain: matrix
-    version: v1.120.2
-    version_helm: 3.10.3
-
-    db:
-      database: synapse
-      username: synapse
-      password:
-      params: "LC_COLLATE 'C' LC_CTYPE 'C' TEMPLATE template0"
-
-    default_rooms:
-    - lobby
-    - support
-
-    mail:
-      account: noreply
-      display_name: Matrix
-      password:
-
-    secrets:
-      registration:
-      macaroon:
-      admin_token: *mas_admin_token
-      mas_client: *mas_client_secret
-      signing_key:
-
-    volume:
-      handle:
-      size: 10Gi
 
   wiki:
     memory: 100M

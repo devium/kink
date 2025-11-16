@@ -26,6 +26,7 @@ resource "helm_release" "postgres" {
 
   values = [<<-YAML
     image:
+      repository: bitnamilegacy/postgresql
       tag: ${var.config.version}
 
     global:

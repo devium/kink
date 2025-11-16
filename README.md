@@ -17,10 +17,6 @@ Use an existing vault or create a `secrets.{dev|prod}.yml` in `vault/`. Define a
 
 You can use `scripts/bip39_secrets.sh` to generate BIP39-like secrets.
 
-Use `scripts/synapse_signing_key.py` to generate a Synapse signing key (requires `signedjson`).
-
-Run `docker run ghcr.io/matrix-org/matrix-authentication-service:main config generate > mas.yaml` to create secrets (`secrets.admin_token`, `secrets.keys` and `secrets.encryption`) for Matrix Authentication Service.
-
 Encrypt the secrets file you just created using Ansible:
 ```
 ansible-vault encrypt vault/secrets.{dev|prod}.yml

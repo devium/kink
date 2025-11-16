@@ -57,13 +57,6 @@ module "collabora" {
   config       = var.app_config.collabora
 }
 
-module "element" {
-  source = "./modules/element"
-
-  cluster_vars = local.cluster_vars
-  config       = var.app_config.element
-}
-
 module "grafana" {
   source = "./modules/grafana"
 
@@ -127,13 +120,6 @@ module "mailserver" {
   decryption_path = var.decryption_path
 }
 
-module "mas" {
-  source = "./modules/mas"
-
-  cluster_vars = local.cluster_vars
-  config       = var.app_config.mas
-}
-
 module "minecraft" {
   source = "./modules/minecraft"
 
@@ -186,18 +172,6 @@ module "shlink_web" {
 
   cluster_vars = local.cluster_vars
   config       = var.app_config.shlink_web
-}
-
-module "synapse" {
-  source = "./modules/synapse"
-
-  cluster_vars = local.cluster_vars
-  config       = var.app_config.synapse
-
-  depends_on = [
-    module.keycloak,
-    module.postgres
-  ]
 }
 
 module "wiki" {

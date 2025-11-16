@@ -7,11 +7,9 @@ locals {
     "connect-src"     = "'self' https://${var.cluster_vars.domains.keycloak} wss: https://www.gravatar.com"
     "worker-src"      = "'self' blob:"
     "frame-src"       = "https://www.youtube.com"
-    "frame-ancestors" = "https://${var.cluster_vars.domains.element}"
   })
   csp_jitsi_keycloak = merge(var.cluster_vars, {
     "style-src"       = "'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net"
-    "frame-ancestors" = "https://${var.cluster_vars.domains.element}"
   })
 }
 

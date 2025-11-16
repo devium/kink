@@ -35,7 +35,7 @@ resource "kubernetes_deployment_v1" "buddy" {
 
       spec {
         container {
-          image = "ghcr.io/tobiasbeck/consumption_buddy:${var.config.version}"
+          image = "ghcr.io/amberbyte/consumption_buddy:${var.config.version}"
           name  = "buddy"
 
           port {

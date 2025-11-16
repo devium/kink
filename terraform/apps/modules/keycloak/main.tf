@@ -3,8 +3,7 @@ locals {
 
   csp = merge(var.cluster_vars.default_csp, {
     "script-src"      = "'self' 'unsafe-inline' 'unsafe-eval'"
-    "frame-src"       = "'self' https://${var.cluster_vars.domains.grafana} https://${var.cluster_vars.domains.hedgedoc} https://${var.cluster_vars.domains.mas} https://${var.cluster_vars.domains.wiki}"
-    "frame-ancestors" = "'self' https://${var.cluster_vars.domains.element}"
+    "frame-src"       = "'self' https://${var.cluster_vars.domains.grafana} https://${var.cluster_vars.domains.hedgedoc} https://${var.cluster_vars.domains.wiki}"
   })
 }
 
