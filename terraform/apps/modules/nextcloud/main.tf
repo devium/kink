@@ -23,9 +23,7 @@ resource "helm_release" "nextcloud" {
       enabled: true
       annotations:
         cert-manager.io/cluster-issuer: ${var.cluster_vars.issuer}
-        nginx.ingress.kubernetes.io/enable-cors: "true"
         nginx.ingress.kubernetes.io/proxy-body-size: 500m
-        nginx.ingress.kubernetes.io/cors-allow-headers: "X-Forwarded-For"
 
         nginx.ingress.kubernetes.io/configuration-snippet: |
           more_set_headers "Content-Security-Policy: ${join(";", [for key, value in local.csp : "${key} ${value}"])}";

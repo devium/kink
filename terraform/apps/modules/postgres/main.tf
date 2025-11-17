@@ -43,9 +43,9 @@ resource "helm_release" "postgres" {
         user: postgres
         password: ${var.config.password}
 
-    resources:
-      requests:
-        memory: ${var.config.memory}
+      resources:
+        requests:
+          memory: ${var.config.memory}
     YAML
   ]
 }
