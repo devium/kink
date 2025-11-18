@@ -314,7 +314,7 @@ default_csp:
   default-src     : "'none'"
   script-src      : "'self'"
   connect-src     : "'self' https://{{ app_config.keycloak.subdomain }}.{{ domain }} wss:"
-  style-src       : "'self' 'unsafe-inline'"
+  style-src       : "'self' 'unsafe-inline' https://fonts.googleapis.com"
   img-src         : "* blob: data:"
   font-src        : "* blob: data:"
   frame-src       : "'none'"
