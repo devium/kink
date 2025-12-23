@@ -20,7 +20,7 @@ resource "helm_release" "minecraft" {
 
     minecraftServer:
       eula: "TRUE"
-      version: ${var.config.version_game}
+      version: "${var.config.version_game}"
       serviceType: NodePort
       nodePort: 30001
       maxPlayers: 8

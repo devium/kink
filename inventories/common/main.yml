@@ -198,7 +198,7 @@ app_config_default:
     seed: 0
     subdomain: minecraft
     version: latest
-    version_game: 1.21.10
+    version_game: 1.21.11
     version_helm: 5.0.0
 
     volume:
