@@ -50,6 +50,15 @@ resource "helm_release" "mailserver" {
         ENABLE_OPENDKIM: 1
         ENABLE_OPENDMARC: 1
 
+      # We don't need persistence for those.
+      extraVolumes:
+      - name: mail-config
+        emptyDir: {}
+      - name: mail-log
+        emptyDir: {}
+      - name: mail-state
+        emptyDir: {}
+
     certificate: ${local.fqdn}-tls
 
     configMaps:
@@ -98,7 +107,7 @@ resource "helm_release" "mailserver" {
     securityContext:
       fsGroup: 5000
 
-    persistence:
+    persistent_volume_claims:
       mail-config:
         enabled: false
 
