@@ -2,7 +2,7 @@ locals {
   fqdn = "${var.config.subdomain}.${var.cluster_vars.domains.domain}"
 
   csp = merge(var.cluster_vars.default_csp, {
-    "script-src" = "'self' 'unsafe-inline'"
+    "script-src" = "'self' 'unsafe-inline' 'unsafe-eval'"
     "style-src"  = "'self' 'unsafe-inline' https://fonts.googleapis.com"
   })
 }
