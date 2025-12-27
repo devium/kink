@@ -29,7 +29,7 @@ resource "helm_release" "minecraft" {
       type: "PAPER"
       worldSaveName: ${var.config.world}
       levelSeed: "${var.config.seed}"
-      memory: 4096M
+      memory: 6144M
       downloadModpackUrl: ${var.config.modpack_url}
       removeOldMods: true
 
@@ -74,7 +74,7 @@ resource "helm_release" "minecraft" {
 
     resources:
       requests:
-        memory: 4Gi
+        memory: 6Gi
 
     nodeSelector:
       kubernetes.io/hostname: gaming
