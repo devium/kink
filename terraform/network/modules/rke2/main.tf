@@ -51,6 +51,7 @@ resource "kubernetes_manifest" "ingress_patch" {
           metrics:
             enabled: true
             serviceMonitor:
+              # Might need to disable this on first install.
               enabled: true
               namespace: grafana
 

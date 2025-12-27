@@ -89,7 +89,7 @@ app_config_default:
 
   hetzner:
     hcloud_token:
-    version: v2.5.1
+    version: v2.18.3
 
   hedgedoc:
     memory: 300Mi
