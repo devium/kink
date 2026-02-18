@@ -1,8 +1,6 @@
 app_config: "{{ app_config_default | combine(vault_app_config, recursive=True) }}"
 domain: "{{ vault_domain }}"
 hcloud_token: "{{ vault_hcloud_token }}"
-hdns_token: "{{ vault_hdns_token }}"
-hdns_zone_id: "{{ vault_hdns_zone_id }}"
 ssh_keys: "{{ vault_ssh_keys }}"
   # - 
 terraform_backend_s3: "{{ vault_terraform_backend_s3 }}"
@@ -38,7 +36,7 @@ app_config_default:
 
   cert_manager:
     email:
-    hdns_token:
+    hcloud_token:
     namespace: cert-manager
     memory: 150Mi
     memory_cainjector: 150Mi

@@ -7,15 +7,6 @@ variable "hcloud_token" {
   sensitive = true
 }
 
-variable "hdns_token" {
-  type      = string
-  sensitive = true
-}
-
-variable "hdns_zone_id" {
-  type = string
-}
-
 variable "ssh_keys" {
   type = list(string)
 }

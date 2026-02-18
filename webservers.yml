@@ -12,8 +12,6 @@
           dkim_file: "{{ terraform_vault_files_decryption_path }}/mail.{{ stage }}.txt"
           domain: "{{ domain }}"
           hcloud_token: "{{ hcloud_token }}"
-          hdns_token: "{{ hdns_token }}"
-          hdns_zone_id: "{{ hdns_zone_id }}"
           inventory_file: "{{ ansible_inventory_sources[0] }}"
           nodes: "{{ nodes }}"
           ssh_keys: "{{ ssh_keys }}"

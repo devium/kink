@@ -30,8 +30,6 @@ module "node" {
 module "domain" {
   dkim_file    = var.dkim_file
   domain       = var.domain
-  hdns_token   = var.hdns_token
-  hdns_zone_id = var.hdns_zone_id
   nodes        = module.node
   source       = "./modules/domain"
   subdomains   = var.subdomains

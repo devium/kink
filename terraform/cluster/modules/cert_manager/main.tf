@@ -36,20 +36,15 @@ resource "kubernetes_secret_v1" "hetzner_secret" {
   }
 
   data = {
-    api-key = var.config.hdns_token
+    api-key = var.config.hcloud_token
   }
 }
 
 resource "helm_release" "hetzner_webhook" {
   name       = "${var.release_name}-hetzner"
   namespace  = var.config.namespace
-  repository = "https://vadimkim.github.io/cert-manager-webhook-hetzner"
+  repository = "https://charts.hetzner.cloud"
   chart      = "cert-manager-webhook-hetzner"
-
-  values = [<<-YAML
-    groupName: acme.${var.domain}
-  YAML
-  ]
 
   # Helm chart creates necessary CRDs.
   depends_on = [
@@ -80,12 +75,12 @@ resource "kubectl_manifest" "issuer" {
 
           - dns01:
               webhook:
-                groupName: acme.${var.domain}
+                groupName: acme.hetzner.com
                 solverName: hetzner
                 config:
-                  secretName: hetzner_secret
-                  zoneName: ${var.domain}
-                  apiUrl: https://dns.hetzner.com/api/v1
+                  tokenSecretKeyRef:
+                    name: hetzner-secret
+                    key: api-key
   YAML
 
   # Helm chart creates necessary CRDs.
