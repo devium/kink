@@ -158,6 +158,7 @@ resource "helm_release" "nextcloud" {
 
     cronjob:
       enabled: true
+      type: cronjob
 
     redis:
       enabled: true

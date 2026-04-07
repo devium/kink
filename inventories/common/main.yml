@@ -215,8 +215,8 @@ app_config_default:
     memory: 600Mi
     namespace: nextcloud
     subdomain: next
-    version: 32.0.1-apache
-    version_helm: 8.5.2
+    version: 33.0.0-apache
+    version_helm: 9.0.4
 
     db:
       database: nextcloud
