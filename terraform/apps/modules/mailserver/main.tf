@@ -47,6 +47,7 @@ resource "helm_release" "mailserver" {
       env:
         OVERRIDE_HOSTNAME: ${local.fqdn}
         ENABLE_RSPAMD: 0
+        ENABLE_RSPAMD_REDIS: 0
         ENABLE_OPENDKIM: 1
         ENABLE_OPENDMARC: 1
 
